@@ -4,12 +4,14 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import zipfile
 
 import numpy as np
 import pandas as pd
 
-from laya_trader.config import AppConfig, load_config
+from laya_trader.config import AppConfig, interval_to_timedelta, load_config
+from laya_trader.data.binance_public import month_keys
 from laya_trader.dataset.splits import split_frame
 from laya_trader.dataset.state import build_state
 from laya_trader.features.core import KLINE_COLUMNS, build_feature_frame, normalize_klines
@@ -47,6 +49,50 @@ def _read_zip(path: Path) -> pd.DataFrame:
     return frame
 
 
+def _configured_archive_paths(
+    root: Path,
+    symbol: str,
+    interval: str,
+    start: str,
+    end: str,
+) -> list[Path]:
+    return [
+        path
+        for month in month_keys(start, end)
+        if (path := root / f"{symbol}-{interval}-{month}.zip").exists()
+    ]
+
+
+def _range_bound(value: str, *, end: bool) -> pd.Timestamp:
+    raw = str(value).strip()
+    ts = pd.Timestamp(raw)
+    ts = ts.tz_localize("UTC") if ts.tzinfo is None else ts.tz_convert("UTC")
+    if end and re.fullmatch(r"\d{4}-\d{2}-\d{2}", raw):
+        ts = ts + pd.Timedelta(days=1) - pd.Timedelta(nanoseconds=1)
+    return ts
+
+
+def _clip_to_configured_range(df: pd.DataFrame, start: str, end: str) -> pd.DataFrame:
+    start_ts = _range_bound(start, end=False)
+    end_ts = _range_bound(end, end=True)
+    if start_ts > end_ts:
+        raise ValueError(f"data.start {start!r} is after data.end {end!r}")
+    out = df.loc[(df["timestamp"] >= start_ts) & (df["timestamp"] <= end_ts)].copy()
+    return out.reset_index(drop=True)
+
+
+def _mark_contiguous_segments(df: pd.DataFrame, interval: str) -> pd.DataFrame:
+    if df.empty:
+        return df.assign(_segment_id=pd.Series(dtype="int64"))
+    expected = interval_to_timedelta(interval)
+    diffs = df["open_time"].diff()
+    starts = diffs.ne(expected)
+    starts.iloc[0] = True
+    out = df.copy()
+    out["_segment_id"] = starts.cumsum().astype(int) - 1
+    return out
+
+
 def load_symbol_klines(cfg: AppConfig, symbol: str) -> pd.DataFrame:
     root = (
         cfg.data.raw_dir
@@ -58,11 +104,23 @@ def load_symbol_klines(cfg: AppConfig, symbol: str) -> pd.DataFrame:
         / symbol
         / cfg.data.interval
     )
-    files = sorted(root.glob(f"{symbol}-{cfg.data.interval}-*.zip"))
+    files = _configured_archive_paths(
+        root,
+        symbol,
+        cfg.data.interval,
+        cfg.data.start,
+        cfg.data.end,
+    )
     if not files:
-        raise FileNotFoundError(f"no downloaded archives for {symbol} under {root}")
+        raise FileNotFoundError(
+            f"no downloaded archives for {symbol} in configured range under {root}"
+        )
     frames = [_read_zip(path) for path in files]
-    return normalize_klines(pd.concat(frames, ignore_index=True))
+    normalized = normalize_klines(pd.concat(frames, ignore_index=True))
+    clipped = _clip_to_configured_range(normalized, cfg.data.start, cfg.data.end)
+    if clipped.empty:
+        raise ValueError(f"{symbol}: no candles inside configured data range")
+    return _mark_contiguous_segments(clipped, cfg.data.interval)
 
 
 def _required_columns(cfg: AppConfig) -> list[str]:
@@ -74,16 +132,35 @@ def _required_columns(cfg: AppConfig) -> list[str]:
 
 def prepare_symbol(cfg: AppConfig, symbol: str) -> pd.DataFrame:
     raw = load_symbol_klines(cfg, symbol)
-    features = build_feature_frame(raw, cfg.features.higher_timeframes)
-    features["symbol"] = symbol
-    features = features.iloc[cfg.features.warmup_bars :].copy()
     required = _required_columns(cfg)
-    missing = [c for c in required if c not in features]
-    if missing:
-        raise ValueError(f"feature pipeline did not produce required columns: {missing}")
-    features = features.dropna(subset=required).reset_index(drop=True)
-    labeled = add_triple_barrier_labels(features, cfg.labels)
-    return labeled
+    labeled_segments: list[pd.DataFrame] = []
+
+    for segment_id, segment in raw.groupby("_segment_id", sort=True):
+        segment = segment.drop(columns=["_segment_id"]).reset_index(drop=True)
+        if len(segment) <= cfg.features.warmup_bars + cfg.labels.horizon_bars:
+            continue
+
+        features = build_feature_frame(segment, cfg.features.higher_timeframes)
+        features["symbol"] = symbol
+        features["_segment_id"] = int(segment_id)
+        features = features.iloc[cfg.features.warmup_bars :].copy()
+
+        missing = [name for name in required if name not in features]
+        if missing:
+            raise ValueError(f"feature pipeline did not produce required columns: {missing}")
+        features = features.dropna(subset=required).reset_index(drop=True)
+        if len(features) <= cfg.labels.horizon_bars:
+            continue
+
+        labeled = add_triple_barrier_labels(features, cfg.labels)
+        if not labeled.empty:
+            labeled_segments.append(labeled)
+
+    if not labeled_segments:
+        raise ValueError(
+            f"{symbol}: no contiguous segment is long enough to build fully causal labels"
+        )
+    return pd.concat(labeled_segments, ignore_index=True)
 
 
 def _targets(row: pd.Series) -> dict:
@@ -175,8 +252,9 @@ def build_dataset(config_path: str | Path) -> dict:
         combined = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
         records = [_record(row, cfg) for _, row in combined.iterrows()]
         _write_jsonl(out_dir / f"{name}.jsonl", records)
+        parquet_path = out_dir / f"{name}.parquet"
         if not combined.empty:
-            combined.to_parquet(out_dir / f"{name}.parquet", index=False)
+            combined.to_parquet(parquet_path, index=False)
             action = np.argmax(
                 combined[["target_long", "target_short", "target_flat"]].to_numpy(), axis=1
             )
@@ -193,6 +271,7 @@ def build_dataset(config_path: str | Path) -> dict:
                 "argmax_action": counts,
             }
         else:
+            parquet_path.unlink(missing_ok=True)
             manifest["splits"][name] = {"rows": 0, "symbols": [], "argmax_action": {}}
 
     (out_dir / "manifest.json").write_text(
