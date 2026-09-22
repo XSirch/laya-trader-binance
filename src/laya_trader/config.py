@@ -51,7 +51,7 @@ class SplitConfig:
 @dataclass(frozen=True)
 class SamplingConfig:
     seed: int = 42
-    max_rows_per_symbol_per_split: int = 50_000
+    max_rows_per_symbol_per_split: int = 5_000
 
 
 @dataclass(frozen=True)
@@ -109,7 +109,7 @@ def load_config(path: str | Path) -> AppConfig:
         sampling=SamplingConfig(
             seed=int(sampling.get("seed", 42)),
             max_rows_per_symbol_per_split=int(
-                sampling.get("max_rows_per_symbol_per_split", 50_000)
+                sampling.get("max_rows_per_symbol_per_split", 5_000)
             ),
         ),
     )
