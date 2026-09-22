@@ -77,7 +77,10 @@ def prepare_symbol(cfg: AppConfig, symbol: str) -> pd.DataFrame:
     features = build_feature_frame(raw, cfg.features.higher_timeframes)
     features["symbol"] = symbol
     features = features.iloc[cfg.features.warmup_bars :].copy()
-    required = [c for c in _required_columns(cfg) if c in features]
+    required = _required_columns(cfg)
+    missing = [c for c in required if c not in features]
+    if missing:
+        raise ValueError(f"feature pipeline did not produce required columns: {missing}")
     features = features.dropna(subset=required).reset_index(drop=True)
     labeled = add_triple_barrier_labels(features, cfg.labels)
     return labeled
