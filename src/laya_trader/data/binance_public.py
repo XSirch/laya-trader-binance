@@ -28,7 +28,7 @@ def kline_url(market: str, symbol: str, interval: str, month: str) -> str:
 
 
 def verify_checksum(file_path: Path, checksum_text: str) -> None:
-    match = re.search(r"\b([0-9a-fA-F]{64})\b", checksum_text)
+    match = re.search(r"\\b([0-9a-fA-F]{64})\\b", checksum_text)
     if not match:
         raise ValueError(f"could not parse checksum for {file_path.name}")
     expected = match.group(1).lower()
@@ -38,8 +38,42 @@ def verify_checksum(file_path: Path, checksum_text: str) -> None:
             digest.update(chunk)
     actual = digest.hexdigest()
     if actual != expected:
-        file_path.unlink(missing_ok=True)
         raise ValueError(f"checksum mismatch for {file_path.name}: {actual} != {expected}")
+
+
+def validate_zip_archive(file_path: Path) -> None:
+    try:
+        with zipfile.ZipFile(file_path) as archive:
+            members = [name for name in archive.namelist() if not name.endswith("/")]
+            if not members:
+                raise ValueError(f"empty ZIP archive: {file_path.name}")
+            bad_member = archive.testzip()
+            if bad_member is not None:
+                raise ValueError(
+                    f"corrupt ZIP member {bad_member!r} in {file_path.name}"
+                )
+    except zipfile.BadZipFile as exc:
+        raise ValueError(f"invalid ZIP archive: {file_path.name}") from exc
+
+
+def validate_archive(
+    session: requests.Session,
+    file_path: Path,
+    checksum_url: str,
+    timeout: int,
+) -> None:
+    """Validate checksum when Binance exposes one, plus ZIP structure in every case."""
+    checksum_text = None
+    try:
+        checksum = session.get(checksum_url, timeout=timeout)
+        if checksum.ok and re.search(r"\\b[0-9a-fA-F]{64}\\b", checksum.text):
+            checksum_text = checksum.text
+    except requests.RequestException:
+        pass
+
+    if checksum_text is not None:
+        verify_checksum(file_path, checksum_text)
+    validate_zip_archive(file_path)
 
 
 def download_one(
