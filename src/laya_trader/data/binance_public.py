@@ -6,6 +6,7 @@ import hashlib
 from pathlib import Path
 import re
 import sys
+import zipfile
 
 import requests
 
@@ -53,23 +54,30 @@ def download_one(
     out_dir.mkdir(parents=True, exist_ok=True)
     filename = f"{symbol}-{interval}-{month}.zip"
     target = out_dir / filename
-    if target.exists() and target.stat().st_size > 0:
-        return symbol, month, "cached"
-
     url = kline_url(market, symbol, interval, month)
     checksum_url = url + ".CHECKSUM"
+
     with requests.Session() as session:
+        if target.exists() and target.stat().st_size > 0:
+            try:
+                validate_archive(session, target, checksum_url, timeout)
+            except (OSError, ValueError):
+                target.unlink(missing_ok=True)
+            else:
+                return symbol, month, "cached"
+
         response = session.get(url, timeout=timeout)
         if response.status_code == 404:
             return symbol, month, "not-listed"
         response.raise_for_status()
         tmp = target.with_suffix(".zip.part")
         tmp.write_bytes(response.content)
-
-        checksum = session.get(checksum_url, timeout=timeout)
-        if checksum.ok:
-            verify_checksum(tmp, checksum.text)
-        tmp.replace(target)
+        try:
+            validate_archive(session, tmp, checksum_url, timeout)
+            tmp.replace(target)
+        except Exception:
+            tmp.unlink(missing_ok=True)
+            raise
     return symbol, month, "downloaded"
 
 
