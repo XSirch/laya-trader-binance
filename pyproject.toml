@@ -34,9 +34,21 @@ laya-build-dataset = "laya_trader.dataset.build:main"
 laya-train = "laya_trader.laya.train:main"
 laya-calibrate = "laya_trader.laya.calibrate:main"
 laya-infer = "laya_trader.laya.infer:main"
+laya-evaluate = "laya_trader.laya.evaluate:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/laya_trader"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

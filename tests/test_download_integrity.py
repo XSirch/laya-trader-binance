@@ -1,6 +1,9 @@
+import hashlib
+import zipfile
 from io import BytesIO
 from pathlib import Path
-import zipfile
+
+import pytest
 
 from laya_trader.data import binance_public
 
@@ -38,6 +41,22 @@ def valid_zip_bytes() -> bytes:
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("BTCUSDT-15m-2025-01.csv", "1,2,3\n")
     return buffer.getvalue()
+
+
+def test_verify_checksum_accepts_known_sha256_rejects_wrong_and_parses_hex(tmp_path: Path):
+    payload = b"laya-trader-checksum-fixture"
+    target = tmp_path / "fixture.bin"
+    target.write_bytes(payload)
+    digest = hashlib.sha256(payload).hexdigest()
+
+    binance_public.verify_checksum(target, f"{digest}  {target.name}")
+
+    with pytest.raises(ValueError, match="checksum mismatch"):
+        binance_public.verify_checksum(target, f"{'0' * 64}  {target.name}")
+
+    parsed = binance_public.re.search(r"\b([0-9a-fA-F]{64})\b", digest)
+    assert parsed is not None
+    assert parsed.group(1) == digest
 
 
 def test_corrupt_cached_archive_is_revalidated_and_replaced(tmp_path: Path, monkeypatch):

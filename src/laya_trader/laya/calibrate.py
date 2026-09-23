@@ -5,13 +5,12 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+import laya
 import numpy as np
 import torch
+from laya.common import collate_items, temp_bucket
 from scipy.optimize import minimize_scalar
 from torch.utils.data import DataLoader, SequentialSampler
-
-import laya
-from laya.common import collate_items, temp_bucket
 
 from laya_trader.laya.records import JsonlDecisionDataset
 
@@ -76,7 +75,7 @@ def calibrate(
         targets = np.stack([y for _, y in rows])
         before = _soft_nll(logits, targets, 1.0)
         result = minimize_scalar(
-            lambda t: _soft_nll(logits, targets, t),
+            lambda t, logits=logits, targets=targets: _soft_nll(logits, targets, t),
             bounds=(0.5, 5.0),
             method="bounded",
         )
