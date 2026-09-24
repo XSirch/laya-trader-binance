@@ -58,3 +58,20 @@ def test_same_candle_tp_and_stop_is_dropped():
     )
     out = add_triple_barrier_labels(df, cfg)
     assert not (out["timestamp"] == df.loc[0, "timestamp"]).any()
+
+
+def test_invalid_atr_rows_are_filtered_without_nan_targets():
+    df = frame_from_prices(
+        opens=[100, 100, 101, 102, 102, 102],
+        highs=[100.5, 101, 103.0, 103, 103, 103],
+        lows=[99.5, 99.5, 100.5, 101, 101, 101],
+        closes=[100, 100.5, 102.5, 102, 102, 102],
+    )
+    df.loc[0, "atr14"] = np.nan
+    cfg = LabelConfig(horizon_bars=3, take_profit_atr=2, stop_loss_atr=1)
+
+    out = add_triple_barrier_labels(df, cfg)
+
+    target_columns = [column for column in out if column.startswith("target_")]
+    assert not out.empty
+    assert not out[target_columns].isna().any().any()

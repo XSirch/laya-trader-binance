@@ -4,17 +4,16 @@ import argparse
 import json
 import math
 import os
-from pathlib import Path
 import random
+from pathlib import Path
 
+import laya
 import numpy as np
 import torch
+from laya.common import collate_items, proper_reward
 from safetensors.torch import save_file
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, DistributedSampler, RandomSampler
-
-import laya
-from laya.common import collate_items, proper_reward
 
 from laya_trader.laya.records import JsonlDecisionDataset
 
@@ -36,6 +35,65 @@ def _seed_everything(seed: int, rank: int) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def _to_cpu(value):
+    if torch.is_tensor(value):
+        return value.detach().cpu()
+    if isinstance(value, dict):
+        return {key: _to_cpu(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_to_cpu(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_to_cpu(item) for item in value)
+    return value
+
+
+def _rng_state() -> dict:
+    return {
+        "python": random.getstate(),
+        "numpy": np.random.get_state(),
+        "torch": torch.get_rng_state(),
+        "cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
+    }
+
+
+def _restore_rng_state(state: dict) -> None:
+    random.setstate(state["python"])
+    np.random.set_state(state["numpy"])
+    torch.set_rng_state(state["torch"])
+    if state.get("cuda") is not None and torch.cuda.is_available():
+        torch.cuda.set_rng_state_all(state["cuda"])
+
+
+def _save_resume_checkpoint(
+    output: Path,
+    model,
+    optimizer: torch.optim.Optimizer,
+    scheduler: torch.optim.lr_scheduler.LRScheduler,
+    scaler: torch.cuda.amp.GradScaler,
+    epoch: int,
+    step: int,
+    update: int,
+    args: argparse.Namespace,
+) -> None:
+    output.mkdir(parents=True, exist_ok=True)
+    checkpoint = {
+        "version": 1,
+        "model": {key: value.detach().cpu() for key, value in model.state_dict().items()},
+        "optimizer": _to_cpu(optimizer.state_dict()),
+        "scheduler": scheduler.state_dict(),
+        "scaler": scaler.state_dict(),
+        "epoch": epoch,
+        "step": step,
+        "update": update,
+        "args": vars(args),
+        "rng": _rng_state(),
+    }
+    temporary = output / "resume.pt.tmp"
+    target = output / "resume.pt"
+    torch.save(checkpoint, temporary)
+    temporary.replace(target)
 
 
 def _save_checkpoint(output: Path, model, tokenizer, cfg: dict) -> None:
@@ -69,23 +127,36 @@ def train(args: argparse.Namespace) -> None:
     cfg["max_len"] = args.max_len
     cfg["head_max_len"] = args.head_max_len
     model = agent.model.to(device).train()
+    if args.gradient_checkpointing:
+        if not hasattr(model.encoder, "gradient_checkpointing_enable"):
+            raise RuntimeError("the selected encoder does not support gradient checkpointing")
+        model.encoder.gradient_checkpointing_enable()
 
     dataset = JsonlDecisionDataset(args.train, tokenizer, args.max_len, args.head_max_len)
     if not len(dataset):
         raise ValueError(f"no records in {args.train}")
-    sampler = (
-        DistributedSampler(dataset, num_replicas=world, rank=rank, shuffle=True, seed=args.seed)
-        if world > 1
-        else RandomSampler(dataset)
-    )
-    loader = DataLoader(
-        dataset,
-        batch_size=args.batch_size,
-        sampler=sampler,
-        num_workers=0,
-        collate_fn=lambda batch: collate_items(batch, tokenizer.pad_token_id),
-        pin_memory=True,
-    )
+
+    def make_loader(epoch: int):
+        if world > 1:
+            sampler = DistributedSampler(
+                dataset, num_replicas=world, rank=rank, shuffle=True, seed=args.seed
+            )
+            sampler.set_epoch(epoch)
+        else:
+            generator = torch.Generator()
+            generator.manual_seed(args.seed + epoch)
+            sampler = RandomSampler(dataset, generator=generator)
+        loader = DataLoader(
+            dataset,
+            batch_size=args.batch_size,
+            sampler=sampler,
+            num_workers=0,
+            collate_fn=lambda batch: collate_items(batch, tokenizer.pad_token_id),
+            pin_memory=True,
+        )
+        return sampler, loader
+
+    _, first_loader = make_loader(0)
 
     encoder_params = list(model.encoder.parameters())
     encoder_ids = {id(p) for p in encoder_params}
@@ -98,7 +169,7 @@ def train(args: argparse.Namespace) -> None:
         weight_decay=args.weight_decay,
     )
 
-    updates_per_epoch = math.ceil(len(loader) / args.grad_accum)
+    updates_per_epoch = math.ceil(len(first_loader) / args.grad_accum)
     total_updates = max(1, updates_per_epoch * args.epochs)
     warmup = max(1, int(total_updates * args.warmup_ratio))
 
@@ -120,13 +191,40 @@ def train(args: argparse.Namespace) -> None:
             find_unused_parameters=True,
         )
 
+    start_epoch = 0
+    start_step = 0
     update = 0
+    if args.resume:
+        resume_path = Path(args.resume)
+        if not resume_path.is_file():
+            raise FileNotFoundError(f"resume checkpoint not found: {resume_path}")
+        resume_state = torch.load(resume_path, map_location="cpu", weights_only=False)
+        raw_model = model.module if isinstance(model, DDP) else model
+        raw_model.load_state_dict(resume_state["model"])
+        optimizer.load_state_dict(resume_state["optimizer"])
+        scheduler.load_state_dict(resume_state["scheduler"])
+        if resume_state.get("scaler"):
+            scaler.load_state_dict(resume_state["scaler"])
+        start_epoch = int(resume_state["epoch"])
+        start_step = int(resume_state["step"])
+        update = int(resume_state["update"])
+        _restore_rng_state(resume_state["rng"])
+        if rank == 0:
+            print(
+                f"resumed from {resume_path} at epoch={start_epoch + 1} "
+                f"step={start_step} update={update}",
+                flush=True,
+            )
+
     optimizer.zero_grad(set_to_none=True)
-    for epoch in range(args.epochs):
-        if isinstance(sampler, DistributedSampler):
-            sampler.set_epoch(epoch)
+    for epoch in range(start_epoch, args.epochs):
+        _, loader = make_loader(epoch)
+        skip_steps = start_step if epoch == start_epoch else 0
+        start_step = 0
         running = 0.0
         for step, batch in enumerate(loader):
+            if step < skip_steps:
+                continue
             if batch is None:
                 continue
             tensors = {
@@ -177,9 +275,51 @@ def train(args: argparse.Namespace) -> None:
                     print(
                         f"epoch={epoch + 1}/{args.epochs} update={update}/{total_updates} "
                         f"loss={running / max(1, args.log_every):.5f} "
-                        f"lr={scheduler.get_last_lr()[0]:.2e}"
+                        f"lr={scheduler.get_last_lr()[0]:.2e}",
+                        flush=True,
                     )
                     running = 0.0
+                next_epoch = epoch
+                next_step = step + 1
+                if next_step >= len(loader):
+                    next_epoch += 1
+                    next_step = 0
+                if rank == 0 and args.checkpoint_every > 0 and update % args.checkpoint_every == 0:
+                    raw_model = model.module if isinstance(model, DDP) else model
+                    _save_resume_checkpoint(
+                        Path(args.output),
+                        raw_model,
+                        optimizer,
+                        scheduler,
+                        scaler,
+                        next_epoch,
+                        next_step,
+                        update,
+                        args,
+                    )
+                    print(
+                        f"saved resume checkpoint at update={update} "
+                        f"epoch={next_epoch + 1} step={next_step}",
+                        flush=True,
+                    )
+
+        if rank == 0 and args.checkpoint_every > 0:
+            raw_model = model.module if isinstance(model, DDP) else model
+            _save_resume_checkpoint(
+                Path(args.output),
+                raw_model,
+                optimizer,
+                scheduler,
+                scaler,
+                epoch + 1,
+                0,
+                update,
+                args,
+            )
+            print(
+                f"saved epoch checkpoint at update={update} epoch={epoch + 2} step=0",
+                flush=True,
+            )
 
     if rank == 0:
         raw_model = model.module if isinstance(model, DDP) else model
@@ -209,6 +349,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-len", type=int, default=512)
     p.add_argument("--head-max-len", type=int, default=192)
     p.add_argument("--amp", choices=("fp16", "bf16"), default="fp16")
+    p.add_argument("--gradient-checkpointing", action="store_true")
+    p.add_argument("--resume", default=None)
+    p.add_argument("--checkpoint-every", type=int, default=250)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--log-every", type=int, default=50)
     return p

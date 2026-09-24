@@ -5,9 +5,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from torch.utils.data import Dataset
-
 from laya.common import QTYPES, build_sequence, render_options
+from torch.utils.data import Dataset
 
 from laya_trader.laya.questions import trading_questions
 

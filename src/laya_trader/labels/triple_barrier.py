@@ -13,8 +13,9 @@ def _first_hit(mask: np.ndarray, horizon: int) -> np.ndarray:
 
 def _softmax(values: np.ndarray, temperature: float) -> np.ndarray:
     t = max(float(temperature), 1e-6)
-    z = values / t
-    z = z - np.nanmax(z, axis=1, keepdims=True)
+    safe_values = np.where(np.isfinite(values), values, 0.0)
+    z = safe_values / t
+    z = z - z.max(axis=1, keepdims=True)
     exp = np.exp(z)
     return exp / exp.sum(axis=1, keepdims=True)
 
@@ -93,8 +94,11 @@ def add_triple_barrier_labels(df: pd.DataFrame, cfg: LabelConfig) -> pd.DataFram
     # Continuous edge quality mapped onto five ordinal levels; use a Gaussian soft target.
     # -1R -> 0, 0R -> 1, 0.5R -> 2, 1R -> 3, >=2R -> 4.
     anchors = np.array([-1.0, 0.0, 0.5, 1.0, 2.0], dtype=float)
-    distance = (best_r[:, None] - anchors[None, :]) / 0.45
-    edge_p = np.exp(-0.5 * distance**2)
+    safe_best_r = np.where(np.isfinite(best_r), best_r, 0.0)
+    distance = (safe_best_r[:, None] - anchors[None, :]) / 0.45
+    edge_logits = -0.5 * distance**2
+    edge_logits = edge_logits - edge_logits.max(axis=1, keepdims=True)
+    edge_p = np.exp(edge_logits)
     edge_p = edge_p / edge_p.sum(axis=1, keepdims=True)
 
     out = df.iloc[:count].copy()

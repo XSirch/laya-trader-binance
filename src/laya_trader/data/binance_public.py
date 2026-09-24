@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
-from pathlib import Path
 import re
 import sys
 import zipfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 import requests
 
@@ -28,7 +28,7 @@ def kline_url(market: str, symbol: str, interval: str, month: str) -> str:
 
 
 def verify_checksum(file_path: Path, checksum_text: str) -> None:
-    match = re.search(r"\\b([0-9a-fA-F]{64})\\b", checksum_text)
+    match = re.search(r"\b([0-9a-fA-F]{64})\b", checksum_text)
     if not match:
         raise ValueError(f"could not parse checksum for {file_path.name}")
     expected = match.group(1).lower()
@@ -66,7 +66,7 @@ def validate_archive(
     checksum_text = None
     try:
         checksum = session.get(checksum_url, timeout=timeout)
-        if checksum.ok and re.search(r"\\b[0-9a-fA-F]{64}\\b", checksum.text):
+        if checksum.ok and re.search(r"\b[0-9a-fA-F]{64}\b", checksum.text):
             checksum_text = checksum.text
     except requests.RequestException:
         pass
@@ -143,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         counts = download_dataset(args.config)
-    except Exception as exc:
+    except (OSError, ValueError, requests.RequestException) as exc:
         print(f"download failed: {exc}", file=sys.stderr)
         return 1
     print("summary:", counts)
