@@ -79,6 +79,21 @@ The large earlier gain was mostly relative price movement, not funding carry, an
 
 The current 15m `tradeable` target comes from `max(long_r, short_r)` after observing the future path. In the local training split, 69.09% of rows had a positive best-side return in hindsight, although the mean long and mean short returns were -0.2867 R and -0.2428 R after costs. This distinction can explain why the model predicts tradeability near 0.68 while its action probabilities stay nearly uniform. It is an inference from the label definition and measured splits, not proof that a different label would create a tradable edge. A future label or teacher should estimate conditional expected net return from causal inputs, then be checked out of sample before spending GPU time.
 
+## Historical positioning-metrics probe
+
+Downloaded 5,480 daily archives for the same five symbols from the [Binance USD-M metrics archive](https://data.binance.vision/?prefix=data/futures/um/daily/metrics/), covering 2023-2025. Each archive contains five-minute open-interest value, top-trader and global long/short ratios, and taker-volume ratios. The fixed features were the 24-hour change in open-interest value, the two long/short ratios, their log difference, and the trailing one-hour taker ratio. Every metric was joined at least one hour after its source timestamp; stale or incomplete observations were excluded. The baseline and augmented model used the same rows, weak gradient booster, 14 bps round-trip cost, and conservative nonoverlap per symbol. Threshold selection used only 2025 H1. The project trade-count rule requires `max(100, 0.5% of split rows)`: 107 calibration trades and 108 validation trades here.
+
+| Training data and model | Calibration trades, mean R, positive months | 2025 H2 trades, mean R, positive months | H2 mean R with 4 bps extra cost |
+|---|---:|---:|---:|
+| Even sample, price/flow only | No passing threshold | Not used | Not used |
+| Even sample, plus metrics | 128, +0.2323, 5/6 | 95, +0.1481, 4/6 | +0.1171 |
+| Full 2023-2024 hourly data, price/flow only | 103, +0.1297, 5/6; below 107 minimum | 105, -0.0553, 2/6; diagnostic before gate alignment | -0.0941 |
+| Full 2023-2024 hourly data, plus metrics | 113, +0.3509, 5/6 | 93, +0.0767, 3/6 | +0.0410 |
+
+The even-sample metrics variant falls 13 trades short of the 108-trade validation minimum. Its 95% week-block bootstrap interval for mean R is [-0.1126, +0.4711]. With the full training set, the metrics variant falls 15 trades short and misses the profitable-month requirement; its interval is [-0.2583, +0.3612] R. ETH was negative in both variants, and the results are sensitive to the training sample. As a further chronological check, training on full 2023 data and selecting on 2024 H1 produced no qualifying threshold for either model; the metrics variant at threshold 0.10 had 122 calibration trades, +0.0762 R, and only 3/6 positive months. Its 2024 H2 was therefore not used. These are exploratory 2025 H2 comparisons, which have already been inspected by several hypotheses. Funding cash flows, portfolio sizing, and simultaneous cross-symbol exposure are not included. Neither variant supports a new GPU run or use of the untouched 2026 final test.
+
+The dataset and probe scripts are `scripts/build_one_hour_full_five.py`, `scripts/metrics_probe.py`, `scripts/metrics_inner_probe.py`, and `scripts/analyze_metrics_probe.py`. Build the uncapped dataset with `uv run python -u scripts/build_one_hour_full_five.py`, then run the main probe with `uv run --with scikit-learn python -u scripts/metrics_probe.py --full-data --validation`. Daily source ZIPs and JSON reports remain in ignored `outputs/` files.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
@@ -88,6 +103,6 @@ The current 15m `tradeable` target comes from `max(long_r, short_r)` after obser
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding and premium-index probes, wider-barrier label probe, and weekly carry rule all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or a genuinely new causal input, such as historical order-book information, specified from training data before another validation comparison. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, wider-barrier label probe, and weekly carry rule all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or another causal input, specified from training data before another validation comparison. Further 2025 H2 comparisons are exploratory because this period has been reused. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
 
-Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, and carry probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
+Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, and positioning-metrics probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
