@@ -42,6 +42,17 @@ Downloaded 16,440 historical funding records for BTC, ETH, BNB, SOL, and XRP fro
 
 Funding increased the calibration result but worsened the later period. The label still omits actual funding cash flows, so even a positive result would require an execution-level check. This experiment does not support a new GPU run.
 
+## Causal premium-index feature probe
+
+Downloaded 180 monthly 1h premium-index archives for BTC, ETH, BNB, SOL, and XRP from the [official Binance public data archive](https://github.com/binance/binance-public-data), covering 2023-2025. The source files contain premium-index OHLC values. The probe used the last completed premium close, its trailing eight-hour mean, its trailing 168-hour z-score, and its eight-hour change. Every joined premium observation was at least one hour older than the decision timestamp. The five-symbol 1h price/flow baseline and the premium model used the same sampled rows, weak gradient booster, and 2023-2024 training period. The threshold was selected only on 2025 H1 calibration and held fixed for 2025 H2 validation. Signals were conservatively nonoverlapping per symbol and include the configured 14 bps round-trip cost.
+
+| Model | Calibration trades, mean R, positive months | Validation trades, mean R, positive months | Validation mean R with 4 bps extra cost |
+|---|---:|---:|---:|
+| Price and flow baseline | No threshold passed the calibration gate | Not evaluated | Not evaluated |
+| Baseline plus lagged premium index | 106, +0.0829, 4/6 | 94, +0.0057, 3/6 | -0.0289 |
+
+The premium model fails the validation gate: fewer than 100 nonoverlapping trades, only three positive months, and a negative mean under the small cost stress. This is exploratory evidence, not a profitable strategy. The reproducibility script is `scripts/premium_probe.py`; run it with `uv run --with scikit-learn python -u scripts/premium_probe.py`. The raw result and cached premium data remain in ignored `outputs/` files. Five gaps longer than one hour were observed across the 131,400 archived premium bars, so a production feature pipeline would also need explicit gap handling. The 2026 final test remains untouched.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
@@ -51,6 +62,6 @@ Funding increased the calibration result but worsened the later period. The labe
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, and 1h lagged-funding probe all fail the out-of-sample execution gate. The next hypothesis needs a changed label or a genuinely new causal input, such as historical order-book information, specified from training data before another validation comparison. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, and lagged funding and premium-index probes all fail the out-of-sample execution gate. The next hypothesis needs a changed label or a genuinely new causal input, such as historical order-book information, specified from training data before another validation comparison. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
 
-The exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
+Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The new premium-index probe script is tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
