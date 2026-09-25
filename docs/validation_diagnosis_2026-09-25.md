@@ -53,6 +53,32 @@ Downloaded 180 monthly 1h premium-index archives for BTC, ETH, BNB, SOL, and XRP
 
 The premium model fails the validation gate: fewer than 100 nonoverlapping trades, only three positive months, and a negative mean under the small cost stress. This is exploratory evidence, not a profitable strategy. The reproducibility script is `scripts/premium_probe.py`; run it with `uv run --with scikit-learn python -u scripts/premium_probe.py`. The raw result and cached premium data remain in ignored `outputs/` files. Five gaps longer than one hour were observed across the 131,400 archived premium bars, so a production feature pipeline would also need explicit gap handling. The 2026 final test remains untouched.
 
+## Wider-barrier label probe
+
+A separate five-symbol 1h probe relabeled outcomes with a 24-hour horizon, a 3 ATR take profit, and a 2 ATR stop. Its entry was the next hourly open; a candle touching both barriers was conservatively scored as a stop. The 14 bps round-trip cost was charged in R units. Positions were held through the full 24-hour horizon for nonoverlap, even if a barrier was hit earlier. A new boundary check excluded every label whose horizon crossed its train, calibration, or validation cutoff; the original 16-bar embargo was insufficient for this 24-bar label. The weak gradient booster and the four threshold choices were fixed before inspecting validation. Training used either the existing even sample or all available 2023-2024 hourly bars.
+
+| Training rows | Calibration result after boundary check | Validation |
+|---:|---|---|
+| 12,628 even-sampled | No threshold passed; at 0.10, 168 trades, -0.0193 R, 3/6 positive months | Not used |
+| 87,590 full hourly | No threshold passed; at 0.10, 117 trades, +0.0350 R, 3/6 positive months | Not used |
+
+The first run, before the boundary fix, appeared to pass calibration. Removing the few cross-boundary labels changed the fitted model enough to eliminate that result. This sensitivity is a further reason not to launch a GPU training run from this label. The reproducibility script is `scripts/wide_barrier_probe.py`; raw reports are in ignored `outputs/wide_barrier_probe_report.json` and `outputs/wide_barrier_full_train_report.json`.
+
+## Weekly premium and funding carry probe
+
+A fixed five-symbol market-neutral rule selected the lowest trailing eight-hour premium for a long and the highest for a short at each Monday UTC open. It held for seven days. The premium observation was at least one hour old; entries and exits used complete hourly candles. Historical settled funding was included with the side-appropriate sign, and each leg paid 14 bps round trip. The portfolio allocated half of gross notional to each leg. Weeks crossing split boundaries were omitted.
+
+| Period | Complete weeks | Mean weekly net return | Mean weekly funding contribution | Positive months | Compounded return |
+|---|---:|---:|---:|---:|---:|
+| 2023-2024 development | 103 | +1.7618% | +0.0956% | 17/24 | +401.3% |
+| 2025 H1 calibration | 25 | -0.9034% | +0.0090% | 1/6 | -21.3% |
+
+The large earlier gain was mostly relative price movement, not funding carry, and failed in the next period. The rule was rejected at calibration; its 2025 H2 result was not used for selection. This approximation does not model liquidation, exchange margin, changing position notional, or funding settlement in a real account. The reproducibility script is `scripts/carry_probe.py`; run it with `uv run --with scikit-learn python -u scripts/carry_probe.py`. It obtains the premium and funding archives through the companion scripts if their caches are absent. The raw report is in ignored `outputs/carry_probe_report.json`.
+
+## Target interpretation
+
+The current 15m `tradeable` target comes from `max(long_r, short_r)` after observing the future path. In the local training split, 69.09% of rows had a positive best-side return in hindsight, although the mean long and mean short returns were -0.2867 R and -0.2428 R after costs. This distinction can explain why the model predicts tradeability near 0.68 while its action probabilities stay nearly uniform. It is an inference from the label definition and measured splits, not proof that a different label would create a tradable edge. A future label or teacher should estimate conditional expected net return from causal inputs, then be checked out of sample before spending GPU time.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
@@ -62,6 +88,6 @@ The premium model fails the validation gate: fewer than 100 nonoverlapping trade
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, and lagged funding and premium-index probes all fail the out-of-sample execution gate. The next hypothesis needs a changed label or a genuinely new causal input, such as historical order-book information, specified from training data before another validation comparison. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding and premium-index probes, wider-barrier label probe, and weekly carry rule all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or a genuinely new causal input, such as historical order-book information, specified from training data before another validation comparison. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
 
-Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The new premium-index probe script is tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
+Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, and carry probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
