@@ -94,6 +94,12 @@ The even-sample metrics variant falls 13 trades short of the 108-trade validatio
 
 The dataset and probe scripts are `scripts/build_one_hour_full_five.py`, `scripts/metrics_probe.py`, `scripts/metrics_inner_probe.py`, and `scripts/analyze_metrics_probe.py`. Build the uncapped dataset with `uv run python -u scripts/build_one_hour_full_five.py`, then run the main probe with `uv run --with scikit-learn python -u scripts/metrics_probe.py --full-data --validation`. Daily source ZIPs and JSON reports remain in ignored `outputs/` files.
 
+## Daily-horizon label probe
+
+A separate CPU probe used the existing 20-symbol universe and aggregated only complete groups of 96 source 15m candles into daily bars. Causal daily price, trend, volume, and flow features trained a fixed shallow gradient booster on 2023-2024. Outcomes entered at the next daily open, held for up to five days, used a 3 ATR take profit and 2 ATR stop, and charged 14 bps round trip. Same-day touches of both barriers were scored as a stop. Temporal purging and a conservative 16-day embargo came from the existing split policy; positions were considered occupied until the full five-day label horizon. There were 13,768 training rows, 3,200 calibration rows, and 3,260 reserved validation rows.
+
+The 2025 H1 calibration had no qualifying threshold. At 0.20, it produced 105 nonoverlapping trades and +0.0671 R after costs, but only 3/6 positive months. The 2025 H2 labels were not scored for this rule. The reproducibility script is `scripts/daily_trend_probe.py`; the report is in ignored `outputs/daily_trend_probe_report.json`. Funding cash flows and portfolio-level exposure are not included, but the calibration failure already rules out this candidate.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
@@ -103,6 +109,6 @@ The dataset and probe scripts are `scripts/build_one_hour_full_five.py`, `script
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, wider-barrier label probe, and weekly carry rule all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or another causal input, specified from training data before another validation comparison. Further 2025 H2 comparisons are exploratory because this period has been reused. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, wider-barrier and daily-horizon label probes, and weekly carry rule all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or another causal input, specified from training data before another validation comparison. Further 2025 H2 comparisons are exploratory because this period has been reused. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
 
-Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, and positioning-metrics probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
+Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, positioning-metrics, and daily-horizon probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
