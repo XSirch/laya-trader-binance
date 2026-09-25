@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from collections import Counter
 from collections.abc import Iterable
+from datetime import UTC, datetime
 from itertools import pairwise
 from pathlib import Path
 
@@ -126,6 +128,7 @@ def _predict_batch(agent, batch: list[dict]) -> list[dict]:
                 "diagnostics": {
                     "long_r": float(diagnostics["long_r"]),
                     "short_r": float(diagnostics["short_r"]),
+                    "label_end_time": str(diagnostics["label_end_time"]),
                 },
                 "answers": answers,
             }
@@ -223,7 +226,9 @@ def _model_metrics(arrays: dict[str, np.ndarray]) -> dict:
         "action_nll": _nll(action_probabilities, target_action),
         "action_brier": _brier(action_probabilities, target_action),
         "action_agreement_with_target_argmax": float(np.mean(predicted == actual)),
-        "action_ece": _ece(action_probabilities, target_action, arrays["action_confidence"]),
+        "action_ece": _ece(
+            action_probabilities, target_action, action_probabilities.max(axis=1)
+        ),
         "confusion_matrix": confusion,
         "question_nll": {
             "action": _nll(action_probabilities, target_action),
@@ -268,7 +273,6 @@ def _signal_metrics(arrays: dict[str, np.ndarray], mask: np.ndarray) -> dict:
         "median_R": float(np.median(values)) if values.size else None,
         "win_rate": float(np.mean(values > 0)) if values.size else None,
         "loss_rate": float(np.mean(values < 0)) if values.size else None,
-        "positive_expectancy_rate": float(np.mean(values > 0)) if values.size else None,
         "profit_factor": _profit_factor(values) if values.size else None,
     }
 
@@ -341,10 +345,10 @@ def _baseline_reports(
 ) -> dict:
     majority = _majority_action(reference_train)
     majority_mask = np.full(len(predictions), majority != ACTION_TO_INDEX["FLAT"], dtype=bool)
-    random_mask = taken_mask.copy()
     rng = np.random.default_rng(42)
     random_actions = np.full(len(predictions), ACTION_TO_INDEX["FLAT"], dtype=int)
-    trade_indices = rng.permutation(len(predictions))[: int(taken_mask.sum())]
+    trade_count = int((taken_mask & (arrays["action_index"] != ACTION_TO_INDEX["FLAT"])).sum())
+    trade_indices = rng.permutation(len(predictions))[:trade_count]
     long_count = int((taken_mask & (arrays["action_index"] == ACTION_TO_INDEX["LONG"])).sum())
     long_indices = set(trade_indices[:long_count].tolist())
     for index in trade_indices:
@@ -357,7 +361,7 @@ def _baseline_reports(
     random_arrays = dict(arrays)
     random_arrays["action_index"] = random_actions
     baseline_reports["random_direction_same_trade_frequency"] = _signal_metrics(
-        random_arrays, random_mask
+        random_arrays, random_actions != ACTION_TO_INDEX["FLAT"]
     )
     ema_actions = np.asarray([_ema_action(row) for row in predictions], dtype=int)
     ema_arrays = dict(arrays)
@@ -366,6 +370,111 @@ def _baseline_reports(
         ema_arrays, ema_actions != ACTION_TO_INDEX["FLAT"]
     )
     return baseline_reports
+
+
+def _select_thresholds(
+    predictions: list[dict], arrays: dict[str, np.ndarray]
+) -> tuple[list[dict], dict]:
+    action_probability = arrays["action_probabilities"].max(axis=1)
+    grid = []
+    for tradeable_min in THRESHOLDS:
+        for action_probability_min in ACTION_THRESHOLDS:
+            candidate_mask = (
+                (arrays["tradeable"] >= tradeable_min)
+                & (action_probability >= action_probability_min)
+            )
+            metrics = _signal_metrics(arrays, candidate_mask)
+            gate = _threshold_gate(predictions, arrays, candidate_mask)
+            grid.append(
+                {
+                    "tradeable_min": tradeable_min,
+                    "action_probability_min": action_probability_min,
+                    **metrics,
+                    **gate,
+                }
+            )
+    eligible = [row for row in grid if row["eligible_for_selection"]]
+    selected = max(
+        eligible,
+        key=lambda row: (
+            row["nonoverlap_by_symbol"]["mean_R"],
+            row["nonoverlap_by_symbol"]["profit_factor"]
+            if row["nonoverlap_by_symbol"]["profit_factor"] is not None
+            else float("inf"),
+            row["nonoverlap_by_symbol"]["trades"],
+        ),
+        default=None,
+    )
+    return grid, {
+        "minimum_trades": max(100, int(len(action_probability) * 0.005)),
+        "minimum_profitable_months": math.ceil(
+            len({str(row["decision_time"])[:7] for row in predictions}) * 2 / 3
+        ),
+        "selected": (
+            {
+                "tradeable_min": selected["tradeable_min"],
+                "action_probability_min": selected["action_probability_min"],
+            }
+            if selected
+            else None
+        ),
+    }
+
+
+def _threshold_gate(
+    predictions: list[dict], arrays: dict[str, np.ndarray], mask: np.ndarray
+) -> dict:
+    minimum_trades = max(100, int(len(predictions) * 0.005))
+    months = np.asarray([str(row["decision_time"])[:7] for row in predictions])
+    all_months = sorted(set(months))
+    minimum_profitable_months = math.ceil(len(all_months) * 2 / 3)
+    executed_mask = _nonoverlap_mask(predictions, arrays, mask)
+    executed = _signal_metrics(arrays, executed_mask)
+    profitable_months = sum(
+        1
+        for month in all_months
+        if (monthly := _signal_metrics(arrays, executed_mask & (months == month)))["trades"] > 0
+        and monthly["mean_R"] > 0
+    )
+    enough_trades = executed["trades"] >= minimum_trades
+    positive_after_costs = executed["mean_R"] is not None and executed["mean_R"] > 0
+    stable_months = profitable_months >= minimum_profitable_months
+    return {
+        "minimum_trades": minimum_trades,
+        "nonoverlap_by_symbol": executed,
+        "profitable_months": profitable_months,
+        "minimum_profitable_months": minimum_profitable_months,
+        "meets_minimum_trades": enough_trades,
+        "positive_after_costs": positive_after_costs,
+        "stable_months": stable_months,
+        "eligible_for_selection": enough_trades and positive_after_costs and stable_months,
+    }
+
+
+def _nonoverlap_mask(
+    predictions: list[dict], arrays: dict[str, np.ndarray], mask: np.ndarray
+) -> np.ndarray:
+    """Conservatively hold each symbol until the full label horizon ends."""
+    directional = mask & (arrays["action_index"] != ACTION_TO_INDEX["FLAT"])
+    action_probability = arrays["action_probabilities"].max(axis=1)
+    ordered = sorted(
+        np.flatnonzero(directional),
+        key=lambda index: (
+            predictions[index]["decision_time"],
+            -action_probability[index],
+            predictions[index]["symbol"],
+        ),
+    )
+    accepted = np.zeros(len(predictions), dtype=bool)
+    last_end: dict[str, str] = {}
+    for index in ordered:
+        row = predictions[index]
+        symbol = str(row["symbol"])
+        decision_time = str(row["decision_time"])
+        if decision_time >= last_end.get(symbol, ""):
+            accepted[index] = True
+            last_end[symbol] = str(row["diagnostics"]["label_end_time"])
+    return accepted
 
 
 def evaluate_predictions(
@@ -381,11 +490,13 @@ def evaluate_predictions(
         & (action_probability >= float(thresholds["action_probability_min"]))
     )
     signal_mask = taken_mask & (arrays["action_index"] != ACTION_TO_INDEX["FLAT"])
+    nonoverlap_mask = _nonoverlap_mask(predictions, arrays, taken_mask)
     report = {
         "samples": len(predictions),
         "thresholds": thresholds,
         "model": _model_metrics(arrays),
         "signal_level_realized_R": _signal_metrics(arrays, taken_mask),
+        "nonoverlap_by_symbol_realized_R": _signal_metrics(arrays, nonoverlap_mask),
         "per_symbol": _group_metrics(predictions, arrays, signal_mask, "symbol"),
         "per_month": _group_metrics(predictions, arrays, signal_mask, "month"),
         "confidence_bucket": _group_metrics(predictions, arrays, signal_mask, "confidence_bucket"),
@@ -394,52 +505,15 @@ def evaluate_predictions(
         "baselines": _baseline_reports(predictions, arrays, taken_mask, reference_train),
     }
     if include_threshold_grid:
-        grid = []
-        minimum_trades = max(100, int(len(predictions) * 0.005))
-        for tradeable_min in THRESHOLDS:
-            for action_probability_min in ACTION_THRESHOLDS:
-                candidate_mask = (
-                    (arrays["tradeable"] >= tradeable_min)
-                    & (action_probability >= action_probability_min)
-                )
-                metrics = _signal_metrics(arrays, candidate_mask)
-                grid.append(
-                    {
-                        "tradeable_min": tradeable_min,
-                        "action_probability_min": action_probability_min,
-                        "minimum_trades": minimum_trades,
-                        **metrics,
-                        "eligible_for_selection": metrics["trades"] >= minimum_trades,
-                    }
-                )
-        eligible = [row for row in grid if row["eligible_for_selection"] and row["mean_R"] is not None]
-        if not eligible:
-            eligible = [row for row in grid if row["mean_R"] is not None]
-        selected = max(
-            eligible,
-            key=lambda row: (
-                row["mean_R"],
-                row["profit_factor"] if row["profit_factor"] is not None else -1.0,
-                row["trades"],
-            ),
-        ) if eligible else None
+        grid, selection = _select_thresholds(predictions, arrays)
         report["threshold_grid"] = grid
-        report["threshold_selection"] = {
-            "minimum_trades": minimum_trades,
-            "selected": (
-                {
-                    "tradeable_min": selected["tradeable_min"],
-                    "action_probability_min": selected["action_probability_min"],
-                }
-                if selected
-                else None
-            ),
-        }
+        report["threshold_selection"] = selection
     return report
 
 
 def render_markdown(report: dict, title: str) -> str:
     signal = report["signal_level_realized_R"]
+    nonoverlap = report["nonoverlap_by_symbol_realized_R"]
     model = report["model"]
     lines = [
         f"# {title}",
@@ -460,6 +534,12 @@ def render_markdown(report: dict, title: str) -> str:
         f"- Eligible signals: `{signal['eligible_signals']}`; trades: `{signal['trades']}`; LONG: `{signal['LONG']}`; SHORT: `{signal['SHORT']}`",
         f"- Mean R: `{signal['mean_R']}`; median R: `{signal['median_R']}`; win rate: `{signal['win_rate']}`; profit factor: `{signal['profit_factor']}`",
         "",
+        "## Conservative nonoverlap by symbol",
+        "",
+        "At most one position per symbol is held through the full label horizon. This is not portfolio PnL.",
+        "",
+        f"- Trades: `{nonoverlap['trades']}`; mean R: `{nonoverlap['mean_R']}`; profit factor: `{nonoverlap['profit_factor']}`",
+        "",
         "## Baselines",
         "",
         "| baseline | trades | mean R | profit factor | win rate |",
@@ -470,13 +550,51 @@ def render_markdown(report: dict, title: str) -> str:
             f"| {name} | {metrics['trades']} | {metrics['mean_R']} | {metrics['profit_factor']} | {metrics['win_rate']} |"
         )
     if "threshold_grid" in report:
-        lines += ["", "## Threshold selection (validation only)", "", "```json", json.dumps(report["threshold_selection"], indent=2), "```"]
+        lines += [
+            "", "## Threshold selection (calibration)", "",
+            "```json", json.dumps(report["threshold_selection"], indent=2), "```",
+        ]
+    if "validation_gate" in report:
+        lines += [
+            "", "## Fixed-threshold validation gate", "",
+            "```json", json.dumps(report["validation_gate"], indent=2), "```",
+            f"- Basic gate passed: `{report['thresholds_pass_basic_gate']}`",
+        ]
     lines += ["", "## Confusion matrix", "", "```json", json.dumps(model["confusion_matrix"], indent=2), "```", ""]
     return "\n".join(lines)
 
 
 def _default_title(path: Path) -> str:
     return "Validation Report" if path.stem == "validation" else "Final Test Report"
+
+
+def _save_selected_thresholds(selected: dict | None, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    if selected is not None:
+        temporary.write_text(json.dumps(selected, indent=2), encoding="utf-8")
+    if path.exists():
+        stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+        archive = path.with_name(f"{path.stem}.stale-{stamp}{path.suffix}")
+        sequence = 1
+        while archive.exists():
+            archive = path.with_name(f"{path.stem}.stale-{stamp}-{sequence}{path.suffix}")
+            sequence += 1
+        path.replace(archive)
+        print(f"archived previous thresholds to {archive}")
+    if selected is not None:
+        temporary.replace(path)
+
+
+def _check_selection_order(selection_predictions: list[dict], predictions: list[dict]) -> None:
+    if not selection_predictions or not predictions:
+        raise ValueError("selection and evaluation datasets must both contain records")
+    latest_selection = max(str(row["decision_time"]) for row in selection_predictions)
+    earliest_evaluation = min(str(row["decision_time"]) for row in predictions)
+    if latest_selection >= earliest_evaluation:
+        raise ValueError(
+            "selection records must end before the evaluation period begins"
+        )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -488,31 +606,70 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--reference-train", default="data/dataset/train.jsonl")
     parser.add_argument("--thresholds")
     parser.add_argument("--select-thresholds", action="store_true")
+    parser.add_argument("--selection-data", help="Calibration JSONL used only for threshold selection")
     parser.add_argument("--threshold-output", default="outputs/thresholds.json")
     parser.add_argument("--batch-size", type=int, default=1)
     args = parser.parse_args(argv)
+    if args.select_thresholds and not args.selection_data:
+        parser.error("--select-thresholds requires --selection-data (calibration JSONL)")
+    if args.selection_data and not args.select_thresholds:
+        parser.error("--selection-data requires --select-thresholds")
+    if args.select_thresholds and args.thresholds:
+        parser.error("--thresholds and --select-thresholds cannot be combined")
     data_path = Path(args.data)
+    if args.selection_data and Path(args.selection_data).resolve() == data_path.resolve():
+        parser.error("selection data and evaluation data must be different files")
     thresholds = {"tradeable_min": 0.70, "action_probability_min": 0.60}
     if args.thresholds:
         thresholds = json.loads(Path(args.thresholds).read_text(encoding="utf-8"))
+    selection_report = None
+    if args.select_thresholds:
+        selection_predictions = _load_predictions(
+            Path(args.checkpoint), Path(args.selection_data), args.batch_size
+        )
+        selection_report = evaluate_predictions(
+            selection_predictions, thresholds, Path(args.reference_train),
+            include_threshold_grid=True,
+        )
+        thresholds = selection_report["threshold_selection"]["selected"] or thresholds
     predictions = _load_predictions(Path(args.checkpoint), data_path, args.batch_size)
+    if selection_report is not None:
+        _check_selection_order(selection_predictions, predictions)
     report = evaluate_predictions(
         predictions,
         thresholds,
         Path(args.reference_train),
-        include_threshold_grid=args.select_thresholds,
+        include_threshold_grid=False,
     )
-    if args.select_thresholds and report["threshold_selection"]["selected"] is not None:
-        Path(args.threshold_output).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.threshold_output).write_text(
-            json.dumps(report["threshold_selection"]["selected"], indent=2), encoding="utf-8"
+    if selection_report is not None:
+        report["threshold_grid"] = selection_report["threshold_grid"]
+        report["threshold_selection"] = selection_report["threshold_selection"]
+        report["threshold_selection_data"] = str(args.selection_data)
+        arrays = _arrays(predictions)
+        action_probability = arrays["action_probabilities"].max(axis=1)
+        mask = (
+            (arrays["tradeable"] >= thresholds["tradeable_min"])
+            & (action_probability >= thresholds["action_probability_min"])
+        )
+        report["validation_gate"] = _threshold_gate(predictions, arrays, mask)
+        report["thresholds_pass_basic_gate"] = bool(
+            report["threshold_selection"]["selected"]
+            and report["validation_gate"]["eligible_for_selection"]
         )
     output_json = Path(args.output_json)
     output_json.parent.mkdir(parents=True, exist_ok=True)
     output_json.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
-    Path(args.output_md).write_text(
+    output_md = Path(args.output_md)
+    output_md.parent.mkdir(parents=True, exist_ok=True)
+    output_md.write_text(
         render_markdown(report, _default_title(data_path)), encoding="utf-8"
     )
+    if args.select_thresholds:
+        _save_selected_thresholds(
+            report["threshold_selection"]["selected"]
+            if report["thresholds_pass_basic_gate"] else None,
+            Path(args.threshold_output),
+        )
     print(json.dumps(report["signal_level_realized_R"], indent=2))
     return 0
 

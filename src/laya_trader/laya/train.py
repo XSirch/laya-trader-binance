@@ -222,6 +222,7 @@ def train(args: argparse.Namespace) -> None:
         skip_steps = start_step if epoch == start_epoch else 0
         start_step = 0
         running = 0.0
+        running_batches = 0
         for step, batch in enumerate(loader):
             if step < skip_steps:
                 continue
@@ -257,6 +258,7 @@ def train(args: argparse.Namespace) -> None:
             else:
                 loss.backward()
             running += float(loss.detach()) * args.grad_accum
+            running_batches += 1
 
             do_update = (step + 1) % args.grad_accum == 0 or (step + 1) == len(loader)
             if do_update:
@@ -274,11 +276,12 @@ def train(args: argparse.Namespace) -> None:
                 if rank == 0 and update % args.log_every == 0:
                     print(
                         f"epoch={epoch + 1}/{args.epochs} update={update}/{total_updates} "
-                        f"loss={running / max(1, args.log_every):.5f} "
+                        f"loss={running / max(1, running_batches):.5f} "
                         f"lr={scheduler.get_last_lr()[0]:.2e}",
                         flush=True,
                     )
                     running = 0.0
+                    running_batches = 0
                 next_epoch = epoch
                 next_step = step + 1
                 if next_step >= len(loader):

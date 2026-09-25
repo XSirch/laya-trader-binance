@@ -173,6 +173,25 @@ uv run laya-infer \
 
 The runtime uses the same fixed typed questions as training.
 
+## 7. Validate and freeze thresholds
+
+```bash
+uv run laya-evaluate \
+  --checkpoint checkpoints/laya-trader-v0.1 \
+  --data data/dataset/validation.jsonl \
+  --selection-data data/dataset/calibration.jsonl \
+  --reference-train data/dataset/train.jsonl \
+  --output-json outputs/validation_report.json \
+  --output-md outputs/validation_report.md \
+  --select-thresholds \
+  --threshold-output outputs/validation_thresholds.json \
+  --batch-size 8
+```
+
+Thresholds are selected on calibration data, then applied without retuning to validation data. Both splits require at least `max(100, 0.5% of samples)` nonoverlapping trades per symbol, positive mean R after configured costs, and profitable trades in at least two thirds of the months. A trade conservatively occupies its symbol until the full label horizon ends. If either split fails, no active threshold file is left; an older file is archived with a `stale` suffix. The report also shows overlapping signal metrics for comparison. These metrics are not portfolio PnL and do not include funding or capital allocation.
+
+The saved threshold file is a research candidate, not authorization for live trading. Only after a candidate passes additional execution and cost checks should its frozen thresholds be evaluated on `test.jsonl`. Do not select thresholds on the final test split.
+
 ## Repository layout
 
 ```text
