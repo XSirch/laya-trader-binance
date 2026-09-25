@@ -62,6 +62,8 @@ uv run laya-download --config configs/dataset.toml
 
 Archives are downloaded from Binance's public data archive. If a `.CHECKSUM` file is available, SHA-256 is verified before the archive is accepted.
 
+The long-running download, dataset build, training, calibration, and evaluation commands print timestamped progress to standard output. Each stage shows completed work, elapsed time, and an ETA once throughput can be measured. The ETA is an estimate and can change after GPU warmup or a slow checkpoint save. Training also logs the checkpoint path, size, and save duration; resumed runs start their progress counter at the saved update.
+
 Data is intentionally git-ignored.
 
 ## 2. Build the training dataset

@@ -16,6 +16,7 @@ from laya.common import collate_items, confidence_from_probs, temp_bucket
 
 from laya_trader.laya.questions import ACTION_KEYS
 from laya_trader.laya.records import record_to_items
+from laya_trader.progress import ProgressReporter, log_progress
 
 THRESHOLDS = (0.50, 0.60, 0.70, 0.80)
 ACTION_THRESHOLDS = (0.40, 0.50, 0.60, 0.70)
@@ -137,11 +138,17 @@ def _predict_batch(agent, batch: list[dict]) -> list[dict]:
 
 
 def _load_predictions(checkpoint: Path, path: Path, batch_size: int) -> list[dict]:
+    log_progress("evaluation setup", f"loading checkpoint {checkpoint} for {path.name}")
     agent = laya.load(str(checkpoint))
     agent.model.eval()
+    log_progress("evaluation setup", f"checkpoint loaded; counting records in {path}")
+    with path.open("rb") as fh:
+        total_records = sum(bool(line.strip()) for line in fh)
+    progress = ProgressReporter(f"evaluation inference {path.stem}", total_records, unit="records")
     predictions: list[dict] = []
     for batch in _batches(path, batch_size):
         predictions.extend(_predict_batch(agent, batch))
+        progress.update(len(predictions))
     return predictions
 
 
@@ -377,6 +384,9 @@ def _select_thresholds(
 ) -> tuple[list[dict], dict]:
     action_probability = arrays["action_probabilities"].max(axis=1)
     grid = []
+    progress = ProgressReporter(
+        "threshold grid", len(THRESHOLDS) * len(ACTION_THRESHOLDS), unit="candidates"
+    )
     for tradeable_min in THRESHOLDS:
         for action_probability_min in ACTION_THRESHOLDS:
             candidate_mask = (
@@ -393,6 +403,7 @@ def _select_thresholds(
                     **gate,
                 }
             )
+            progress.update(len(grid))
     eligible = [row for row in grid if row["eligible_for_selection"]]
     selected = max(
         eligible,
@@ -624,6 +635,7 @@ def main(argv: list[str] | None = None) -> int:
         thresholds = json.loads(Path(args.thresholds).read_text(encoding="utf-8"))
     selection_report = None
     if args.select_thresholds:
+        log_progress("evaluation", f"selecting thresholds from {args.selection_data}")
         selection_predictions = _load_predictions(
             Path(args.checkpoint), Path(args.selection_data), args.batch_size
         )
@@ -632,6 +644,8 @@ def main(argv: list[str] | None = None) -> int:
             include_threshold_grid=True,
         )
         thresholds = selection_report["threshold_selection"]["selected"] or thresholds
+        log_progress("evaluation", f"calibration selected thresholds={selection_report['threshold_selection']['selected']}")
+    log_progress("evaluation", f"evaluating fixed thresholds on {data_path}")
     predictions = _load_predictions(Path(args.checkpoint), data_path, args.batch_size)
     if selection_report is not None:
         _check_selection_order(selection_predictions, predictions)
@@ -642,6 +656,7 @@ def main(argv: list[str] | None = None) -> int:
         include_threshold_grid=False,
     )
     if selection_report is not None:
+        log_progress("evaluation", "checking nonoverlapping validation gate")
         report["threshold_grid"] = selection_report["threshold_grid"]
         report["threshold_selection"] = selection_report["threshold_selection"]
         report["threshold_selection_data"] = str(args.selection_data)
@@ -657,6 +672,7 @@ def main(argv: list[str] | None = None) -> int:
             and report["validation_gate"]["eligible_for_selection"]
         )
     output_json = Path(args.output_json)
+    log_progress("evaluation save", f"writing report to {output_json} and {args.output_md}")
     output_json.parent.mkdir(parents=True, exist_ok=True)
     output_json.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     output_md = Path(args.output_md)
@@ -670,6 +686,7 @@ def main(argv: list[str] | None = None) -> int:
             if report["thresholds_pass_basic_gate"] else None,
             Path(args.threshold_output),
         )
+    log_progress("evaluation save", "report and threshold decision saved")
     print(json.dumps(report["signal_level_realized_R"], indent=2))
     return 0
 

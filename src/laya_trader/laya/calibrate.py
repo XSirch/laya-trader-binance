@@ -13,6 +13,7 @@ from scipy.optimize import minimize_scalar
 from torch.utils.data import DataLoader, SequentialSampler
 
 from laya_trader.laya.records import JsonlDecisionDataset
+from laya_trader.progress import ProgressReporter, log_progress
 
 
 def _soft_nll(logits: np.ndarray, target: np.ndarray, temperature: float) -> float:
@@ -25,8 +26,10 @@ def _soft_nll(logits: np.ndarray, target: np.ndarray, temperature: float) -> flo
 def calibrate(
     checkpoint: Path, calibration_jsonl: Path, batch_size: int = 32
 ) -> dict[str, float]:
+    log_progress("calibration setup", f"loading checkpoint {checkpoint}")
     agent = laya.load(str(checkpoint))
     device = agent.device
+    log_progress("calibration setup", f"checkpoint loaded; indexing {calibration_jsonl}")
     dataset = JsonlDecisionDataset(
         calibration_jsonl,
         agent.tok,
@@ -40,12 +43,15 @@ def calibrate(
         num_workers=0,
         collate_fn=lambda batch: collate_items(batch, agent.tok.pad_token_id),
     )
+    log_progress("calibration setup", f"indexed {len(dataset)} records on {device}")
 
     buckets: dict[str, list[tuple[np.ndarray, np.ndarray]]] = defaultdict(list)
     agent.model.eval()
+    inference_progress = ProgressReporter("calibration inference", len(loader), unit="batches")
     with torch.no_grad():
-        for batch in loader:
+        for batch_index, batch in enumerate(loader, start=1):
             if batch is None:
+                inference_progress.update(batch_index, detail="empty batch")
                 continue
             tensors = {
                 k: v.to(device)
@@ -67,10 +73,14 @@ def calibrate(
                 k = int(masks[i].sum())
                 key = temp_bucket(int(qtypes[i]), k)
                 buckets[key].append((logits[i, :k].copy(), targets[i, :k].copy()))
+            inference_progress.update(
+                batch_index, detail=f"records_seen={min(batch_index * batch_size, len(dataset))}"
+            )
 
     fitted: dict[str, float] = {}
     report: dict[str, dict] = {}
-    for key, rows in sorted(buckets.items()):
+    fit_progress = ProgressReporter("calibration fit", len(buckets), unit="buckets")
+    for bucket_index, (key, rows) in enumerate(sorted(buckets.items()), start=1):
         logits = np.stack([x for x, _ in rows])
         targets = np.stack([y for _, y in rows])
         before = _soft_nll(logits, targets, 1.0)
@@ -87,7 +97,9 @@ def calibrate(
             "nll_before": round(before, 6),
             "nll_after": round(_soft_nll(logits, targets, temp), 6),
         }
+        fit_progress.update(bucket_index, detail=f"bucket={key}", force=True)
 
+    log_progress("calibration save", f"writing config and report to {checkpoint}")
     cfg_path = checkpoint / "rl_agent_config.json"
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
     cfg["temperature_by_options"] = fitted
@@ -95,6 +107,7 @@ def calibrate(
     (checkpoint / "calibration_report.json").write_text(
         json.dumps(report, indent=2), encoding="utf-8"
     )
+    log_progress("calibration save", f"saved {len(report)} fitted buckets")
     return fitted
 
 

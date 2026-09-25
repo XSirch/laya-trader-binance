@@ -16,6 +16,7 @@ from laya_trader.dataset.splits import split_frame
 from laya_trader.dataset.state import build_state
 from laya_trader.features.core import KLINE_COLUMNS, build_feature_frame, normalize_klines
 from laya_trader.labels.triple_barrier import add_triple_barrier_labels
+from laya_trader.progress import ProgressReporter, log_progress
 
 STATE_FEATURES = (
     "trend_fast_atr",
@@ -218,19 +219,30 @@ def build_dataset(config_path: str | Path) -> dict:
     }
     errors: dict[str, str] = {}
 
-    for symbol in cfg.data.symbols:
+    symbols_progress = ProgressReporter("dataset symbols", len(cfg.data.symbols), unit="symbols")
+    for symbol_index, symbol in enumerate(cfg.data.symbols, start=1):
+        log_progress("dataset symbols", f"processing {symbol}")
         try:
             labeled = prepare_symbol(cfg, symbol)
         except (FileNotFoundError, ValueError) as exc:
             errors[symbol] = str(exc)
-            print(f"skip {symbol}: {exc}")
+            symbols_progress.update(
+                symbol_index,
+                detail=f"skipped={symbol} reason={exc}",
+                force=True,
+            )
             continue
         splits = split_frame(labeled, cfg.splits, cfg.data.interval)
         for name, frame in splits.items():
             frame = _even_cap(frame, cfg.sampling.max_rows_per_symbol_per_split)
             if not frame.empty:
                 per_split[name].append(frame)
-        print(symbol, {k: len(v) for k, v in splits.items()})
+        split_rows = {name: len(frame) for name, frame in splits.items()}
+        symbols_progress.update(
+            symbol_index,
+            detail=f"last={symbol} rows={split_rows}",
+            force=True,
+        )
 
     manifest: dict = {
         "schema_version": 1,
@@ -249,10 +261,19 @@ def build_dataset(config_path: str | Path) -> dict:
 
     for name, frames in per_split.items():
         combined = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
-        records = [_record(row, cfg) for _, row in combined.iterrows()]
+        export_progress = ProgressReporter(f"dataset export {name}", len(combined), unit="records")
+        records = []
+        for row_index, (_, row) in enumerate(combined.iterrows(), start=1):
+            records.append(_record(row, cfg))
+            export_progress.update(row_index)
+        if combined.empty:
+            export_progress.update(0, force=True)
+        log_progress("dataset export", f"writing {name} JSONL to {out_dir / f'{name}.jsonl'}")
         _write_jsonl(out_dir / f"{name}.jsonl", records)
+        log_progress("dataset export", f"wrote {len(records)} {name} JSONL records")
         parquet_path = out_dir / f"{name}.parquet"
         if not combined.empty:
+            log_progress("dataset export", f"writing {name} parquet")
             combined.to_parquet(parquet_path, index=False)
             action = np.argmax(
                 combined[["target_long", "target_short", "target_flat"]].to_numpy(), axis=1
@@ -276,6 +297,7 @@ def build_dataset(config_path: str | Path) -> dict:
     (out_dir / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+    log_progress("dataset export", f"manifest saved to {out_dir / 'manifest.json'}")
     return manifest
 
 

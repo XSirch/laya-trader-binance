@@ -5,6 +5,7 @@ import json
 import math
 import os
 import random
+import time
 from pathlib import Path
 
 import laya
@@ -16,6 +17,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, DistributedSampler, RandomSampler
 
 from laya_trader.laya.records import JsonlDecisionDataset
+from laya_trader.progress import ProgressReporter, log_progress
 
 
 def _dist_setup() -> tuple[int, int, int]:
@@ -120,6 +122,8 @@ def train(args: argparse.Namespace) -> None:
     if not torch.cuda.is_available():
         raise RuntimeError("training requires CUDA; use a T4/Ampere-or-newer GPU")
     device = torch.device("cuda", local_rank)
+    if rank == 0:
+        log_progress("train setup", f"GPU={torch.cuda.get_device_name(device)} loading {args.base_model}")
 
     agent = laya.load(args.base_model, device="cpu")
     tokenizer = agent.tok
@@ -132,9 +136,13 @@ def train(args: argparse.Namespace) -> None:
             raise RuntimeError("the selected encoder does not support gradient checkpointing")
         model.encoder.gradient_checkpointing_enable()
 
+    if rank == 0:
+        log_progress("train setup", f"model loaded; indexing {args.train}")
     dataset = JsonlDecisionDataset(args.train, tokenizer, args.max_len, args.head_max_len)
     if not len(dataset):
         raise ValueError(f"no records in {args.train}")
+    if rank == 0:
+        log_progress("train setup", f"indexed {len(dataset)} records")
 
     def make_loader(epoch: int):
         if world > 1:
@@ -198,6 +206,8 @@ def train(args: argparse.Namespace) -> None:
         resume_path = Path(args.resume)
         if not resume_path.is_file():
             raise FileNotFoundError(f"resume checkpoint not found: {resume_path}")
+        if rank == 0:
+            log_progress("train resume", f"loading {resume_path}")
         resume_state = torch.load(resume_path, map_location="cpu", weights_only=False)
         raw_model = model.module if isinstance(model, DDP) else model
         raw_model.load_state_dict(resume_state["model"])
@@ -210,22 +220,35 @@ def train(args: argparse.Namespace) -> None:
         update = int(resume_state["update"])
         _restore_rng_state(resume_state["rng"])
         if rank == 0:
-            print(
+            log_progress(
+                "train resume",
                 f"resumed from {resume_path} at epoch={start_epoch + 1} "
                 f"step={start_step} update={update}",
-                flush=True,
             )
 
+    progress = None
     optimizer.zero_grad(set_to_none=True)
     for epoch in range(start_epoch, args.epochs):
         _, loader = make_loader(epoch)
         skip_steps = start_step if epoch == start_epoch else 0
         start_step = 0
+        if rank == 0:
+            log_progress("train", f"epoch={epoch + 1}/{args.epochs} batches={len(loader)}")
+        skip_progress = (
+            ProgressReporter("train resume skip", skip_steps, unit="batches")
+            if rank == 0 and skip_steps else None
+        )
         running = 0.0
         running_batches = 0
         for step, batch in enumerate(loader):
             if step < skip_steps:
+                if skip_progress is not None:
+                    skip_progress.update(step + 1)
                 continue
+            if progress is None and rank == 0:
+                progress = ProgressReporter(
+                    "train", total_updates, unit="updates", initial_done=update
+                )
             if batch is None:
                 continue
             tensors = {
@@ -273,13 +296,17 @@ def train(args: argparse.Namespace) -> None:
                 optimizer.zero_grad(set_to_none=True)
                 scheduler.step()
                 update += 1
-                if rank == 0 and update % args.log_every == 0:
-                    print(
-                        f"epoch={epoch + 1}/{args.epochs} update={update}/{total_updates} "
-                        f"loss={running / max(1, running_batches):.5f} "
-                        f"lr={scheduler.get_last_lr()[0]:.2e}",
-                        flush=True,
+                if progress is not None:
+                    progress.update(
+                        update,
+                        force=args.log_every > 0 and update % args.log_every == 0,
+                        detail=(
+                            f"epoch={epoch + 1}/{args.epochs} "
+                            f"loss={running / max(1, running_batches):.5f} "
+                            f"lr={scheduler.get_last_lr()[0]:.2e}"
+                        ),
                     )
+                if args.log_every > 0 and update % args.log_every == 0:
                     running = 0.0
                     running_batches = 0
                 next_epoch = epoch
@@ -289,6 +316,8 @@ def train(args: argparse.Namespace) -> None:
                     next_step = 0
                 if rank == 0 and args.checkpoint_every > 0 and update % args.checkpoint_every == 0:
                     raw_model = model.module if isinstance(model, DDP) else model
+                    save_started = time.monotonic()
+                    log_progress("train checkpoint", f"writing {Path(args.output) / 'resume.pt'} at update={update}")
                     _save_resume_checkpoint(
                         Path(args.output),
                         raw_model,
@@ -300,14 +329,20 @@ def train(args: argparse.Namespace) -> None:
                         update,
                         args,
                     )
-                    print(
-                        f"saved resume checkpoint at update={update} "
-                        f"epoch={next_epoch + 1} step={next_step}",
-                        flush=True,
+                    log_progress(
+                        "train checkpoint",
+                        f"saved update={update} next_epoch={next_epoch + 1} "
+                        f"next_step={next_step} "
+                        f"size_gib={(Path(args.output) / 'resume.pt').stat().st_size / 1024**3:.2f} "
+                        f"elapsed={time.monotonic() - save_started:.1f}s",
                     )
 
+        if progress is not None:
+            progress.update(update, detail=f"completed_epoch={epoch + 1}/{args.epochs}", force=True)
         if rank == 0 and args.checkpoint_every > 0:
             raw_model = model.module if isinstance(model, DDP) else model
+            save_started = time.monotonic()
+            log_progress("train checkpoint", f"writing end-of-epoch checkpoint for epoch={epoch + 1}")
             _save_resume_checkpoint(
                 Path(args.output),
                 raw_model,
@@ -319,16 +354,25 @@ def train(args: argparse.Namespace) -> None:
                 update,
                 args,
             )
-            print(
-                f"saved epoch checkpoint at update={update} epoch={epoch + 2} step=0",
-                flush=True,
+            log_progress(
+                "train checkpoint",
+                f"saved completed_epoch={epoch + 1} update={update} "
+                f"size_gib={(Path(args.output) / 'resume.pt').stat().st_size / 1024**3:.2f} "
+                f"elapsed={time.monotonic() - save_started:.1f}s",
             )
 
     if rank == 0:
         raw_model = model.module if isinstance(model, DDP) else model
+        save_started = time.monotonic()
+        log_progress("train final", f"writing model to {args.output}")
         _save_checkpoint(Path(args.output), raw_model, tokenizer, cfg)
-        print(f"saved uncalibrated checkpoint to {args.output}")
-        print("next: run laya-calibrate on the dedicated calibration split")
+        log_progress(
+            "train final",
+            f"saved uncalibrated checkpoint to {args.output} "
+            f"size_gib={(Path(args.output) / 'model.safetensors').stat().st_size / 1024**3:.2f} "
+            f"elapsed={time.monotonic() - save_started:.1f}s",
+        )
+        log_progress("train final", "next: run laya-calibrate on the calibration split")
 
     if world > 1:
         torch.distributed.barrier()

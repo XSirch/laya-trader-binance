@@ -11,6 +11,7 @@ from pathlib import Path
 import requests
 
 from laya_trader.config import load_config
+from laya_trader.progress import ProgressReporter, log_progress
 
 BASE_URL = "https://data.binance.vision/data/futures"
 
@@ -128,12 +129,21 @@ def download_dataset(config_path: str | Path) -> dict[str, int]:
         for month in month_keys(cfg.data.start, cfg.data.end)
     ]
     counts: dict[str, int] = {}
+    progress = ProgressReporter("download", len(jobs), unit="archives")
     with ThreadPoolExecutor(max_workers=max(1, cfg.data.workers)) as pool:
-        futures = [pool.submit(download_one, *job) for job in jobs]
+        futures = {pool.submit(download_one, *job): job for job in jobs}
         for fut in as_completed(futures):
-            symbol, month, status = fut.result()
+            try:
+                symbol, month, status = fut.result()
+            except Exception as exc:
+                job = futures[fut]
+                log_progress("download", f"archive failed: {job[1]} {job[3]}: {exc}")
+                raise
             counts[status] = counts.get(status, 0) + 1
-            print(f"{symbol} {month}: {status}")
+            progress.update(
+                sum(counts.values()),
+                detail=f"last={symbol} {month} {status} counts={counts}",
+            )
     return counts
 
 
