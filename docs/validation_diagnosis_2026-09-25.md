@@ -100,6 +100,19 @@ A separate CPU probe used the existing 20-symbol universe and aggregated only co
 
 The 2025 H1 calibration had no qualifying threshold. At 0.20, it produced 105 nonoverlapping trades and +0.0671 R after costs, but only 3/6 positive months. The 2025 H2 labels were not scored for this rule. The reproducibility script is `scripts/daily_trend_probe.py`; the report is in ignored `outputs/daily_trend_probe_report.json`. Funding cash flows and portfolio-level exposure are not included, but the calibration failure already rules out this candidate.
 
+## Daily cross-sectional premium and funding probe
+
+A fixed market-neutral rule ranked the 20 configured symbols by their trailing eight-hour premium-index mean at each UTC daily open. It bought the five lowest and sold the five highest, with equal gross weight across the ten legs. Each premium observation ended at least one hour before the decision. Entries and exits used consecutive complete daily bars from the existing 15m candles. Actual funding settlements between the opens were included with the side-appropriate sign. Each leg paid 14 bps round trip, with a further 4 bps cost stress. This daily choice was motivated by the [historical cross-sectional basis study](https://www.repository.cam.ac.uk/items/3a556482-574b-42cd-af07-fe5c9f9db91c); that study is not evidence that this rule works in these years or after these costs.
+
+The probe requested 1,440 monthly premium and funding ZIPs from the [Binance public archive](https://data.binance.vision/); 1,428 existed. The 12 unavailable ZIPs were ARBUSDT January-February 2023 and SUIUSDT January-April 2023, for each of premium and funding. The universe had 13-20 eligible symbols per completed day (median 20). The median premium spread between selected long and short baskets was about 4.56 bps. A day was excluded if any selected leg lacked a consecutive complete price bar or settled funding observation; the rule never replaced a missing leg using its future outcome. Funding settlement and mark-to-market are approximated by source rates and open prices; the simulation does not model margin, liquidation, changing contract notional, or exchange execution.
+
+| Split | Complete days | Mean daily net return | Compounded return | Mean daily price | Mean daily funding | Positive months |
+|---|---:|---:|---:|---:|---:|---:|
+| 2023-2024 training | 729 | -13.56 bps | -64.37% | -0.96 bps | +1.39 bps | 6/24 |
+| 2025 H1 calibration | 181 | -15.41 bps | -25.11% | -2.15 bps | +0.74 bps | 3/6 |
+
+The 2025 H1 gate required at least 150 complete days, a positive mean after the base and stressed costs, and four positive months. It failed on returns and month consistency. Its +0.74 bps daily funding receipt was far below the 14 bps turnover charge. The rule's 2025 H2 daily outcomes were therefore not calculated or used. Run `uv run python -u scripts/cross_basis_daily_probe.py` to reproduce the probe; cached archives and `outputs/cross_basis_daily_report.json` are ignored by Git. The 2026 final test remains untouched.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
@@ -109,6 +122,6 @@ The 2025 H1 calibration had no qualifying threshold. At 0.20, it produced 105 no
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, wider-barrier and daily-horizon label probes, and weekly carry rule all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or another causal input, specified from training data before another validation comparison. Further 2025 H2 comparisons are exploratory because this period has been reused. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, wider-barrier and daily-horizon label probes, and weekly and daily cross-sectional carry rules all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or another causal input, specified from training data before another validation comparison. Further 2025 H2 comparisons are exploratory because this period has been reused. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
 
-Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, positioning-metrics, and daily-horizon probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
+Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, positioning-metrics, daily-horizon, and daily cross-sectional probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
