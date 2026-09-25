@@ -184,7 +184,8 @@ def build_portfolios(first_start: str, last_start: str) -> pd.DataFrame:
     }
     days = []
     starts = pd.date_range(first_start, last_start, freq="D", tz="UTC")
-    for start in starts:
+    progress = ProgressReporter("basis portfolios", len(starts), unit="days", interval_seconds=10)
+    for count, start in enumerate(starts, 1):
         end = start + timedelta(days=1)
         available = {
             symbol: value
@@ -193,6 +194,7 @@ def build_portfolios(first_start: str, last_start: str) -> pd.DataFrame:
             if (value := signal_at(premium_by_symbol[symbol], start)) is not None
         }
         if len(available) < 2 * RANK_SIZE:
+            progress.update(count)
             continue
         ranked = sorted(available, key=lambda symbol: (available[symbol], symbol))
         longs, shorts = ranked[:RANK_SIZE], ranked[-RANK_SIZE:]
@@ -201,6 +203,7 @@ def build_portfolios(first_start: str, last_start: str) -> pd.DataFrame:
         legs += [leg_return(symbol, "short", start, end, prices, funding_by_symbol)
                  for symbol in shorts]
         if any(leg is None for leg in legs):
+            progress.update(count)
             continue
         days.append({
             "start": start, "end": end, "eligible_symbols": len(available),
@@ -211,6 +214,7 @@ def build_portfolios(first_start: str, last_start: str) -> pd.DataFrame:
             "funding_return": float(np.mean([leg["funding_return"] for leg in legs])),
             "net_return": float(np.mean([leg["net_return"] for leg in legs])),
         })
+        progress.update(count)
     result = pd.DataFrame(days)
     print("complete daily portfolios", len(result), flush=True)
     return result
