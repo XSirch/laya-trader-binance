@@ -113,6 +113,17 @@ The probe requested 1,440 monthly premium and funding ZIPs from the [Binance pub
 
 The 2025 H1 gate required at least 150 complete days, a positive mean after the base and stressed costs, and four positive months. It failed on returns and month consistency. Its +0.74 bps daily funding receipt was far below the 14 bps turnover charge. The rule's 2025 H2 daily outcomes were therefore not calculated or used. Run `uv run python -u scripts/cross_basis_daily_probe.py` to reproduce the probe; cached archives and `outputs/cross_basis_daily_report.json` are ignored by Git. The 2026 final test remains untouched.
 
+## Weekly cross-sectional momentum probe
+
+A second fixed portfolio rule ranked the same 20-symbol universe by its prior 30-day open-to-open price return, ending one day before each Monday UTC entry. It bought the five strongest and sold the five weakest for seven days, with equal gross weights across ten legs. Entries and exits used complete daily bars aggregated from existing 15m candles. Settled funding was included with the side-appropriate sign. The base case charged 14 bps round trip per leg on every weekly holding period; the stress added 4 bps. The rule and gate were set before 2025 H2 was calculated. Weeks crossing a split boundary were excluded.
+
+| Split | Complete weeks | Mean weekly net | Compounded return | Positive months | Maximum drawdown |
+|---|---:|---:|---:|---:|---:|
+| 2023-2024 training | 99 | +0.421% | +41.98% | 13/23 | -16.80% |
+| 2025 H1 calibration | 25 | -0.004% | -1.52% | 3/6 | -17.83% |
+
+The calibration gate required at least 20 weeks, positive mean return with base and stressed fees, at least four positive months, and drawdown below 25%. It failed on return and month consistency. To bound the effect of turnover accounting, a deliberately optimistic variant charged only entry and exit fees when a symbol or side changed, with no resizing fee for retained names. It produced +0.080% mean weekly return and +0.57% compounded in calibration, but still only 3/6 positive months. Even with zero fees, only three months were positive. A fuller simulator would also account for weight drift, margin, liquidation, and execution. This candidate was rejected without calculating 2025 H2. Run `uv run python -u scripts/cross_momentum_weekly_probe.py`; the report and weekly portfolios remain in ignored `outputs/` files.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
@@ -126,6 +137,6 @@ Before building another input, a small quality check compared BTCUSDT snapshots 
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, wider-barrier and daily-horizon label probes, and weekly and daily cross-sectional carry rules all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or another quality-controlled causal input, specified from training data before another validation comparison. Further 2025 H2 comparisons are exploratory because this period has been reused. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, wider-barrier and daily-horizon label probes, weekly and daily cross-sectional carry rules, and weekly momentum portfolio all fail their calibration or out-of-sample execution gate. The next hypothesis needs a conditional expected-return label or another quality-controlled causal input, specified from training data before another validation comparison. Further 2025 H2 comparisons are exploratory because this period has been reused. Freeze the model, threshold, execution assumptions, and risk rules before using the 2026 final test once. A positive independent-signal average by itself is insufficient.
 
-Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, positioning-metrics, daily-horizon, and daily cross-sectional probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
+Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, positioning-metrics, daily-horizon, daily cross-sectional, and weekly momentum probe scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
