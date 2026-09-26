@@ -2,7 +2,7 @@
 
 ## Decision
 
-No candidate has demonstrated a robust, executable edge after costs. Multiple exploratory probes have now inspected 2025 H2, so it is no longer an untouched holdout for these ideas. The 2026 final test remains untouched. Do not launch another full Laya training run or enable live orders on the current evidence.
+No candidate has demonstrated a robust, executable edge after costs. Multiple exploratory probes have now inspected 2025 H2, so it is no longer an untouched holdout for these ideas. The frozen quarterly-basis rule also failed its January-September 2026 final test, reported below. Do not launch another full Laya training run or enable live orders on the current evidence.
 
 ## Existing 15 minute Laya checkpoint
 
@@ -51,7 +51,7 @@ Downloaded 180 monthly 1h premium-index archives for BTC, ETH, BNB, SOL, and XRP
 | Price and flow baseline | No threshold passed the calibration gate | Not evaluated | Not evaluated |
 | Baseline plus lagged premium index | 106, +0.0829, 4/6 | 94, +0.0057, 3/6 | -0.0289 |
 
-The premium model fails the validation gate: fewer than 100 nonoverlapping trades, only three positive months, and a negative mean under the small cost stress. This is exploratory evidence, not a profitable strategy. The reproducibility script is `scripts/premium_probe.py`; run it with `uv run --with scikit-learn python -u scripts/premium_probe.py`. The raw result and cached premium data remain in ignored `outputs/` files. Five gaps longer than one hour were observed across the 131,400 archived premium bars, so a production feature pipeline would also need explicit gap handling. The 2026 final test remains untouched.
+The premium model fails the validation gate: fewer than 100 nonoverlapping trades, only three positive months, and a negative mean under the small cost stress. This is exploratory evidence, not a profitable strategy. The reproducibility script is `scripts/premium_probe.py`; run it with `uv run --with scikit-learn python -u scripts/premium_probe.py`. The raw result and cached premium data remain in ignored `outputs/` files. Five gaps longer than one hour were observed across the 131,400 archived premium bars, so a production feature pipeline would also need explicit gap handling. The separate quarterly-basis 2026 evaluation is reported below.
 
 ## Wider-barrier label probe
 
@@ -111,7 +111,7 @@ The probe requested 1,440 monthly premium and funding ZIPs from the [Binance pub
 | 2023-2024 training | 729 | -13.56 bps | -64.37% | -0.96 bps | +1.39 bps | 6/24 |
 | 2025 H1 calibration | 181 | -15.41 bps | -25.11% | -2.15 bps | +0.74 bps | 3/6 |
 
-The 2025 H1 gate required at least 150 complete days, a positive mean after the base and stressed costs, and four positive months. It failed on returns and month consistency. Its +0.74 bps daily funding receipt was far below the 14 bps turnover charge. The rule's 2025 H2 daily outcomes were therefore not calculated or used. Run `uv run python -u scripts/cross_basis_daily_probe.py` to reproduce the probe; cached archives and `outputs/cross_basis_daily_report.json` are ignored by Git. The 2026 final test remains untouched.
+The 2025 H1 gate required at least 150 complete days, a positive mean after the base and stressed costs, and four positive months. It failed on returns and month consistency. Its +0.74 bps daily funding receipt was far below the 14 bps turnover charge. The rule's 2025 H2 daily outcomes were therefore not calculated or used. Run `uv run python -u scripts/cross_basis_daily_probe.py` to reproduce the probe; cached archives and `outputs/cross_basis_daily_report.json` are ignored by Git. The separate quarterly-basis 2026 evaluation is reported below.
 
 ## Weekly cross-sectional momentum probe
 
@@ -133,7 +133,7 @@ A fixed rule took the sign of each configured symbol's lagged 30-day return, lon
 | Equal gross | +83.24% | 13/23 | -32.40% | +14.73% | 3/6 | -19.58% | [-0.98%, +2.61%] |
 | Inverse volatility | +71.37% | 12/23 | -28.98% | +14.38% | 2/6 | -16.89% | [-0.81%, +2.35%] |
 
-Despite positive compounded returns after the configured costs, neither variant demonstrates robust profit. Both miss the four-positive-month calibration gate and both week-block intervals include a negative mean. The equal-weight training return was concentrated in a few large months, including November 2024; its training drawdown exceeded 30%. Volatility weighting reduced drawdown but did not improve month consistency. These are gross-notional portfolio approximations: they omit margin, liquidation, actual weight drift within a week, and exchange execution. No 2025 H2 outcomes were calculated for either variant, and the 2026 final test remains untouched. Run `uv run python -u scripts/time_momentum_weekly_probe.py` and add `--inverse-vol` for the second variant. Reports and weekly portfolios remain in ignored `outputs/` files.
+Despite positive compounded returns after the configured costs, neither variant demonstrates robust profit. Both miss the four-positive-month calibration gate and both week-block intervals include a negative mean. The equal-weight training return was concentrated in a few large months, including November 2024; its training drawdown exceeded 30%. Volatility weighting reduced drawdown but did not improve month consistency. These are gross-notional portfolio approximations: they omit margin, liquidation, actual weight drift within a week, and exchange execution. No 2025 H2 outcomes were calculated for either variant; the separate quarterly-basis 2026 evaluation is reported below. Run `uv run python -u scripts/time_momentum_weekly_probe.py` and add `--inverse-vol` for the second variant. Reports and weekly portfolios remain in ignored `outputs/` files.
 
 ## Evaluator fixes
 
@@ -210,7 +210,7 @@ An exploratory follow-up used a fixed daily rule rather than monthly turnover. I
 | 2025 H1 | 3/6 | +0.304% | 0 |
 | 2025 H2 diagnostic | 4/6 | -0.006% | 0 |
 
-The minimum margin cushion under the stated shock was +1.515 units, and spot cash never went negative. Nevertheless, the full stressed return was only +3.220% from February 2023 through December 2025. The script's research gate failed because 2025 H2 was slightly negative and the full 2025 stressed return was far below the required 2% on initial capital. The 2025 H2 period has been examined by other hypotheses, so it is a diagnostic rather than a pristine holdout. Moving excess collateral between wallets might reduce skipped entries, but it would require a separately specified funding and margin rule; it was not silently assumed here. The 2026 final period remains untouched. Run `uv run python -u scripts/spot_perp_daily_carry_probe.py`; its report and daily ledger are ignored under `outputs/`.
+The minimum margin cushion under the stated shock was +1.515 units, and spot cash never went negative. Nevertheless, the full stressed return was only +3.220% from February 2023 through December 2025. The script's research gate failed because 2025 H2 was slightly negative and the full 2025 stressed return was far below the required 2% on initial capital. The 2025 H2 period has been examined by other hypotheses, so it is a diagnostic rather than a pristine holdout. Moving excess collateral between wallets might reduce skipped entries, but it would require a separately specified funding and margin rule; it was not silently assumed here. The separate quarterly-basis 2026 evaluation is reported below. Run `uv run python -u scripts/spot_perp_daily_carry_probe.py`; its report and daily ledger are ignored under `outputs/`.
 
 ## BTC/ETH spot versus quarterly delivery futures
 
@@ -230,10 +230,27 @@ Execution evidence is incomplete. The official daily `bookTicker` archive suppli
 
 Because the quote series is incomplete, a separate screen downloaded 96 official spot and quarterly-future one-minute ZIPs. All 24 trades had a common traded minute at 00:00 UTC. It assumed the worst observed price inside that minute for every leg and then added a further 5 bps per spot side and 10 bps per future side beyond the initial 8 bps pair stress. On the same 3.05 initial capital, that produced +0.055% in 2023, +4.136% in 2024, and +0.971% in 2025. First-minute aggregate traded volume exceeded an illustrative 1,000 USDT account's base-asset quantity in 22 of 24 legs, but aggregate volume does not prove an order could fill at the modeled price. The very small 2023 and 2025 returns remain vulnerable to unmodeled execution and financing costs. Run `uv run python -u scripts/quarterly_basis_minute_probe.py`; its report and source ZIPs are ignored under `outputs/`.
 
-The rule, stress assumptions, and acceptance criteria for a single 2026 historical evaluation were frozen in `docs/quarterly_basis_2026_protocol.md` before reading complete 2026 outcomes. Passing that quantitative gate would make the rule a stronger research candidate, not a live-trading authorization.
+The rule, stress assumptions, and acceptance criteria for a single 2026 historical evaluation were frozen in `docs/quarterly_basis_2026_protocol.md` at commit `5ad9f22`, before reading complete 2026 outcomes. The final evaluation is reported next; the protocol was not retuned.
+
+## Frozen 2026 quarterly-basis evaluation
+
+The fixed BTC/ETH spot-versus-quarterly-futures rule was applied to the three completed 2026 quarters. The evaluator verified SHA256 checksums and ZIP CRC for 144 official daily and one-minute spot/futures archives. September 2026 daily files completed the third quarter because its monthly archive was not yet available. All six symbol-quarter legs had the first common traded minute at exactly 00:00 UTC for entry and exit. The separate-wallet replay charged 19 bps per side on both markets in the final stress: original fees and 2 bps slippage, another 2 bps per side, then another 5 bps for spot or 10 bps for futures per side. The rule, costs and acceptance thresholds came from the earlier frozen protocol.
+
+| Quarter | Profit after final stress, normalized USDT | Return on 3.05 initial capital |
+|---|---:|---:|
+| 2026 Q1 | +0.000469 | +0.015% |
+| 2026 Q2 | -0.005482 | -0.180% |
+| 2026 Q3 | -0.008367 | -0.274% |
+| **Total** | **-0.013380** | **-0.439%** |
+
+The aggregate return was already negative at the original fee/slippage level (-0.050% on initial capital), before either extra cost stress. The minimum spot-wallet cash was +0.0431 units. The minimum futures margin cushion under the daily-high plus 10% simultaneous mark shock and assumed 5% maintenance was +1.1113 units. The maximum estimated daily account drawdown was -0.554%. All six legs had aggregate first-minute traded volume exceeding the base-asset quantity for an illustrative 1,000 USDT account; this is neither order-book depth nor a fill guarantee.
+
+The frozen quantitative gate **failed**: two of three quarters lost money and the total fell below the required +1.5%. The margin, spot funding, daily drawdown and common-minute conditions passed. At the April entry, BTC and ETH future premia were only about 26 and 23 bps; by exit the gross basis convergence could not pay the modeled round trip. The September ETH future premium was slightly higher at exit than at entry. No threshold or symbol was changed after seeing this result. This historical candidate does not satisfy the requested robust profit after costs. The replay still omits live executable depth, account-specific liquidation and lot-size rules, financing opportunity cost, and taxes. Reproduce it with `uv run python -u scripts/quarterly_basis_final_2026.py`; the report, source-hash manifest, leg ledger and daily ledger are ignored under `outputs/`.
+
+The local report SHA256 is `98c45a5b591eec14701a95edd7679f66c14c08b8e3f64ab1ee3f7cf377b8ed7e`; the 144-archive source manifest SHA256 is `b958ac339a37073d6ed5c5292b9b08a136d28f1fd21fc0d6cb58cf943cace885`.
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, both fixed book-depth pilots, wider-barrier and daily-horizon label probes, weekly and daily cross-sectional carry rules, and both momentum families fail their calibration or out-of-sample execution gate. The separate spot-perpetual hedge screen showed positive historical monthly returns, but its initial consistency gate failed in 2024 H2 and the retained-position version breached modeled futures margin in November 2024. A daily, better-collateralized carry replay stayed above its modeled margin requirement yet failed its cost-stressed 2025 gate. The quarterly BTC/ETH basis rule was positive in eleven of twelve observed quarters and passed a first-minute adverse-price stress every year, but missed its 2023 selection return threshold and lacks complete historical quotes. Additional collateral, intraday liquidation safety, account-level financing, and plausible net return must all be considered before a candidate is executable. Avoid more changes to these rules based on already inspected 2025 months. Further 2025 H2 comparisons are exploratory because this period has been reused. The 2026 quarterly-basis protocol fixes one final historical evaluation; a positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, both fixed book-depth pilots, wider-barrier and daily-horizon label probes, weekly and daily cross-sectional carry rules, and both momentum families fail their calibration or out-of-sample execution gate. The separate spot-perpetual hedge screen showed positive historical monthly returns, but its initial consistency gate failed in 2024 H2 and the retained-position version breached modeled futures margin in November 2024. A daily, better-collateralized carry replay stayed above its modeled margin requirement yet failed its cost-stressed 2025 gate. The quarterly BTC/ETH basis rule has now also failed the frozen 2026 evaluation after costs. Avoid more changes to these rules based on already inspected periods; a fresh prospective period and exchange-specific execution evidence are needed before revisiting them. A positive independent-signal average by itself is insufficient.
 
 Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, positioning-metrics, daily-horizon, daily cross-sectional, momentum, and book-depth scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
