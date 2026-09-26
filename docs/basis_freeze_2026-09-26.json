@@ -1,0 +1,154 @@
+{
+  "created_utc": "2026-09-26T23:53:21.673000+00:00",
+  "phase": "inputs_frozen_before_first_basis_portfolio_replay",
+  "inputs_file_sha256": "b4911b1041c53b65ad3b474524642b246e3e5e6f717bcfedc65a6aaef291cb8e",
+  "inputs_file_bytes": 287210,
+  "anchors": {
+    "files_sha256": {
+      "docs/basis_data_inventory_2026-09-26.md": "88e4f7f0d672103e0375d3e73ef9b6bed3ca7f3523ac6df9e500e7f54ffa8e7e",
+      "docs/basis_protocol_2026-09-26.md": "b832cfa3b73333d8fb90f66f4a568d8c207c9c54af75122384c8555f75191b1b",
+      "docs/basis_sources_2026-09-26.md": "e841d1dfc0f3dc1d68fbbff46f3db16cd0692baf33d9961075484990804d16b5",
+      "pyproject.toml": "09c68a0f80838f1f434e9099c7764a0741ce726538853c7751a43bb04cd62867",
+      "requirements-tree.lock": "57edb0d68b403e5a935e9038142f34bc62ceb987cf4f3241d18f44f19a02bdc2",
+      "src/jev_trader/basis_data.py": "a8492c713e884c87b2e6d54cdc41bab9a67ab38fddb7e95b0c1c4c773bb7ef78",
+      "src/jev_trader/basis_execution.py": "714bb02cee92d473294e81af96284b1035f9b714b149c9ef4290e5ceb4730154",
+      "src/jev_trader/basis_features.py": "115714c78417dc1871d0ed512e272b5cff15198208b5afc7c49b0c681ef47c3e",
+      "src/jev_trader/basis_policy.py": "a1a39e1459af14688062b9f825c3cfe1917f4de26f22849c453eb572e343cfe6",
+      "src/jev_trader/basis_research.py": "15b017a8dda38313896fae93675e85da1cb047c64b8c272e04e1b5c6c81dbf92",
+      "src/jev_trader/binance_data.py": "464f3e057a119f26c9209a49135286617fc86e5a6ff15784cd641a90cb056cbf",
+      "src/jev_trader/cli.py": "f69c9f83af500f28c16cc70dbb2c7445856bcac2c199d27ccac14bd4f748fea5",
+      "src/jev_trader/derivatives_data.py": "135e2d54fbd75c8ef43ad7bba762ca62f3e11b582a8f683ea7dba4abc08fa919",
+      "src/jev_trader/market_state.py": "2234141e3892647489b4ce9af1944c6539c26c7271abef19bae03cfaf58a720f",
+      "src/jev_trader/strategies.py": "ab48d354fa0a2f9fb3ff2fd1092304c86f66b61c8ee8a20c887de84c64f7fbc3",
+      "tests/test_basis_data.py": "5e85f1f5964dba5d9f9e759fd4e779b332a88a283cf55747a8817811f2bce6e9",
+      "tests/test_basis_execution.py": "8171c281b22e041b2f0852a84091c6b4d80e96a62d98887122b2365725e77f9c",
+      "tests/test_basis_features.py": "eada62ba7034717f54c8b92d9ee6490db9eec30d357358ce592ba27a3a10105c",
+      "tests/test_basis_policy.py": "0e7e4b8702bca12524f538e224ed4ff3afe116c044ce5d16adba62c73dbe59de",
+      "tests/test_basis_research.py": "cd821c88846ab1f894a517ba64056139c0df2b8670bbf1efa666088d302f94d5"
+    },
+    "implementation": "CPython",
+    "python": "3.13.9"
+  },
+  "config": {
+    "basis_history_hours": 720,
+    "completed_close_execution_delay_hours": 1,
+    "costs": {
+      "base": [
+        0.0012,
+        0.0007
+      ],
+      "stress": [
+        0.0024,
+        0.0014
+      ]
+    },
+    "funding_publication_lag_hours": 1,
+    "historical_point_in_time_verified": false,
+    "margin_volatility_multiple": 3,
+    "max_hold_hours": [
+      24,
+      168
+    ],
+    "maximum_drawdown_pct": 10,
+    "minimum_quote_volume24": 10000000,
+    "periods": {
+      "development": [
+        "2023-04-01T00:00:00+00:00",
+        "2024-01-01T00:00:00+00:00"
+      ],
+      "later": [
+        "2024-01-01T00:00:00+00:00",
+        "2026-08-31T23:00:00+00:00"
+      ]
+    },
+    "portfolio_trailing": [
+      null,
+      0.04
+    ],
+    "preventive_margin_ratio": 0.2,
+    "references": [
+      "fundamental_r0",
+      "median720"
+    ],
+    "schema_version": 1,
+    "spot_fractions": [
+      0.5,
+      0.75
+    ],
+    "stress_margin_ratio": 0.1,
+    "target_net_cagr_pct": 50
+  },
+  "source_count": 712,
+  "source_inventory_sha256": "38b7739dc25101aa8c1f2b29ff91c48a2691d45ecc55f9a95f6522e8ec3fb31a",
+  "features": {
+    "context": "All market_state technical fields for both legs; all periods are hours.",
+    "state_sha256": "5b26ec2a1a6020cf501d72c2cf27473594c14c2d2309891aa2b90cf7c60852f0",
+    "symbols": {
+      "BNBUSDT": {
+        "excluded_counts": {
+          "consecutive_history_warmup": 1440
+        },
+        "first_execution_ms": 1675130400000,
+        "last_execution_ms": 1788224400000,
+        "state_count": 30695
+      },
+      "BTCUSDT": {
+        "excluded_counts": {
+          "consecutive_history_warmup": 1440
+        },
+        "first_execution_ms": 1675130400000,
+        "last_execution_ms": 1788224400000,
+        "state_count": 30695
+      },
+      "ETHUSDT": {
+        "excluded_counts": {
+          "consecutive_history_warmup": 1440
+        },
+        "first_execution_ms": 1675130400000,
+        "last_execution_ms": 1788224400000,
+        "state_count": 30695
+      },
+      "SOLUSDT": {
+        "excluded_counts": {
+          "consecutive_history_warmup": 1440
+        },
+        "first_execution_ms": 1675130400000,
+        "last_execution_ms": 1788224400000,
+        "state_count": 30695
+      }
+    },
+    "unavailable": [
+      "synchronized executable quotes",
+      "historical publication times",
+      "historical margin tiers",
+      "financing rates",
+      "SOL positioning cohort"
+    ]
+  },
+  "tests": {
+    "full_suite": {
+      "passed": 494,
+      "skipped": 0,
+      "elapsed_seconds": 35.287
+    },
+    "additional_runner_tests": {
+      "passed": 14,
+      "skipped": 0,
+      "elapsed_seconds": 0.023
+    }
+  },
+  "independent_review": {
+    "agent": "basis_sources",
+    "material_findings_remaining": 0,
+    "corrected_before_freeze": [
+      "negative realized margin after fill or funding",
+      "intrahour peaks and terminal costs in drawdown bound",
+      "zero-volume fill validation",
+      "terminal funding collision",
+      "projected funding reserve in entry margin guard"
+    ]
+  },
+  "financial_outcomes_inspected": false,
+  "jev_calls": 0,
+  "orders_sent": 0
+}

@@ -41,3 +41,7 @@ src/jev_trader/funding_event_*.py text eol=lf
 tests/test_funding_event_*.py text eol=lf
 docs/funding_event_*.md text eol=lf
 docs/funding_event_*.json text eol=lf
+src/jev_trader/basis_*.py text eol=lf
+tests/test_basis_*.py text eol=lf
+docs/basis_*.md text eol=lf
+docs/basis_*.json text eol=lf
