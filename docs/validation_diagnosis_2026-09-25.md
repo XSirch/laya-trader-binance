@@ -9,9 +9,11 @@ screen also failed: all 24 size cases had negative conditional net cash after
 its fixed costs, despite timely displayed entry depth. A separate Deribit
 USDC delivery-book screen found no passing BTC/ETH/AVAX/SOL/XRP future either;
 six larger altcoin cases lacked displayed depth and every evaluable case had
-negative conditional net cash after fixed costs. The ongoing BTC March 2027
-COIN-M forward watch remains read-only and cannot by itself establish
-realized profit.
+negative conditional net cash after fixed costs. Eight Deribit inverse
+BTC/ETH delivery books also failed the both-size 4% gate; BTC March 2027 was
+best at +1.458% annualized conditional after-cost return. The ongoing BTC
+March 2027 COIN-M forward watch remains read-only and cannot by itself
+establish realized profit.
 
 ## Existing 15 minute Laya checkpoint
 
@@ -532,6 +534,35 @@ API report is `outputs/deribit_usdc_delivery_universe.json`, SHA256
 `b6088c8064b543c2d1688667d620a14d0f6a65580ab2b4dcb3c3d0e1c0290241`.
 Reproduce a new snapshot with
 `uv run python -u scripts/deribit_usdc_delivery_universe_screen.py`.
+
+### Deribit inverse delivery quote universe
+
+The [Deribit inverse protocol](deribit_inverse_delivery_universe_protocol.md)
+was committed at `30e922a` after public instrument discovery and before any
+inverse-future order-book read. It fixed BTC and ETH October/November/December
+2026 and March 2027 expiries, paired with native USDC spot asks. The
+evaluator used the inverse future's USD-face bid depth to compute the exact
+coin collateral requirement, rounded the spot buy up, and wrote off excess
+coin. It carried the predeclared spot/future, expiry, exit, index, USD/USDC,
+uncertainty and capital charges. All eight contracts had valid displayed
+entry depth at both 500 and 1,000 USDC sizes. Every paired receive offset was
+below 0.06 seconds; both book timestamps were less than 3.6 seconds old at
+the subsequent Deribit clock read.
+
+Six contracts had negative conditional cash after costs. BTC and ETH March
+2027 were positive but below the fixed 4%-annualized both-size gate: BTC was
++1.458% and ETH about +0.616% at both sizes. Therefore **0/8 contracts
+passed**. At the BTC 1,000 USDC target, the displayed 1,000 USD face required
+0.0115881569 BTC of collateral, costing 976.363 USDC at the spot asks. The
+23.637 gross entry basis became +7.235 conditional net on 1,000.772 of
+illustrative reserved capital; the 4% gate would require another 12.613
+USDC. Actual account eligibility, spot routing, fees, collateral transfers,
+margin path, both-leg execution and expiry exit remain unverified. No order
+or shadow position was opened. The ignored full public-API report is
+`outputs/deribit_inverse_delivery_universe.json`, SHA256
+`48b4f57220ca09c53876646f087b9b68aad2c8d1b06fa3dda121c92fdac2b30a`.
+Reproduce a new snapshot with
+`uv run python -u scripts/deribit_inverse_delivery_universe_screen.py`.
 
 ### BTC March 2027 prospective quote watch and settlement-range audit
 
