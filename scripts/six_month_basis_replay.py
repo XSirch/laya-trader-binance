@@ -6,6 +6,7 @@ import hashlib
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
+from datetime import timedelta
 
 import pandas as pd
 
@@ -30,7 +31,7 @@ class Period:
 
     @property
     def exit(self) -> pd.Timestamp:
-        return pd.Timestamp(self.expiry, tz="UTC") - pd.Timedelta(days=2)
+        return pd.Timestamp(self.expiry, tz="UTC") - timedelta(days=2)
 
 
 PERIODS = (
@@ -129,6 +130,7 @@ def execute_leg(period: Period, symbol: str, minute_bars: dict) -> dict:
         "exit_spot_volume": volumes[2], "exit_future_volume": volumes[3],
         "illustrative_1000_usdt_quantity": q_example,
         "minute_volume_covers_illustrative_quantity": min(volumes) >= q_example,
+        "account_size_at_minute_volume": min(volumes) / q * INITIAL_CAPITAL,
     }
 
 
@@ -216,6 +218,15 @@ def replay(executions: list[dict], daily: dict) -> tuple[list[dict], list[dict],
                              if row["period"].startswith(str(year))) / INITIAL_CAPITAL
               for year in (2024, 2025, 2026)}
     total = spot_cash + futures_cash - INITIAL_CAPITAL
+    extra_cost_diagnostic = {}
+    for extra_bps in (5, 10, 20, 30):
+        extra_side_cost = extra_bps / 10000
+        extra_cash = sum(
+            leg["quantity"] * extra_side_cost * (
+                leg["spot_entry_high"] + leg["spot_exit_low"]
+                + leg["future_entry_low"] + leg["future_exit_high"])
+            for leg in executions)
+        extra_cost_diagnostic[str(extra_bps)] = (total - extra_cash) / INITIAL_CAPITAL
     conditions = {
         "all_five_half_years_profitable": all(row["stressed_cash_profit"] > 0
                                                for row in periods),
@@ -238,6 +249,7 @@ def replay(executions: list[dict], daily: dict) -> tuple[list[dict], list[dict],
         "maximum_daily_liquidation_drawdown": max_drawdown,
         "minute_volume_covers_illustrative_quantity_legs": sum(
             leg["minute_volume_covers_illustrative_quantity"] for leg in executions),
+        "posthoc_extra_cost_per_side_bps_to_total_return": extra_cost_diagnostic,
         "legs": len(executions), "conditions": conditions,
         "research_gate_passed": all(conditions.values()),
     }

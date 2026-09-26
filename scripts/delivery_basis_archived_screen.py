@@ -94,7 +94,7 @@ def screen(day: str, expiry: str) -> dict:
     return {
         "archived_observation_day": day,
         "delivery_expiry_day": expiry,
-        "method": "first common minute within five minutes of 00:00 UTC; buy spot at minute high and sell future at minute low",
+        "method": "first common positive-volume minute within five minutes of 00:00 UTC; buy spot at minute high and sell future at minute low",
         "limits": "delayed historical screen, not live executable quotes; exit basis convergence and exit price scenarios are assumptions; order-book depth, margin, liquidation, financing and taxes are absent",
         "source_manifest": sorted(source_results, key=lambda item: item["task"]),
         "assumptions": {

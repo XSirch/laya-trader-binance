@@ -8,8 +8,10 @@ import json
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import timedelta
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import requests
 
@@ -72,11 +74,17 @@ def fetch_one(market: str, name: str, day: str) -> tuple[str, str, str, str]:
 def first_minutes(market: str, name: str, day: str) -> pd.DataFrame:
     frame = normalize_klines(_read_zip(archive_path(market, name, day)))
     start = pd.Timestamp(day, tz="UTC")
-    end = start + pd.Timedelta(minutes=MAX_DELAY_MINUTES)
+    end = start + timedelta(minutes=MAX_DELAY_MINUTES)
     result = frame.loc[(frame.open_time >= start) & (frame.open_time < end),
                        ["open_time", "open", "high", "low", "volume", "quote_volume"]]
+    numeric = result[["open", "high", "low", "volume", "quote_volume"]]
+    result = result.loc[np.isfinite(numeric.to_numpy()).all(axis=1)
+                        & result.low.gt(0)
+                        & result.high.ge(result.low)
+                        & result.volume.gt(0)
+                        & result.quote_volume.gt(0)]
     if result.empty:
-        raise ValueError(f"no trades in first {MAX_DELAY_MINUTES} minutes: {market} {name} {day}")
+        raise ValueError(f"no positive-volume trades in first {MAX_DELAY_MINUTES} minutes: {market} {name} {day}")
     return result.set_index("open_time")
 
 
