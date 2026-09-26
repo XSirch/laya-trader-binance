@@ -11,11 +11,11 @@ USDC delivery-book screen found no passing BTC/ETH/AVAX/SOL/XRP future either;
 six larger altcoin cases lacked displayed depth and every evaluable case had
 negative conditional net cash after fixed costs. Eight Deribit inverse
 BTC/ETH delivery books also failed the both-size 4% gate; BTC March 2027 was
-best at +1.458% annualized conditional after-cost return. The ongoing BTC
-March 2027 COIN-M forward watch remains read-only; its first three samples
-failed, so its 10-of-12 gate is already mathematically unreachable, although
-the scheduled run continues to preserve all observations. It cannot by
-itself establish realized profit.
+best at +1.458% annualized conditional after-cost return. The BTC March 2027
+COIN-M forward watch recorded three failed samples and then stopped when
+Windows shut down. Nine scheduled samples were not observed, and its 10-of-12
+gate was already mathematically unreachable. It cannot establish realized
+profit.
 
 BitMEX is excluded from further venue screening: its [official closure
 notice](https://www.bitmex.com/wind-down/) says trading and new positions
@@ -669,11 +669,17 @@ evidence plus `progress.json` under
 `outputs/binance_coinm_btc_mar_forward_watch/20260926T075419.396417Z/`.
 The first three scheduled samples had timely full-depth books, but their
 annualized **conditional** after-cost estimates were +2.085%, +2.109% and
-+2.014% at both sizes. Thus 0/3 passed; with only nine samples remaining,
-the required 10/12 is mathematically impossible even if all remaining
-samples pass. The collector remains active to preserve the complete frozen
-schedule, whose last sample is due about 13:24 UTC if the notebook stays on.
-No order or shadow position was opened.
++2.014% at both sizes. Thus 0/3 passed; the required 10/12 was mathematically
+impossible even if all remaining samples had passed. The Windows System log
+records a Start Menu shutdown at 06:11:02 local time (09:11:02 UTC), after
+the third sample, and the Event Log service starting again at 11:58:08 local
+(14:58:08 UTC). The original Python PID was absent after reboot. The raw
+append-only file contains exactly observations 1-3; observations 4-12 were
+**not collected**. The run is marked `interrupted`, not complete, in
+`progress.json` and `summary.json`. Raw `samples.jsonl` SHA256 is
+`c4f8befdc072fcf8b3c1fdf8f01e0bfdf5fcbc3b474de3ef3c489baf1baf8aec`.
+No historical quote was substituted for the missing schedule, and no order
+or shadow position was opened.
 
 Separately, a [settlement-range audit](binance_coinm_settlement_mismatch_audit_protocol.md) was frozen at `52bf751` before reading minute candles around every BTC quarterly expiry from 2023 Q1 through 2026 Q3. Binance states that settlement at 08:00 UTC uses 1,800 one-second index observations over the preceding 30 minutes. All 15 dates had the required 30 COIN-M index-price and five post-settlement spot candles. The audit compared the mean of the 30 index-minute highs with the lowest spot trade during 08:00-08:04 UTC. This is a broad adverse **candle-range scenario**, not the actual settlement price or an executable exit bid. In **8/15** dates its `1 - spot_low/index_high_mean` gap exceeded the existing 10 bps spot/index charge; the largest was **43.54 bps** on 2025-12-26. Thus the fixed 10 bps does not cover this historical adverse range, although no observed spot sale is established. No fee or threshold was changed in the running quote watch. The ignored raw API report SHA256 is `22154a55c82d352ce94428ff1635a0eabed3cd231737cc044b2f0dd453953ddc`; reproduce with `uv run python -u scripts/binance_coinm_settlement_mismatch_audit.py`. Actual account eligibility, settlement-index value, spot exit book and margin path remain open evidence.
 
