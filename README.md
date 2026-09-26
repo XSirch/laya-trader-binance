@@ -42,9 +42,10 @@ It combines 103 market fields across daily candles, four-hour candles and
 cross-asset context. All indicators and all five adherence questions travel in
 **one request per asset/time decision**. Jev returns only criterion adherence;
 the Python script owns entry, hold and exit decisions through fixed thresholds.
-The paid replay is explicit: `uv run python -m jev_trader.multifactor --budget-usd 2`.
-The user authorized a maximum of USD 2 for this experiment on 2026-09-26.
-The ledger reserves in-flight charges and blocks retries with unreconciled costs.
+The user authorized a cumulative maximum of USD 2 on 2026-09-26.
+The original spot replay consumed USD 0.043515150. Further paid research uses
+the cumulative client described below, which includes that existing ledger;
+opening a different cache does not establish another USD 2 authorization.
 See [the multi-parameter report](docs/multifactor_research_2026-09-26.md).
 
 The extended implementation corrects entry-cost compounding: entry costs reduce
@@ -77,7 +78,7 @@ See the [derivatives research checkpoint](docs/derivatives_research_2026-09-26.m
 - Selection: only the chosen non-hold rule and the fixed hold benchmark are evaluated in the later periods. A failed calibration still yields a clearly labeled diagnostic leader, not a trading recommendation.
 - Jev: the pinned `typesafe/jev-1.13` model sees only completed-bar features at each RSI14 rule entry. It returns a Noul probability that an explicit entry checklist is satisfied: RSI14 <= 30, close > SMA200, 24-hour return in [-5%, 0%], 24-hour high/low range <= 8%, and last one-hour return > -1.5%. Code enforces those numeric bounds; Jev probability must also be at least 0.70. The exit rule is deterministic: RSI14 >= 55, close < SMA200, or end of the split. Each record is sent in a separate request because 20-record batches yielded inconsistent numeric judgments in a diagnostic comparison. Responses are cached by content hash in `results/jev_checklist_single_decisions.jsonl`; the API key is never written there.
 
-Reports are written to `results/research.json` and `results/jev_replay.json`. `data/` and `results/` are ignored by Git. No live trading, leverage, shorting, order routing, or exchange API keys are present.
+Reports are written to `results/research.json` and `results/jev_replay.json`. `data/` and `results/` are ignored by Git. The original spot runner is long/cash only; the later futures research simulates long/short exposure and leverage. Neither places real orders or uses exchange trading keys.
 
 ## Interpretation
 
@@ -121,6 +122,19 @@ The user target is now **50% net annual CAGR with at most 10% portfolio drawdown
 A fixed [48-scenario exposure and trailing grid](docs/target50_research_2026-09-26.md)
 found no match to both constraints. The existing candidate remains a comparison
 baseline; increasing its exposure has not satisfied this target.
+
+The separate [broad JEV protocol](docs/broad_jev_protocol_2026-09-26.md) fixes
+2,785 asset/time evaluations with all 60 daily market fields and five adherence
+questions in each request. The script compares exact numeric criteria with JEV
+scores and preserves the whole basket's relative weights, including its hedge.
+Run `uv run python -m jev_trader.broad_jev_research --prepare-only` for offline
+preparation and baseline reproduction. The completed comparison is rerunnable
+from cache with `uv run python -m jev_trader.broad_jev_research`.
+Only `--paid --workers 4` can acquire missing answers under the existing joint
+USD 2 cap. It includes prior costs, reserves in-flight charges, and stops new
+spending after an unresolved request, including across restarts. The experiment
+is separate from the running paper strategy. See
+[the broad JEV results](docs/broad_jev_research_2026-09-26.md).
 
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
