@@ -4,6 +4,12 @@
 
 No candidate has demonstrated a robust, executable edge after costs. A six-month BTC/ETH delivery-basis replay passes its exploratory Binance historical gate, but an independent OKX price screen has two negative half-years, the fixed 1,000 USDT directional-volume proxy fails at ETH's July 2026 Binance entry, and Bybit has no future trade in the exact July entry window. A separately frozen Bybit USDC screen lacks trades in five required futures windows. The prospective December 2026 Binance live-book quote has displayed entry depth but negative conditional net after the fixed cost stresses at both studied sizes; a later 12-sample forward observation was negative in all four legs on all 12 samples. The newly screened March 2027 BTC/ETH USDT-M delivery books showed small positive conditional net cash, but neither coin approached the frozen 4%-annualized research gate on illustrative reserved capital. A separate full ten-contract COIN-M delivery screen produced a best conditional estimate of 2.17% annualized for BTC March 2027, also below its predeclared 4% gate and without executed fills. A current 20-symbol Binance funding screen found three signals above the old 0.8% projected-month input threshold, but a fixed six-leg follow-up using actual spot/perpetual entry books produced negative conditional cash in all cases after configured costs. The native Bybit spread's short public-book observation found recent two-sided quotes in only 2/10 BTC and 0/10 ETH samples under its fixed freshness rule, and its complete BTC/ETH/SOL carry-combination quote screen found no preliminary candidate after conservative costs and extra stress. Both the Bybit spot-perpetual funding-only screen and its fixed-window price-and-funding extension were negative after configured costs in all nine recent symbol-windows. The Binance entry premia were inspected before freezing the replay, historical bid/ask depth remains incomplete, and the 2026 H2 exit has no completed outcome. Multiple exploratory probes have inspected 2025 H2, so it is not an untouched holdout. The frozen three-month quarterly-basis rule failed its January-September 2026 final test. A later audit found future-dependent ambiguous-bar exclusion in the older label dataset; the corrected positioning-metrics evaluation also fails below. Do not launch another full Laya training run or enable live orders on the current evidence.
 
+A separately frozen 12-contract OKX USD-margined BTC/ETH/SOL delivery-book
+screen also failed: all 24 size cases had negative conditional net cash after
+its fixed costs, despite timely displayed entry depth. The ongoing BTC March
+2027 COIN-M forward watch remains read-only and cannot by itself establish
+realized profit.
+
 ## Existing 15 minute Laya checkpoint
 
 The completed Colab A100 run evaluated 100,000 records from 2025 H2. The report is preserved in `MyDrive/laya-trader-colab/persistent/validation_report.json` and `.md`; the checkpoint is in `MyDrive/laya-trader-colab/checkpoints/laya-trader-v0.1-local`.
@@ -466,6 +472,35 @@ All ten contract books and 20 size cases were evaluable with displayed depth. Fu
 | XRP March 2027 | -0.488% | -0.457% |
 
 Thus **0/10 contracts passed** the fixed both-size 4%-annualized research gate. At the 1,000 USDT BTC March target, the book showed 1,000 USD future face, 976.34 USDT spot acquisition cost, 23.66 USDT entry basis before costs, and +10.75 USDT conditional net after configured costs on 1,000.74 USDT reserved capital. The gate would require +19.85 USDT conditional net, a further 9.11 USDT. This is larger than the modeled 0.98 USDT future-entry-fee stress, so a future fee discount alone cannot bridge it. No forward shadow position or order was opened. Account eligibility, transfers, actual fee rates, independent leg fills, liquidation behavior, future index/spot difference, spot exit and taxes remain unverified. The ignored raw API report SHA256 is `072f516efa74c220942727194a935421fa090f34995394721c7da5e7e24a719d`; reproduce a new snapshot with `uv run python -u scripts/binance_coinm_delivery_universe_screen.py`.
+
+### Full OKX USD-margined delivery universe
+
+The [OKX USD-margined protocol](okx_usdm_delivery_universe_protocol.md) was
+committed at `81446af` after instrument discovery and before the first order
+book read. It screened the 12 normal-expiry USD-margined BTC, ETH and SOL
+futures for October and November 2026, December 2026 and March 2027 against
+matching OKX USDC spot books, at both 500 and 1,000 USDC intended sizes. The
+model charged fixed spot, future, expiry, exit, index/spot, USD/USDC conversion,
+uncertainty and capital costs. All 24 cases had full displayed entry depth,
+valid lot sizes and timely books: both sides were less than one second old at
+the subsequent OKX clock read, and paired local receive offsets were less
+than 0.17 seconds. **All 24 conditional after-cost cash results were negative;
+0/12 contracts passed** the prespecified both-size, 4%-annualized gate.
+
+At 1,000 USDC intended size, the annualized conditional range was -6.51% to
+-0.129%; the least-negative contract was BTC March 2027. Its displayed future
+bid proceeds were 1,011.365 USD against 992.594 USDC spot ask cost, a 18.771
+nominal entry basis before charges, but the configured net was -1.290 on
+2,010.002 illustrative reserved capital. Reaching the 4% gate would require
+another 41.155 in conditional net cash, much larger than the modeled 1.498
+combined spot/future entry taker fees. The USD settlement asset chosen by the
+user's OKX account, regional access, actual fees, two-leg fills, margin path,
+conversion and final spot exit remain unknown. No order or shadow position
+was opened. The ignored full public-API report is
+`outputs/okx_usdm_delivery_universe.json`, SHA256
+`84ad1720eeefa296d3b1acb50c282b09277925f55bbf62a186f0416ca45841f4`.
+Reproduce a time-varying snapshot with
+`uv run python -u scripts/okx_usdm_delivery_universe_screen.py`.
 
 ### BTC March 2027 prospective quote watch and settlement-range audit
 
