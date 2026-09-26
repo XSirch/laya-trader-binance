@@ -21,3 +21,6 @@ docs/residual_*.json text eol=crlf
 docs/target50_*.json text eol=crlf
 docs/target50_protocol_*.md text eol=lf
 docs/consistency_*.json text eol=crlf
+src/jev_trader/funding_capacity*.py text eol=lf
+docs/funding_capacity_protocol_*.md text eol=lf
+docs/funding_capacity_*.json text eol=crlf
