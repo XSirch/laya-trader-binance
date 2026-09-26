@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-09-26T17:54:38.180784+00:00",
+  "deployable": false,
+  "design": "Frozen 1h execution delay; August evaluated after candidate freeze, no retuning.",
+  "freeze_sha256": "8fe84cb7140c6c265b02dbfe2825dabfe2a6fc7ff8d5c9cef14e19cc22fe9b85",
+  "limits": [
+    "One retrospective month cannot establish consistency or prospective performance.",
+    "Final hour omitted because September opening price is not in August archives."
+  ],
+  "period": [
+    "2026-08-01",
+    "2026-08-31T23:00:00"
+  ],
+  "results": {
+    "0.001": {
+      "adverse_intrahour_drawdown_bound_pct": 5.050536171553377,
+      "entries": 13,
+      "fees_pct_initial": 0.13367194318503944,
+      "funding_pct_initial": 0.03164501346819951,
+      "margin_stress_failures": 0,
+      "max_drawdown_pct": 4.336097970442587,
+      "monthly_returns_pct": {
+        "2026-08": -2.3937948603656944
+      },
+      "months": 1,
+      "positive_months": 0,
+      "rebalances": 5,
+      "return_pct": -2.3937948603656944
+    },
+    "0.0015": {
+      "adverse_intrahour_drawdown_bound_pct": 5.057533640894762,
+      "entries": 13,
+      "fees_pct_initial": 0.20045056606262796,
+      "funding_pct_initial": 0.031640983393885075,
+      "margin_stress_failures": 0,
+      "max_drawdown_pct": 4.343081091468126,
+      "monthly_returns_pct": {
+        "2026-08": -2.45978254712812
+      },
+      "months": 1,
+      "positive_months": 0,
+      "rebalances": 5,
+      "return_pct": -2.45978254712812
+    },
+    "0.003": {
+      "adverse_intrahour_drawdown_bound_pct": 5.084306702042085,
+      "entries": 13,
+      "fees_pct_initial": 0.40055718734260903,
+      "funding_pct_initial": 0.03162889973404562,
+      "margin_stress_failures": 0,
+      "max_drawdown_pct": 4.369854727960343,
+      "monthly_returns_pct": {
+        "2026-08": -2.65751725844775
+      },
+      "months": 1,
+      "positive_months": 0,
+      "rebalances": 5,
+      "return_pct": -2.65751725844775
+    }
+  }
+}

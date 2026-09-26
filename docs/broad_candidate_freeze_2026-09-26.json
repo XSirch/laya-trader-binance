@@ -1,0 +1,66 @@
+{
+  "chronological_extension_window": [
+    "2026-08-01",
+    "2026-09-26"
+  ],
+  "cohort": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "XRPUSDT",
+    "LINKUSDT",
+    "LTCUSDT",
+    "DOGEUSDT",
+    "DOTUSDT",
+    "BCHUSDT",
+    "XLMUSDT",
+    "ADAUSDT",
+    "EOSUSDT",
+    "UNIUSDT",
+    "SUSHIUSDT",
+    "YFIUSDT",
+    "BNBUSDT",
+    "TRXUSDT",
+    "CRVUSDT",
+    "MKRUSDT",
+    "AAVEUSDT",
+    "GRTUSDT"
+  ],
+  "costs_per_side": [
+    0.001,
+    0.0015,
+    0.003
+  ],
+  "daily_sources_sha256": "bb5ca5238319ba119a2a86596203d4c9adcfce46fd113832ebf1c41a8a0fad33",
+  "delay_sensitivity_hours": [
+    1,
+    2
+  ],
+  "deployable": false,
+  "design_status": "Post-screen exploratory combination; not an independently preregistered discovery.",
+  "extension_status": "Not evaluated when frozen; retrospective chronological extension, not prospective proof.",
+  "frozen_utc": "2026-09-26T17:51:29.974470+00:00",
+  "funding": "Hourly adverse mark bounds unless exact settlement marks are verified; no unearned entry funding credits.",
+  "historical_execution_window": [
+    "2024-01-01",
+    "2026-08-01"
+  ],
+  "maximum_target_gross": 0.5,
+  "members": [
+    "low_volatility30",
+    "carry30_betahedged"
+  ],
+  "missing_held_price": "Fail closed; no assumed settlement or invented fill",
+  "rebalance": "Monday 01:00 UTC, signals from completed daily candles through Monday 00:00 UTC",
+  "rule": "blend:low_volatility30+carry30_betahedged",
+  "source_code_sha256": {
+    "broad_combo.py": "b9bf6917b4a51f7e74f6ca8543dfe3c46ed57aeec6b9111d4c835a758d92f92f",
+    "broad_data.py": "d905e107025dcdc0bac6f0c7443ac86a9f00ed5ef5b8e99807c550fb14103a27",
+    "broad_research.py": "9144a4b085a71b2a6ee0a701b748fb8694e1409ee5f6a5cfd3b73c50179a154b",
+    "statistics.py": "c1f7e91a1472ad1ed7d540aa705c6e3eb2f34dd95d8f15adb42f3e3e99e9e426"
+  },
+  "source_report_sha256": "46c69f515765fed1d82bfe248079ec67dd9853c93663743fd58bd7d6ea40aa89",
+  "weights": [
+    0.5,
+    0.5
+  ]
+}

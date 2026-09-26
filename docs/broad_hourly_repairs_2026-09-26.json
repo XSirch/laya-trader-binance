@@ -1,0 +1,182 @@
+[
+  {
+    "bytes": 861,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "b2cd8b71eda6bde7b6c25be96c56b0a5bf62b2ced6510870af3a40cf4565eb12",
+    "symbol": "AAVEUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/AAVEUSDT/1h/AAVEUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 797,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "18ba600674c0ad0b38c1578deaf5941e103c9e48335fea540e7e04e6f65f27f6",
+    "symbol": "ADAUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/ADAUSDT/1h/ADAUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 932,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "dbbaa6de50d5eaf6aca33e5445b2b67420d2087f4cf71e75683a1302f638ec99",
+    "symbol": "BCHUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/BCHUSDT/1h/BCHUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 899,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "43c5a12015a2bbc78d571d27e0f5cd03931b674e9449c556eeda3858eec9d3d4",
+    "symbol": "BNBUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/BNBUSDT/1h/BNBUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 997,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "122fd96f8693a9794e2dbdb4491858078676045170acce68046e32f32f7b4068",
+    "symbol": "BTCUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/BTCUSDT/1h/BTCUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 775,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "2452ad9f1d433c51e5bbcca5b8435078e6d3ce763d5d58e10026f85b27b8118e",
+    "symbol": "CRVUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/CRVUSDT/1h/CRVUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 804,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "cc9a614a649061a40c910aa09634891bb13490a0e78ce6f7aba4de2e7d8531e3",
+    "symbol": "DOGEUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/DOGEUSDT/1h/DOGEUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 819,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "4deee70113a557c817cfbb3bcf21c3b01c9a8898515e750f8db65b9837e4e555",
+    "symbol": "DOTUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/DOTUSDT/1h/DOTUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 944,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "29ef5b9ab185b18c7bcb73fd7ba12d14ebcef404367c886ad13705592ef99c20",
+    "symbol": "ETHUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/ETHUSDT/1h/ETHUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 767,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "f1b80c56d5c40c15af62594f7c04c7d064a1b3e1a2bd8f56d3975fe797d07001",
+    "symbol": "GRTUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/GRTUSDT/1h/GRTUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 850,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "215ef3e4f500ac8e664a8ab948ab9763a38cb12733d25bb8b62a3bb283d55c70",
+    "symbol": "LINKUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/LINKUSDT/1h/LINKUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 850,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "fce56e1cfaae8319d963f537ab6367ad3996417b31e4cbcd8c31a8a7c3e46c5a",
+    "symbol": "LTCUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/LTCUSDT/1h/LTCUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 767,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "80dc39d5a9a4a87509def1ed7dc165d3537d11daee81a9fe8d6f6aa8965854c5",
+    "symbol": "SUSHIUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/SUSHIUSDT/1h/SUSHIUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 778,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "95d422f09c86653dda6b9a48bad56f8bef572d12db2f919d50eb413d0377cbc2",
+    "symbol": "TRXUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/TRXUSDT/1h/TRXUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 836,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "1dbff30d3c241e748d498a97144dde8fd070a3a22129fc5911bf0741976e8fe9",
+    "symbol": "UNIUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/UNIUSDT/1h/UNIUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 813,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "e7a396476229704c5aa7fa750cdc3f04c4e4bb37115837fc81b28de20b87a6d2",
+    "symbol": "XLMUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/XLMUSDT/1h/XLMUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 807,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "1b94be0070cd35f4d9ade6f28353a3bfef644eeb9553e8cca4a6ad5d2d34be36",
+    "symbol": "XRPUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/XRPUSDT/1h/XRPUSDT-1h-2026-06-29.zip"
+  },
+  {
+    "bytes": 792,
+    "frequency": "daily",
+    "interval": "1h",
+    "kind": "markPriceKlines",
+    "month": "2026-06-29",
+    "sha256": "19243ddd6ccc1548c092ba1f2c193b474ea367302f5ca3feda3f9e337c51a240",
+    "symbol": "YFIUSDT",
+    "url": "https://data.binance.vision/data/futures/um/daily/markPriceKlines/YFIUSDT/1h/YFIUSDT-1h-2026-06-29.zip"
+  }
+]

@@ -1,0 +1,16 @@
+# Protocolo: universo histórico mais amplo
+
+Fixado antes de abrir os resultados desta rodada. A seleção de quatro moedas das rodadas anteriores será comparada com um universo definido pela liquidez conhecida em janeiro de 2021, incluindo os contratos posteriormente retirados de negociação.
+
+1. Consultar o catálogo público Binance USD-M e identificar contratos perpétuos terminados em USDT com arquivo diário de janeiro/2021. Baixar os arquivos desse mês, verificar checksums e ordenar pelo volume financeiro total. Fixar os 20 primeiros, sem filtro de sobrevivência atual.
+2. Obter candles diários, preços de marcação e funding, do início de 2021 a agosto/2026. Preservar ausências e mudanças de disponibilidade; não fabricar preços. Só a informação já publicada pode selecionar posições ou treinar modelos.
+3. Usar 2021 para aquecimento, 2022–2023 para desenvolvimento/seleção, 2024 como validação histórica e 2025 H1, 2025 H2 e janeiro–julho/2026 como diagnósticos posteriores. Esses períodos posteriores já foram estudados em outros universos, portanto não são um teste final intocado.
+4. Comparar fatores econômicos distintos, com carteiras compradas e vendidas: momentum de 7, 30 e 90 dias, momentum de 90 dias excluindo os últimos sete, reversão curta, carry, volatilidade, participação de compradores agressivos e combinações de fatores. Parâmetros serão definidos antes da simulação, com custos-base e conservadores.
+5. O screening diário não comprova execução nem margem. Qualquer candidato que sobreviva precisa de replay horário, estabilidade por ativo/regime, custos maiores, intervalo estatístico com dependência temporal e avaliação cronologicamente posterior após congelamento.
+6. Contratos retirados não podem simplesmente desaparecer da carteira. Se houver exposição quando o histórico terminar, a execução exige evidência de encerramento/settlement; enquanto faltar essa evidência, a conclusão fica explicitamente incompleta. Não remover retroativamente um contrato porque teve mau resultado.
+
+O JEV permanece uma camada de aderência aos critérios, em uma única chamada com todos os indicadores, quando houver justificativa para utilizá-lo. A decisão continua sendo do script. Não há autorização de ordens reais.
+
+Antes da simulação, ficaram fixadas 12 regras-base e suas 12 versões com hedge de beta: momentum 7/30/90, momentum 90 sem os últimos sete dias, reversão 1/7, carry 30, baixa volatilidade 30, fluxo agressor 20, combinação de rankings, momentum com volatilidade/participação e combinação temporal de EMAs. Cada versão com hedge estima beta contra BTC pelos 60 dias anteriores, limita a estimativa entre 0,25 e 3, contrai 25% em direção a 1 e acrescenta uma posição BTC para neutralizar o beta estimado. O nocional bruto permanece limitado a 50%; neutralidade estimada não garante ausência de exposição real ao mercado.
+
+Diagnóstico estatístico fixado antes dos resultados: bootstrap circular em blocos de 30 dias, 2.000 amostras, com os mesmos blocos para todas as estratégias. Reportar intervalo de retorno da regra selecionada no desenvolvimento e estatística máxima de médias centradas para controlar comparações nesta família. Esse controle não abrange as famílias testadas anteriormente, não substitui confirmação prospectiva e não transforma saídas sem evidência de execução em resultados aprovados.

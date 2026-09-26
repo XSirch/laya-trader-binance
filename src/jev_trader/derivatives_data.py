@@ -28,9 +28,11 @@ class Funding:
     rate: float
 
 
-def fetch(kind, symbol, month, frequency="monthly"):
-    suffix = f"{symbol}-fundingRate-{month}.zip" if kind == "fundingRate" else f"{symbol}-1h-{month}.zip"
-    subpath = f"{kind}/{symbol}/{suffix}" if kind == "fundingRate" else f"{kind}/{symbol}/1h/{suffix}"
+def fetch(kind, symbol, month, frequency="monthly", interval="1h"):
+    if interval not in ("1h", "1d"):
+        raise ValueError("unsupported research interval")
+    suffix = f"{symbol}-fundingRate-{month}.zip" if kind == "fundingRate" else f"{symbol}-{interval}-{month}.zip"
+    subpath = f"{kind}/{symbol}/{suffix}" if kind == "fundingRate" else f"{kind}/{symbol}/{interval}/{suffix}"
     url = f"{BASE.replace('/monthly', '/' + frequency)}/{subpath}"
     path = DATA_ROOT / subpath if frequency == "monthly" else DATA_ROOT / frequency / subpath
     checksum = path.with_suffix(".zip.CHECKSUM")
@@ -50,7 +52,8 @@ def fetch(kind, symbol, month, frequency="monthly"):
     if not checksum.exists():
         checksum.write_bytes(raw_checksum)
     return {"kind": kind, "symbol": symbol, "month": month, "url": url,
-            "path": str(path), "sha256": expected, "bytes": len(payload), "frequency": frequency}
+            "path": str(path), "sha256": expected, "bytes": len(payload), "frequency": frequency,
+            "interval": None if kind == "fundingRate" else interval}
 
 
 def download(first="2023-01", last="2026-08"):
