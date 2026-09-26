@@ -28,6 +28,10 @@ in the official ticker response, with zero reported open interest and 24-hour
 volume. A tradeable metadata flag alone is insufficient. No after-cost return
 was calculated for these missing quotes.
 
+A separate Deribit same-expiry linear option/future parity screen evaluated
+48 fully displayed three-leg cases. All had negative gross cash before fees;
+none passed the predeclared after-cost gate.
+
 ## Existing 15 minute Laya checkpoint
 
 The completed Colab A100 run evaluated 100,000 records from 2025 H2. The report is preserved in `MyDrive/laya-trader-colab/persistent/validation_report.json` and `.md`; the checkpoint is in `MyDrive/laya-trader-colab/checkpoints/laya-trader-v0.1-local`.
@@ -603,6 +607,32 @@ shadow position was opened. The ignored full public-API report is
 `451b5d60f09b674503f4c79ced7ef7272ba1bd50fde6e56ccd8b3d69a12e5805`.
 Reproduce a new time-varying snapshot with
 `uv run python -u scripts/deribit_inverse_long_delivery_screen.py`.
+
+### Deribit same-expiry linear option/future parity
+
+The distinct [linear option parity protocol](deribit_linear_option_parity_protocol.md)
+was committed at `cc063f6` before the first book read. It selected the three
+active call/put strikes nearest the public index for BTC and ETH on each of
+October 30 and December 25, 2026, and paired them with the exact same-expiry
+USDC linear future. Both possible call/put/future parity directions were
+evaluated at illustrative 1,000 and 2,000 USDC sizes: 4 asset/expiry groups,
+3 strikes, 2 directions and 2 sizes, or **48 cases**. All 12 triple-book
+sets were timely under the fixed venue-clock and receive-span rule and had
+full displayed depth for all three legs. The public read ran from 09:06:42
+to 09:07:01 UTC on 2026-09-26.
+
+**All 48 cases had negative gross terminal cash even before trading fees.**
+The least negative was ETH December 25, 2,800 strike, long call/short put/
+short future at the 1,000 USDC intended size: -0.15 USDC gross on 0.3 ETH.
+After the frozen entry and delivery fees, execution stress and capital charge,
+its conditional cash was -5.996 USDC, about -2.412% annualized on illustrative
+reserved capital. **0/24 strike/direction combinations passed at both sizes.**
+This is a contemporaneous public-book screen, not a three-leg fill or account
+margin proof. No order or shadow position was opened. The ignored raw report
+is `outputs/deribit_linear_option_parity.json`, SHA256
+`18e6c59f03d4ed587615f00b34418613f5d5745c348345ed573682594c8bd785`.
+The protocol snapshot is `cc063f6`; a new run changes market data and does
+not replace this result.
 
 ### Kraken inverse retail top-quote screen
 
