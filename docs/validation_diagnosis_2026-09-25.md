@@ -32,6 +32,11 @@ A separate Deribit same-expiry linear option/future parity screen evaluated
 48 fully displayed three-leg cases. All had negative gross cash before fees;
 none passed the predeclared after-cost gate.
 
+An exploratory WBETH plus short-ETH perpetual replay had complete monthly
+price and funding inputs for January 2024-August 2026, but only 4/32 months
+showed positive stressed cash; 2025 and 2026 were negative even without the
+separate depeg and capital charges.
+
 ## Existing 15 minute Laya checkpoint
 
 The completed Colab A100 run evaluated 100,000 records from 2025 H2. The report is preserved in `MyDrive/laya-trader-colab/persistent/validation_report.json` and `.md`; the checkpoint is in `MyDrive/laya-trader-colab/checkpoints/laya-trader-v0.1-local`.
@@ -354,6 +359,39 @@ opened. The ignored public API report is
 `97364499105fddb98e5bf6b8c0cca59c498cf2f5ab16901764d1f5ef5b4da414`.
 Reproduce the exact historical read with
 `uv run python -u scripts/wbeth_funding_preflight.py`.
+
+### WBETH/ETH perpetual monthly replay
+
+The subsequent [32-month replay rule](wbeth_funding_monthly_replay_protocol.md)
+was committed at `5088847` before reading the older history. This remains
+**post-selection exploration**, because the preceding 30-day input preview
+had already been inspected. It combined WBETHETH and ETHUSDT spot daily
+closes, ETHUSDT perpetual daily closes and settled funding for every complete
+calendar month from January 2024 through August 2026. All 32 windows had
+the required entry/exit closes and funding coverage: 975 daily rows for
+each price series and 2,922 settled funding events in the full archive.
+The fixed close-price proxy modeled a 1,000 USDT WBETH purchase, fixed ETH
+perpetual short, four spot and two future taker fees, slippage, 0.5% WBETH
+exit-price stress and a 1% annual capital charge on a 2.05x reserve.
+
+Only **4/32 months** had positive stressed cash, all in 2024, versus the
+predeclared 24/32 preliminary consistency gate. Annualized stressed return
+on the reserved capital was **-0.027% in 2024, -4.356% in 2025 and -6.086%
+for January-August 2026**. The corresponding gross close-price proxies,
+before all fees and stresses, were +8.331%, +3.938% and +2.173% annually.
+Even deleting the depeg stress and capital charge entirely leaves 2025 and
+2026 negative after the modeled trading fees and slippage: -8.793 USDT and
+-29.411 USDT, respectively, on a sequence of 1,000 USDT monthly positions.
+Thus the failure does not hinge on the selected depeg stress. The historical
+closes do not prove executable prices, intramonth margin safety, available
+redemption, or future funding; this does **not** warrant a funded trade or
+full Laya retraining. No order or shadow position was opened.
+
+The ignored complete public API report is
+`outputs/wbeth_funding_monthly_replay.json`, SHA256
+`4ab792e837c9ec2867f91b2fac3f8ce0c579f213c7402c1bdd7b031473c19c00`.
+Reproduce the same fixed historical window with
+`uv run python -u scripts/wbeth_funding_monthly_replay.py`.
 
 ## BTC/ETH spot versus quarterly delivery futures
 
