@@ -117,6 +117,11 @@ processed trading hours and never approves a strategy from an empty history.
 The [initial report checkpoint](docs/forward_report_2026-09-26.json) replays both
 flat accounts and verifies their stored inputs; it contains no trading result.
 
+The user target is now **50% net annual CAGR with at most 10% portfolio drawdown**.
+A fixed [48-scenario exposure and trailing grid](docs/target50_research_2026-09-26.md)
+found no match to both constraints. The existing candidate remains a comparison
+baseline; increasing its exposure has not satisfied this target.
+
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
 Sources: [Binance public-data format and checksums](https://github.com/binance/binance-public-data/blob/master/README.md), [OpenRouter Jev Decisions API](https://openrouter.ai/blog/insights/what-is-jev/).
