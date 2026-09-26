@@ -108,6 +108,15 @@ process and heartbeat before claiming it is running. The 2026-09-26 checkpoint
 verifies a live 72-hour run; it does not establish future uptime or profitability. See
 [the bounded supervisor documentation](docs/forward_watch_2026-09-26.md).
 
+Prospective measurement is fixed separately in
+[the evaluation protocol](docs/forward_evaluation_protocol_2026-09-26.md).
+`uv run python -m jev_trader.forward_report --series forward_paper_v2` verifies
+the stored evidence and replays paper accounting without acquiring data or
+altering the running strategy. Its report separates cash-only captures from
+processed trading hours and never approves a strategy from an empty history.
+The [initial report checkpoint](docs/forward_report_2026-09-26.json) replays both
+flat accounts and verifies their stored inputs; it contains no trading result.
+
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
 Sources: [Binance public-data format and checksums](https://github.com/binance/binance-public-data/blob/master/README.md), [OpenRouter Jev Decisions API](https://openrouter.ai/blog/insights/what-is-jev/).

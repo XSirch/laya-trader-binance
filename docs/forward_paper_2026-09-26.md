@@ -1,5 +1,7 @@
 # Sinais atuais e contabilidade em simulação
 
+Este documento descreve o checkpoint anterior à inicialização do supervisor. O acompanhamento iniciado posteriormente está registrado em `forward_watch_2026-09-26.md`; a ausência de serviço abaixo se refere àquele checkpoint, não ao estado atual do processo.
+
 O candidato fixado agora pode gerar um estado atual reproduzível e avançar duas contas simuladas: referência e trailing de carteira de 4%. Cada conta começa com 10.000 USDT fictícios. A série `forward_paper_v2` preserva código, regra, dados de entrada e estado contábil por hashes. Nenhum dinheiro foi transferido e não há envio de ordens.
 
 ## Dados e decisões

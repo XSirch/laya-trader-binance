@@ -1,0 +1,49 @@
+{
+  "anchor_ledger_sha256": "6f3836c54a83c99bef54567a9aa33a0d2ae81c8cfde1ed603c4c785c709d6ed9",
+  "anchor_record_count": 3,
+  "anchor_record_sha256": "f4d78631dd28c3e2b924e70c2085dad146ef321598c054d40aad00ca1389f381",
+  "automatic_profitability_approval": false,
+  "bootstrap": {
+    "interval_method": "percentile",
+    "lower_one_sided_nominal_confidence": 0.95,
+    "method": "circular_blocks",
+    "primary_block_days": 30,
+    "quantile_convention": "linear interpolation at p*(N-1), zero-based",
+    "samples": 5000,
+    "secondary_is_confirmatory": false,
+    "seed": 1907,
+    "sensitivity_block_days": [
+      14,
+      60
+    ]
+  },
+  "config_sha256": "88b38498e29ab3fafee5dfc11d2725917dbff740f94eab90f4a379b01641f959",
+  "current_candidate_meets_historical_return_target": false,
+  "daily_return_count": 364,
+  "descriptive_checkpoint_days": [
+    30,
+    90,
+    180
+  ],
+  "external_timestamp_anchor": false,
+  "first_eligible_ms": 1790557200000,
+  "first_record_sha256": "3168f9aea50df0384b28a7ab02206c506bf3d19f600c050217e6c401607eaec5",
+  "live_orders_enabled": false,
+  "primary_end_ms": 1822006800000,
+  "primary_end_window_exclusive_ms": 1822007100000,
+  "primary_metric": "mean_net_daily_log_return_against_zero_return_paper_cash",
+  "primary_variant": "reference",
+  "protocol_file": "forward_evaluation_protocol_2026-09-26.md",
+  "protocol_sha256": "ccec0c01928f849cec0ca26e714b1aa7b2e533f3964f5a3ab8cb424bd4117d90",
+  "registered_utc": "2026-09-26T19:55:13.553979+00:00",
+  "registration_state": "before_first_paper_trade",
+  "risk_tolerance": {
+    "maximum_portfolio_drawdown": 0.1,
+    "observation_limit": "Hourly observations do not bound intrahour drawdown",
+    "source": "explicit_user_instruction"
+  },
+  "schema_version": 1,
+  "secondary_variant": "trailing4",
+  "series": "forward_paper_v2",
+  "target_annual_net_return": 0.5
+}
