@@ -1,5 +1,7 @@
 # Avaliação do trailing stop
 
+Atualização de interpretação: a perda recente citada abaixo começa com carteira em caixa. Na carteira contínua desde janeiro/2024, o trecho de agosto–setembro perdeu 3,84% com trailing e 4,71% sem trailing, ao custo de 0,15% por lado. O estado anterior da carteira altera os acionamentos. Ver `consistency_2026-09-26.md`; não generalizar a comparação entre esses dois modos de início.
+
 O trailing de carteira de 4% é um candidato a controle de risco: melhorou o resultado agregado retrospectivo, mas não impediu perdas e ainda não demonstrou consistência futura. A distância foi fixada depois de comparar nove variantes em dados já estudados; esta rodada manteve essa distância e avaliou somente a sensibilidade da execução.
 
 Na simulação de janeiro/2024 a 26 de setembro/2026, com custo de 0,15% por lado, entrada semanal às 01:00 UTC e execução do stop na abertura horária observada:

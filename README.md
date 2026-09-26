@@ -81,6 +81,13 @@ Reports are written to `results/research.json` and `results/jev_replay.json`. `d
 
 ## Interpretation
 
+The current candidate has favorable retrospective evidence, including positive
+rolling annual returns at the stated primary cost. A losing month or short
+window alone does not disprove positive expectancy. Continuous portfolio paths
+and independent cash-start windows can give different trailing-stop results;
+see [the consistency and loss-distribution assessment](docs/consistency_2026-09-26.md).
+This does not remove selection bias or constitute prospective validation.
+
 The read-only forward-data collector is available as
 `uv run python -m jev_trader.forward_observer`. It validates current public
 quotes and contract status and appends a hash-chained acquisition record.

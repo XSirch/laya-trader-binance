@@ -1,0 +1,726 @@
+{
+  "candidate_selection_changed": false,
+  "created_utc": "2026-09-26T19:10:19.542700+00:00",
+  "deployable": false,
+  "limits": [
+    "Neither historical segment is prospectively unseen to the researcher.",
+    "Scenario frequencies assume dependence and regimes resemble calibration history.",
+    "Recent segment continues the combined portfolio; independent-start replay differs.",
+    "Daily timestamps follow events in the midnight hour; terminal sample includes liquidation fees.",
+    "Daily samples omit within-day drawdown and execution liquidity.",
+    "Loss compatibility is not proof of positive expectancy or sustainable future profits."
+  ],
+  "protocol_sha256": "d8ac8e8594feef4473b473e4992b2a0fc51e59fa3021cbf14cfb7468336b9590",
+  "results": {
+    "none": {
+      "double_stress": {
+        "calibration": {
+          "annualized_geometric_return_pct": 10.606962494044115,
+          "days": 943,
+          "longest_underwater_days": 322,
+          "max_daily_drawdown_pct": 12.290656063229685,
+          "return_pct": 29.752190786491035,
+          "rolling": {
+            "180": {
+              "best_return_pct": 15.931189245105434,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 615,
+              "windows": 764,
+              "worst_return_pct": -6.55016616531876
+            },
+            "30": {
+              "best_return_pct": 8.289301808659875,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 630,
+              "windows": 914,
+              "worst_return_pct": -11.813257605422304
+            },
+            "365": {
+              "best_return_pct": 27.332926514386894,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 572,
+              "windows": 579,
+              "worst_return_pct": -0.6599089676250582
+            },
+            "90": {
+              "best_return_pct": 12.14903841986052,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 646,
+              "windows": 854,
+              "worst_return_pct": -9.743687942110128
+            }
+          },
+          "terminal_underwater_days": 61
+        },
+        "calibration_growth_interval": {
+          "annualized_geometric_return_95_interval_pct": [
+            -1.682983455941203,
+            23.29053080804413
+          ],
+          "block_days": 30,
+          "draws": 5000,
+          "interpretation": "Individual retrospective bootstrap interval; not adjusted for research selection."
+        },
+        "calibration_last_return_end_ms": 1785542400000,
+        "full": {
+          "annualized_geometric_return_pct": 7.922364896495647,
+          "days": 999,
+          "longest_underwater_days": 322,
+          "max_daily_drawdown_pct": 12.290656063229685,
+          "return_pct": 23.20422309447795,
+          "rolling": {
+            "180": {
+              "best_return_pct": 15.931189245105434,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 650,
+              "windows": 820,
+              "worst_return_pct": -6.55016616531876
+            },
+            "30": {
+              "best_return_pct": 8.289301808659875,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 633,
+              "windows": 970,
+              "worst_return_pct": -11.813257605422304
+            },
+            "365": {
+              "best_return_pct": 27.332926514386894,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 628,
+              "windows": 635,
+              "worst_return_pct": -0.6599089676250582
+            },
+            "90": {
+              "best_return_pct": 12.14903841986052,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 666,
+              "windows": 910,
+              "worst_return_pct": -9.743687942110128
+            }
+          },
+          "terminal_underwater_days": 117
+        },
+        "historical_recent_length_windows": {
+          "best_return_pct": 10.661200254138366,
+          "overlapping_windows_are_dependent": true,
+          "positive_windows": 665,
+          "windows": 888,
+          "worst_return_pct": -10.993687439107175
+        },
+        "original_hourly_max_drawdown_pct": 12.69481999026042,
+        "recent_continuous": {
+          "annualized_geometric_return_pct": -28.645851648274366,
+          "days": 56,
+          "longest_underwater_days": 42,
+          "max_daily_drawdown_pct": 6.232384077459744,
+          "return_pct": -5.046518022025424,
+          "rolling": {
+            "30": {
+              "best_return_pct": -0.896151756981717,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 0,
+              "windows": 27,
+              "worst_return_pct": -5.064382296676484
+            }
+          },
+          "terminal_underwater_days": 42
+        },
+        "recent_first_return_end_ms": 1785628800000,
+        "scenarios": {
+          "14": {
+            "at_or_below_observed_frequency": 0.0366,
+            "block_days": 14,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.3120787913780936,
+              "p50": 2.9419221764040295,
+              "p95": 8.191973689017141
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.3016,
+            "return_percentiles_pct": {
+              "p05": -4.354893209703368,
+              "p50": 1.7562503336467952,
+              "p95": 7.029291727112259
+            },
+            "seed": 1907
+          },
+          "30": {
+            "at_or_below_observed_frequency": 0.0412,
+            "block_days": 30,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.2160335931288762,
+              "p50": 2.836104555184974,
+              "p95": 8.540574188818848
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2828,
+            "return_percentiles_pct": {
+              "p05": -4.312939957061951,
+              "p50": 1.7644587239688203,
+              "p95": 6.882176909560959
+            },
+            "seed": 1907
+          },
+          "60": {
+            "at_or_below_observed_frequency": 0.0486,
+            "block_days": 60,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.1449877453420838,
+              "p50": 2.673424738776086,
+              "p95": 9.399640090574794
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2804,
+            "return_percentiles_pct": {
+              "p05": -4.620275940352055,
+              "p50": 2.0844597960729967,
+              "p95": 7.051007138826327
+            },
+            "seed": 1907
+          }
+        }
+      },
+      "stress": {
+        "calibration": {
+          "annualized_geometric_return_pct": 12.49360459669954,
+          "days": 943,
+          "longest_underwater_days": 319,
+          "max_daily_drawdown_pct": 12.097993729242916,
+          "return_pct": 35.54762365268748,
+          "rolling": {
+            "180": {
+              "best_return_pct": 16.829812202780104,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 651,
+              "windows": 764,
+              "worst_return_pct": -5.746023100421371
+            },
+            "30": {
+              "best_return_pct": 8.401147841094188,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 658,
+              "windows": 914,
+              "worst_return_pct": -11.610990278389895
+            },
+            "365": {
+              "best_return_pct": 29.310668820534996,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 579,
+              "windows": 579,
+              "worst_return_pct": 1.0270498356887117
+            },
+            "90": {
+              "best_return_pct": 12.48923434638402,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 665,
+              "windows": 854,
+              "worst_return_pct": -9.303262451228548
+            }
+          },
+          "terminal_underwater_days": 61
+        },
+        "calibration_growth_interval": {
+          "annualized_geometric_return_95_interval_pct": [
+            0.04266192806141614,
+            25.358538738963286
+          ],
+          "block_days": 30,
+          "draws": 5000,
+          "interpretation": "Individual retrospective bootstrap interval; not adjusted for research selection."
+        },
+        "calibration_last_return_end_ms": 1785542400000,
+        "full": {
+          "annualized_geometric_return_pct": 9.798933909224285,
+          "days": 999,
+          "longest_underwater_days": 319,
+          "max_daily_drawdown_pct": 12.097993729242916,
+          "return_pct": 29.156571344534104,
+          "rolling": {
+            "180": {
+              "best_return_pct": 16.829812202780104,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 694,
+              "windows": 820,
+              "worst_return_pct": -5.746023100421371
+            },
+            "30": {
+              "best_return_pct": 8.401147841094188,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 661,
+              "windows": 970,
+              "worst_return_pct": -11.610990278389895
+            },
+            "365": {
+              "best_return_pct": 29.310668820534996,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 635,
+              "windows": 635,
+              "worst_return_pct": 1.0270498356887117
+            },
+            "90": {
+              "best_return_pct": 12.48923434638402,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 685,
+              "windows": 910,
+              "worst_return_pct": -9.303262451228548
+            }
+          },
+          "terminal_underwater_days": 117
+        },
+        "historical_recent_length_windows": {
+          "best_return_pct": 10.903513622530237,
+          "overlapping_windows_are_dependent": true,
+          "positive_windows": 685,
+          "windows": 888,
+          "worst_return_pct": -10.691420002217072
+        },
+        "original_hourly_max_drawdown_pct": 12.494389450855238,
+        "recent_continuous": {
+          "annualized_geometric_return_pct": -27.006307290790645,
+          "days": 56,
+          "longest_underwater_days": 42,
+          "max_daily_drawdown_pct": 6.024385335374066,
+          "return_pct": -4.714986612033199,
+          "rolling": {
+            "30": {
+              "best_return_pct": -0.7524383257370991,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 0,
+              "windows": 27,
+              "worst_return_pct": -4.926731162616344
+            }
+          },
+          "terminal_underwater_days": 42
+        },
+        "recent_first_return_end_ms": 1785628800000,
+        "scenarios": {
+          "14": {
+            "at_or_below_observed_frequency": 0.0388,
+            "block_days": 14,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.2658536506028284,
+              "p50": 2.8529267209817264,
+              "p95": 8.085491592835478
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2802,
+            "return_percentiles_pct": {
+              "p05": -4.094961260187952,
+              "p50": 2.0243522534019056,
+              "p95": 7.309634287924475
+            },
+            "seed": 1907
+          },
+          "30": {
+            "at_or_below_observed_frequency": 0.0418,
+            "block_days": 30,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.19787081250217,
+              "p50": 2.7107003145114503,
+              "p95": 8.412174170355213
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2556,
+            "return_percentiles_pct": {
+              "p05": -4.056056581165091,
+              "p50": 2.02826450557271,
+              "p95": 7.137146245349577
+            },
+            "seed": 1907
+          },
+          "60": {
+            "at_or_below_observed_frequency": 0.0486,
+            "block_days": 60,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.1445081063948699,
+              "p50": 2.4761382960130787,
+              "p95": 9.268109636065926
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2604,
+            "return_percentiles_pct": {
+              "p05": -4.311684777170598,
+              "p50": 2.329525769361581,
+              "p95": 7.330259172219606
+            },
+            "seed": 1907
+          }
+        }
+      }
+    },
+    "portfolio_pct_4pct": {
+      "double_stress": {
+        "calibration": {
+          "annualized_geometric_return_pct": 12.575881549336328,
+          "days": 943,
+          "longest_underwater_days": 140,
+          "max_daily_drawdown_pct": 7.39112251236336,
+          "return_pct": 35.80390238400547,
+          "rolling": {
+            "180": {
+              "best_return_pct": 15.242866305305597,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 756,
+              "windows": 764,
+              "worst_return_pct": -1.0018384418275819
+            },
+            "30": {
+              "best_return_pct": 8.28930180865957,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 628,
+              "windows": 914,
+              "worst_return_pct": -6.887056089021726
+            },
+            "365": {
+              "best_return_pct": 24.178902439812788,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 579,
+              "windows": 579,
+              "worst_return_pct": 5.371969941865165
+            },
+            "90": {
+              "best_return_pct": 12.182396274234236,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 698,
+              "windows": 854,
+              "worst_return_pct": -3.36152086940044
+            }
+          },
+          "terminal_underwater_days": 61
+        },
+        "calibration_growth_interval": {
+          "annualized_geometric_return_95_interval_pct": [
+            2.414456214821844,
+            23.5761578434679
+          ],
+          "block_days": 30,
+          "draws": 5000,
+          "interpretation": "Individual retrospective bootstrap interval; not adjusted for research selection."
+        },
+        "calibration_last_return_end_ms": 1785542400000,
+        "full": {
+          "annualized_geometric_return_pct": 9.119983340226883,
+          "days": 999,
+          "longest_underwater_days": 140,
+          "max_daily_drawdown_pct": 10.09675135065875,
+          "return_pct": 26.9823982912831,
+          "rolling": {
+            "180": {
+              "best_return_pct": 15.242866305305597,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 779,
+              "windows": 820,
+              "worst_return_pct": -6.564348907136192
+            },
+            "30": {
+              "best_return_pct": 8.28930180865957,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 629,
+              "windows": 970,
+              "worst_return_pct": -6.887056089021726
+            },
+            "365": {
+              "best_return_pct": 24.178902439812788,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 635,
+              "windows": 635,
+              "worst_return_pct": 2.4518086886725587
+            },
+            "90": {
+              "best_return_pct": 12.182396274234236,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 718,
+              "windows": 910,
+              "worst_return_pct": -9.180265857399721
+            }
+          },
+          "terminal_underwater_days": 117
+        },
+        "historical_recent_length_windows": {
+          "best_return_pct": 10.661200254138356,
+          "overlapping_windows_are_dependent": true,
+          "positive_windows": 670,
+          "windows": 888,
+          "worst_return_pct": -4.785961910693599
+        },
+        "original_hourly_max_drawdown_pct": 10.32922082469776,
+        "recent_continuous": {
+          "annualized_geometric_return_pct": -35.45205495580131,
+          "days": 56,
+          "longest_underwater_days": 42,
+          "max_daily_drawdown_pct": 7.704412631438334,
+          "return_pct": -6.495766276125321,
+          "rolling": {
+            "30": {
+              "best_return_pct": -2.573863995654133,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 0,
+              "windows": 27,
+              "worst_return_pct": -5.823682941033406
+            }
+          },
+          "terminal_underwater_days": 42
+        },
+        "recent_first_return_end_ms": 1785628800000,
+        "scenarios": {
+          "14": {
+            "at_or_below_observed_frequency": 0.007,
+            "block_days": 14,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.299309154173085,
+              "p50": 2.8244862775703705,
+              "p95": 6.28046623541646
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2762,
+            "return_percentiles_pct": {
+              "p05": -3.383251221212116,
+              "p50": 1.936227246168476,
+              "p95": 6.943089909374465
+            },
+            "seed": 1907
+          },
+          "30": {
+            "at_or_below_observed_frequency": 0.0018,
+            "block_days": 30,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.1951139731106915,
+              "p50": 2.671647199242673,
+              "p95": 6.1474498398447395
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2728,
+            "return_percentiles_pct": {
+              "p05": -3.0870114871266625,
+              "p50": 1.7885836994201623,
+              "p95": 6.881293940301991
+            },
+            "seed": 1907
+          },
+          "60": {
+            "at_or_below_observed_frequency": 0.0,
+            "block_days": 60,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.1449877453421715,
+              "p50": 2.577856591941667,
+              "p95": 5.074124437899271
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2846,
+            "return_percentiles_pct": {
+              "p05": -2.3878007089598774,
+              "p50": 1.8009255208069854,
+              "p95": 7.051007138826231
+            },
+            "seed": 1907
+          }
+        }
+      },
+      "stress": {
+        "calibration": {
+          "annualized_geometric_return_pct": 14.864861952828914,
+          "days": 943,
+          "longest_underwater_days": 104,
+          "max_daily_drawdown_pct": 7.007806786753402,
+          "return_pct": 43.05311806999154,
+          "rolling": {
+            "180": {
+              "best_return_pct": 16.254639957891936,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 763,
+              "windows": 764,
+              "worst_return_pct": -0.05555028498668314
+            },
+            "30": {
+              "best_return_pct": 8.401147841094264,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 662,
+              "windows": 914,
+              "worst_return_pct": -6.4926021751800205
+            },
+            "365": {
+              "best_return_pct": 26.39094214372334,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 579,
+              "windows": 579,
+              "worst_return_pct": 7.617462535392374
+            },
+            "90": {
+              "best_return_pct": 12.595001706749947,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 747,
+              "windows": 854,
+              "worst_return_pct": -2.7466638294276513
+            }
+          },
+          "terminal_underwater_days": 61
+        },
+        "calibration_growth_interval": {
+          "annualized_geometric_return_95_interval_pct": [
+            4.7261972173129685,
+            25.998798590066052
+          ],
+          "block_days": 30,
+          "draws": 5000,
+          "interpretation": "Individual retrospective bootstrap interval; not adjusted for research selection."
+        },
+        "calibration_last_return_end_ms": 1785542400000,
+        "full": {
+          "annualized_geometric_return_pct": 12.358882134660062,
+          "days": 999,
+          "longest_underwater_days": 117,
+          "max_daily_drawdown_pct": 7.007806786753402,
+          "return_pct": 37.56621465807033,
+          "rolling": {
+            "180": {
+              "best_return_pct": 16.254639957891936,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 810,
+              "windows": 820,
+              "worst_return_pct": -2.976949368615474
+            },
+            "30": {
+              "best_return_pct": 8.401147841094264,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 665,
+              "windows": 970,
+              "worst_return_pct": -6.4926021751800205
+            },
+            "365": {
+              "best_return_pct": 26.39094214372334,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 635,
+              "windows": 635,
+              "worst_return_pct": 7.38526684024059
+            },
+            "90": {
+              "best_return_pct": 12.595001706749947,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 768,
+              "windows": 910,
+              "worst_return_pct": -6.063638455834919
+            }
+          },
+          "terminal_underwater_days": 117
+        },
+        "historical_recent_length_windows": {
+          "best_return_pct": 10.90351362252962,
+          "overlapping_windows_are_dependent": true,
+          "positive_windows": 692,
+          "windows": 888,
+          "worst_return_pct": -4.575711779288463
+        },
+        "original_hourly_max_drawdown_pct": 7.42715682586087,
+        "recent_continuous": {
+          "annualized_geometric_return_pct": -22.501968922471605,
+          "days": 56,
+          "longest_underwater_days": 42,
+          "max_daily_drawdown_pct": 5.020239044533222,
+          "return_pct": -3.8355706509218526,
+          "rolling": {
+            "30": {
+              "best_return_pct": -0.07913077431682616,
+              "overlapping_windows_are_dependent": true,
+              "positive_windows": 0,
+              "windows": 27,
+              "worst_return_pct": -3.4258921013722423
+            }
+          },
+          "terminal_underwater_days": 42
+        },
+        "recent_first_return_end_ms": 1785628800000,
+        "scenarios": {
+          "14": {
+            "at_or_below_observed_frequency": 0.03,
+            "block_days": 14,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.2611889932675986,
+              "p50": 2.7204367012557817,
+              "p95": 6.0452887406858515
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2448,
+            "return_percentiles_pct": {
+              "p05": -3.0689474591318144,
+              "p50": 2.251895952268863,
+              "p95": 7.242992509069487
+            },
+            "seed": 1907
+          },
+          "30": {
+            "at_or_below_observed_frequency": 0.0174,
+            "block_days": 30,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.1945676724981595,
+              "p50": 2.6065758016250613,
+              "p95": 5.89446579110942
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2382,
+            "return_percentiles_pct": {
+              "p05": -2.7113584884917437,
+              "p50": 2.085057497451758,
+              "p95": 7.139798638076576
+            },
+            "seed": 1907
+          },
+          "60": {
+            "at_or_below_observed_frequency": 0.0014,
+            "block_days": 60,
+            "calibration_days": 943,
+            "drawdown_percentiles_pct": {
+              "p05": 1.1445081063947937,
+              "p50": 2.471205471752002,
+              "p95": 4.7826041168041735
+            },
+            "draws": 5000,
+            "horizon_days": 56,
+            "interpretation": "Conditional empirical scenario frequencies, not calibrated future probabilities.",
+            "loss_frequency": 0.2536,
+            "return_percentiles_pct": {
+              "p05": -1.9895087075706634,
+              "p50": 2.114000070208119,
+              "p95": 7.330259172219112
+            },
+            "seed": 1907
+          }
+        }
+      }
+    }
+  },
+  "source_code_sha256": "904dac6ad01b7d14c08722768f16c445100f0faeabec412338498c6f77ca6df5",
+  "source_report_sha256": "17fb5c7e91728ef4604dc94347647a220fb555dbd9dd3f2ff4319ee451469ff1"
+}
