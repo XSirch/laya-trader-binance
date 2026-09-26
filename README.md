@@ -146,6 +146,13 @@ money after costs. Reproduce the correction from preserved R1 inputs with
 `uv run python -m jev_trader.residual_lifecycle_research`; it makes no JEV calls
 and does not change the paper strategy.
 
+The separate [funding-income capacity screen](docs/funding_capacity_research_2026-09-26.md)
+compares three causal weekly selectors across the historical twenty-asset cohort.
+All twelve fixed scenarios stay below 50% annualized funding income even with
+zero costs and an ideal price hedge. This is an income-component diagnostic;
+its drawdown does not measure portfolio risk. Reproduce from the preserved
+cache with `uv run python -m jev_trader.funding_capacity_research`.
+
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
 Sources: [Binance public-data format and checksums](https://github.com/binance/binance-public-data/blob/master/README.md), [OpenRouter Jev Decisions API](https://openrouter.ai/blog/insights/what-is-jev/).

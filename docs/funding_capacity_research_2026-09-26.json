@@ -1,0 +1,792 @@
+{
+  "created_utc": "2026-09-26T21:10:26.154568+00:00",
+  "deployable": false,
+  "elapsed_seconds": 29.68794379999963,
+  "full_report_sha256": "a31f7b02cd71b01ff8562d2003c7823b1e7880bdc9c95c051beae576013d8863",
+  "goal_achieved": false,
+  "inputs": {
+    "anchors": {
+      "code_sha256": {
+        "binance_data.py": "464f3e057a119f26c9209a49135286617fc86e5a6ff15784cd641a90cb056cbf",
+        "broad_data.py": "d905e107025dcdc0bac6f0c7443ac86a9f00ed5ef5b8e99807c550fb14103a27",
+        "broad_execution.py": "38cde34b4c55bc09c68cf631db439668743a92a8167738c89611aad301b44ba5",
+        "broad_extension.py": "448bc66ad0dfe975e2253ab293b1e7e71c6ba25b5373319cd8e8d8503d6c84b9",
+        "broad_hourly.py": "b321ecd9babbec2bcd7433c8dfb1199d6a3e2548119edd22c70cbba24d178fab",
+        "broad_prediction.py": "1348cf6c2b8a2ce011a19eff38546cf8c7204df9620781ed6af886af3ff7e358",
+        "broad_research.py": "9144a4b085a71b2a6ee0a701b748fb8694e1409ee5f6a5cfd3b73c50179a154b",
+        "broad_technical.py": "b0f8588ee511630afe32f135e16aa0a8f1d78bc02480a65e411d3a6ef3cf27ce",
+        "cli.py": "f69c9f83af500f28c16cc70dbb2c7445856bcac2c199d27ccac14bd4f748fea5",
+        "derivatives_data.py": "135e2d54fbd75c8ef43ad7bba762ca62f3e11b582a8f683ea7dba4abc08fa919",
+        "funding_capacity.py": "affb6692945f4996c9649ee1da38a7ac134bb35204a11f2edfba899f648a98de",
+        "funding_capacity_research.py": "89f0baa606f921450abbf289480708fdebfd260fd8dcf0c88b0e1a73a86ed963",
+        "market_state.py": "2234141e3892647489b4ce9af1944c6539c26c7271abef19bae03cfaf58a720f",
+        "statistics.py": "c1f7e91a1472ad1ed7d540aa705c6e3eb2f34dd95d8f15adb42f3e3e99e9e426",
+        "strategies.py": "ab48d354fa0a2f9fb3ff2fd1092304c86f66b61c8ee8a20c887de84c64f7fbc3",
+        "target50_research.py": "9cc4ff0838a0fa5760dca90e6dc834dd1661f297d75d5753bcb3bce6e60f37dc",
+        "trailing_stop.py": "f88d343b52b1ae6bb34017d67becf1e277e4ac1cb9243d968e71421cc990c716"
+      },
+      "freeze_sha256": "8fe84cb7140c6c265b02dbfe2825dabfe2a6fc7ff8d5c9cef14e19cc22fe9b85",
+      "lifecycle_sha256": "39c792b41326d378b53b718386f1560178833673604afb1d550b02d74d2ac5ff",
+      "manifest_sha256": {
+        "cohort.json": "f7716d2b673f37cecfd9779b9090b4c63681a8e4b667340e5586972a8661ed57",
+        "hourly_manifest.json": "f2e78dc78dead43cdfc60f7f28f80c8d14f628db9dbbe83c49dc23e1e3a2ea40",
+        "manifest.json": "bb5ca5238319ba119a2a86596203d4c9adcfce46fd113832ebf1c41a8a0fad33"
+      },
+      "protocol_sha256": "4d488919abaf0e6ee5c54b375d35cacf64257cfe817e9eb745c85e7099185716"
+    },
+    "cohort": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "XRPUSDT",
+      "LINKUSDT",
+      "LTCUSDT",
+      "DOGEUSDT",
+      "DOTUSDT",
+      "BCHUSDT",
+      "XLMUSDT",
+      "ADAUSDT",
+      "EOSUSDT",
+      "UNIUSDT",
+      "SUSHIUSDT",
+      "YFIUSDT",
+      "BNBUSDT",
+      "TRXUSDT",
+      "CRVUSDT",
+      "MKRUSDT",
+      "AAVEUSDT",
+      "GRTUSDT"
+    ],
+    "config": {
+      "execution_delay_hours": 1,
+      "fees": 0,
+      "goal_target_cagr_pct": 50,
+      "notional_ratios": [
+        0.5,
+        1.0
+      ],
+      "periods": {
+        "combined": [
+          "2024-01-01",
+          "2026-09-26"
+        ],
+        "development": [
+          "2022-01-01",
+          "2024-01-01"
+        ]
+      },
+      "portfolio_drawdown_validated": false,
+      "rules": [
+        "top5_30",
+        "top5_persistent",
+        "top1_30"
+      ],
+      "schema_version": 1,
+      "weekly_rebalance_day": 0
+    },
+    "feature_quality": {
+      "economic_fields": 10,
+      "included_observations": {
+        "AAVEUSDT": 1894,
+        "ADAUSDT": 1894,
+        "BCHUSDT": 1894,
+        "BNBUSDT": 1894,
+        "BTCUSDT": 1894,
+        "CRVUSDT": 1894,
+        "DOGEUSDT": 1894,
+        "DOTUSDT": 1894,
+        "EOSUSDT": 1402,
+        "ETHUSDT": 1894,
+        "GRTUSDT": 1894,
+        "LINKUSDT": 1894,
+        "LTCUSDT": 1894,
+        "MKRUSDT": 1512,
+        "SUSHIUSDT": 1894,
+        "TRXUSDT": 1894,
+        "UNIUSDT": 1894,
+        "XLMUSDT": 1894,
+        "XRPUSDT": 1894,
+        "YFIUSDT": 1894
+      },
+      "observations_with_missing_inputs_excluded": {
+        "AAVEUSDT": 0,
+        "ADAUSDT": 0,
+        "BCHUSDT": 0,
+        "BNBUSDT": 0,
+        "BTCUSDT": 0,
+        "CRVUSDT": 0,
+        "DOGEUSDT": 0,
+        "DOTUSDT": 0,
+        "EOSUSDT": 0,
+        "ETHUSDT": 0,
+        "GRTUSDT": 0,
+        "LINKUSDT": 0,
+        "LTCUSDT": 0,
+        "MKRUSDT": 0,
+        "SUSHIUSDT": 0,
+        "TRXUSDT": 0,
+        "UNIUSDT": 0,
+        "XLMUSDT": 0,
+        "XRPUSDT": 0,
+        "YFIUSDT": 0
+      },
+      "technical_fields": 50,
+      "timeframe": "completed daily candles only"
+    },
+    "fields": [
+      "momentum7",
+      "momentum30",
+      "momentum90",
+      "reversal1",
+      "reversal7",
+      "carry30",
+      "volatility",
+      "taker_flow20",
+      "beta60",
+      "time_series_ensemble",
+      "technical.momentum.macd_histogram_pct",
+      "technical.momentum.macd_pct",
+      "technical.momentum.return_pct.1",
+      "technical.momentum.return_pct.30",
+      "technical.momentum.return_pct.7",
+      "technical.momentum.return_pct.90",
+      "technical.momentum.rsi14",
+      "technical.momentum.stochastic_k14",
+      "technical.participation.distance_vwap20_pct",
+      "technical.participation.obv_change20_over_volume",
+      "technical.participation.quote_volume",
+      "technical.participation.relative_volume20",
+      "technical.participation.taker_buy_fraction20",
+      "technical.participation.trade_count",
+      "technical.participation.volume_zscore20",
+      "technical.structure.close_position_in_bar",
+      "technical.structure.distance_prior_high20_pct",
+      "technical.structure.distance_prior_low20_pct",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.236",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.382",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.5",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.618",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.786",
+      "technical.structure.fibonacci.180.high_after_low",
+      "technical.structure.fibonacci.180.retracement_fraction",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.236",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.382",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.5",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.618",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.786",
+      "technical.structure.fibonacci.60.high_after_low",
+      "technical.structure.fibonacci.60.retracement_fraction",
+      "technical.trend.adx14",
+      "technical.trend.distance_ema_pct.12",
+      "technical.trend.distance_ema_pct.200",
+      "technical.trend.distance_ema_pct.26",
+      "technical.trend.distance_ema_pct.50",
+      "technical.trend.distance_sma_pct.10",
+      "technical.trend.distance_sma_pct.100",
+      "technical.trend.distance_sma_pct.20",
+      "technical.trend.distance_sma_pct.200",
+      "technical.trend.distance_sma_pct.50",
+      "technical.trend.minus_di14",
+      "technical.trend.plus_di14",
+      "technical.trend.sma50_slope_5bars_pct",
+      "technical.volatility.atr14_pct",
+      "technical.volatility.bollinger_position",
+      "technical.volatility.bollinger_width_pct",
+      "technical.volatility.drawdown_from_high60_pct",
+      "technical.volatility.realized20_per_bar_pct"
+    ],
+    "funding_event_counts": {
+      "AAVEUSDT": 6283,
+      "ADAUSDT": 6283,
+      "BCHUSDT": 6283,
+      "BNBUSDT": 6283,
+      "BTCUSDT": 6283,
+      "CRVUSDT": 6283,
+      "DOGEUSDT": 6283,
+      "DOTUSDT": 6283,
+      "EOSUSDT": 4836,
+      "ETHUSDT": 6283,
+      "GRTUSDT": 6283,
+      "LINKUSDT": 6283,
+      "LTCUSDT": 6283,
+      "MKRUSDT": 5135,
+      "SUSHIUSDT": 6283,
+      "TRXUSDT": 6283,
+      "UNIUSDT": 6283,
+      "XLMUSDT": 6283,
+      "XRPUSDT": 6283,
+      "YFIUSDT": 6283
+    },
+    "funding_events_sha256": "5168a275b90e6d4e9d2d98aa107dcfbd720bb55bea319ea688bf0186106f757f",
+    "observed_interval_hours": [
+      8
+    ],
+    "overlap": {
+      "candles_compared": 864,
+      "funding_compared": 54
+    },
+    "sources": {
+      "daily": {
+        "count": 4182,
+        "manifest_sha256": "986ceae28d9fac68b0d6cfca6a3b00b6005c8691fb0ff42427793261f05ed2a4"
+      },
+      "hourly": {
+        "count": 1283,
+        "manifest_sha256": "40c52bdf0f801d04012da96cd5df399b4d7142be86e751c30acd1b25061c2d41"
+      },
+      "rest": {
+        "count": 54,
+        "manifest_sha256": "b53805cbde414224ace2dab85fd4cc34d1c7b4096ab48ccc2861091eaa564416"
+      }
+    },
+    "state_sha256": "6858c7cf9f86d184fc292095082f5d11c9dfd96b7128eae0d374e53f8ab326e8"
+  },
+  "inputs_file_sha256": "ce72842e14144b0bb1827f554c964428da233ed7cbc9a26ec37f55efb2a25f12",
+  "jev_calls": 0,
+  "limits": [
+    "Funding-income index only; not net trading P&L or portfolio risk.",
+    "Assumes free constant notional resets, ideal price hedge and unlimited margin.",
+    "No spot/basis data, trading costs, financing, taxes, slippage or liquidation.",
+    "Ratio one leaves no separate cash reserve for futures collateral.",
+    "Not a mathematical upper bound on all spot/perp strategy returns.",
+    "Known historical periods and current announcement pages do not establish prospective evidence."
+  ],
+  "new_market_downloads": 0,
+  "orders_sent": 0,
+  "scenarios": [
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 104,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 10901,
+        "credit_event_count": 9476,
+        "debit_event_count": 1425,
+        "end_ms": 1704067200000,
+        "final_funding_index": 1.0788116170382827,
+        "funding_index_cagr_pct": 3.8658566150726283,
+        "funding_index_max_drawdown_pct": 0.17128148059970538,
+        "funding_index_return_pct": 7.8811617038282655,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.015984597473430676,
+        "notional_ratio": 0.5,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.0947962145117122,
+        "reserve_cash_fraction_assumption": 0.5,
+        "rule": "top5_30",
+        "start_ms": 1640995200000,
+        "weekly_rebalance_count": 104
+      },
+      "notional_ratio": 0.5,
+      "period": "development",
+      "portfolio_goal_validated": false,
+      "rule": "top5_30"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 104,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 10901,
+        "credit_event_count": 9476,
+        "debit_event_count": 1425,
+        "end_ms": 1704067200000,
+        "final_funding_index": 1.1638273655199376,
+        "funding_index_cagr_pct": 7.880830805103535,
+        "funding_index_max_drawdown_pct": 0.34233706891618754,
+        "funding_index_return_pct": 16.38273655199376,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.032701803214585844,
+        "notional_ratio": 1.0,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.1965291687345228,
+        "reserve_cash_fraction_assumption": 0.0,
+        "rule": "top5_30",
+        "start_ms": 1640995200000,
+        "weekly_rebalance_count": 104
+      },
+      "notional_ratio": 1.0,
+      "period": "development",
+      "portfolio_goal_validated": false,
+      "rule": "top5_30"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 104,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 10733,
+        "credit_event_count": 9340,
+        "debit_event_count": 1393,
+        "end_ms": 1704067200000,
+        "final_funding_index": 1.0780998805451703,
+        "funding_index_cagr_pct": 3.8315886686306193,
+        "funding_index_max_drawdown_pct": 0.18669839013342182,
+        "funding_index_return_pct": 7.809988054517025,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.015986092384719024,
+        "notional_ratio": 0.5,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.09408597292988449,
+        "reserve_cash_fraction_assumption": 0.5,
+        "rule": "top5_persistent",
+        "start_ms": 1640995200000,
+        "weekly_rebalance_count": 104
+      },
+      "notional_ratio": 0.5,
+      "period": "development",
+      "portfolio_goal_validated": false,
+      "rule": "top5_persistent"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 104,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 10733,
+        "credit_event_count": 9340,
+        "debit_event_count": 1393,
+        "end_ms": 1704067200000,
+        "final_funding_index": 1.1622922531517303,
+        "funding_index_cagr_pct": 7.809658804382197,
+        "funding_index_max_drawdown_pct": 0.37312276321024296,
+        "funding_index_return_pct": 16.229225315173036,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.032712206454961014,
+        "notional_ratio": 1.0,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.1950044596066961,
+        "reserve_cash_fraction_assumption": 0.0,
+        "rule": "top5_persistent",
+        "start_ms": 1640995200000,
+        "weekly_rebalance_count": 104
+      },
+      "notional_ratio": 1.0,
+      "period": "development",
+      "portfolio_goal_validated": false,
+      "rule": "top5_persistent"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 104,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 2183,
+        "credit_event_count": 1913,
+        "debit_event_count": 270,
+        "end_ms": 1704067200000,
+        "final_funding_index": 1.081059787167064,
+        "funding_index_cagr_pct": 3.974024985429124,
+        "funding_index_max_drawdown_pct": 0.31776649970214343,
+        "funding_index_return_pct": 8.105978716706396,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.015880049447658025,
+        "notional_ratio": 0.5,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.09693983661472232,
+        "reserve_cash_fraction_assumption": 0.5,
+        "rule": "top1_30",
+        "start_ms": 1640995200000,
+        "weekly_rebalance_count": 104
+      },
+      "notional_ratio": 0.5,
+      "period": "development",
+      "portfolio_goal_validated": false,
+      "rule": "top1_30"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 104,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 2183,
+        "credit_event_count": 1913,
+        "debit_event_count": 270,
+        "end_ms": 1704067200000,
+        "final_funding_index": 1.1686802461533825,
+        "funding_index_cagr_pct": 8.1055154075583,
+        "funding_index_max_drawdown_pct": 0.6346384773405878,
+        "funding_index_return_pct": 16.86802461533825,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.032636229336925546,
+        "notional_ratio": 1.0,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.20131647549030718,
+        "reserve_cash_fraction_assumption": 0.0,
+        "rule": "top1_30",
+        "start_ms": 1640995200000,
+        "weekly_rebalance_count": 104
+      },
+      "notional_ratio": 1.0,
+      "period": "development",
+      "portfolio_goal_validated": false,
+      "rule": "top1_30"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 143,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 14856,
+        "credit_event_count": 12673,
+        "debit_event_count": 2183,
+        "end_ms": 1790380800000,
+        "final_funding_index": 1.124416321993653,
+        "funding_index_cagr_pct": 4.377529541549372,
+        "funding_index_max_drawdown_pct": 0.08998542556101219,
+        "funding_index_return_pct": 12.441632199365294,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [
+          {
+            "effective_ms": 1747818000000,
+            "removed_weight": 0.0,
+            "symbol": "EOSUSDT"
+          },
+          {
+            "effective_ms": 1757322000000,
+            "removed_weight": 0.0,
+            "symbol": "MKRUSDT"
+          }
+        ],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.013936476502402458,
+        "notional_ratio": 0.5,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.13835279849605644,
+        "reserve_cash_fraction_assumption": 0.5,
+        "rule": "top5_30",
+        "start_ms": 1704067200000,
+        "weekly_rebalance_count": 143
+      },
+      "notional_ratio": 0.5,
+      "period": "combined",
+      "portfolio_goal_validated": false,
+      "rule": "top5_30"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 143,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 14856,
+        "credit_event_count": 12673,
+        "debit_event_count": 2183,
+        "end_ms": 1790380800000,
+        "final_funding_index": 1.2642958761713536,
+        "funding_index_cagr_pct": 8.946177038865983,
+        "funding_index_max_drawdown_pct": 0.17991511975008478,
+        "funding_index_return_pct": 26.429587617135365,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [
+          {
+            "effective_ms": 1747818000000,
+            "removed_weight": 0.0,
+            "symbol": "EOSUSDT"
+          },
+          {
+            "effective_ms": 1757322000000,
+            "removed_weight": 0.0,
+            "symbol": "MKRUSDT"
+          }
+        ],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.030541579704723792,
+        "notional_ratio": 1.0,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.294837455876077,
+        "reserve_cash_fraction_assumption": 0.0,
+        "rule": "top5_30",
+        "start_ms": 1704067200000,
+        "weekly_rebalance_count": 143
+      },
+      "notional_ratio": 1.0,
+      "period": "combined",
+      "portfolio_goal_validated": false,
+      "rule": "top5_30"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 143,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 14692,
+        "credit_event_count": 12557,
+        "debit_event_count": 2135,
+        "end_ms": 1790380800000,
+        "final_funding_index": 1.1228561136250268,
+        "funding_index_cagr_pct": 4.324589878315847,
+        "funding_index_max_drawdown_pct": 0.10102263582326687,
+        "funding_index_return_pct": 12.28561136250268,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [
+          {
+            "effective_ms": 1747818000000,
+            "removed_weight": 0.0,
+            "symbol": "EOSUSDT"
+          },
+          {
+            "effective_ms": 1757322000000,
+            "removed_weight": 0.0,
+            "symbol": "MKRUSDT"
+          }
+        ],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.014016741160929427,
+        "notional_ratio": 0.5,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.13687285478596173,
+        "reserve_cash_fraction_assumption": 0.5,
+        "rule": "top5_persistent",
+        "start_ms": 1704067200000,
+        "weekly_rebalance_count": 143
+      },
+      "notional_ratio": 0.5,
+      "period": "combined",
+      "portfolio_goal_validated": false,
+      "rule": "top5_persistent"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 143,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 14692,
+        "credit_event_count": 12557,
+        "debit_event_count": 2135,
+        "end_ms": 1790380800000,
+        "final_funding_index": 1.2607900460584032,
+        "funding_index_cagr_pct": 8.835702024910555,
+        "funding_index_max_drawdown_pct": 0.2019623801607251,
+        "funding_index_return_pct": 26.079004605840318,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [
+          {
+            "effective_ms": 1747818000000,
+            "removed_weight": 0.0,
+            "symbol": "EOSUSDT"
+          },
+          {
+            "effective_ms": 1757322000000,
+            "removed_weight": 0.0,
+            "symbol": "MKRUSDT"
+          }
+        ],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.030642542880250426,
+        "notional_ratio": 1.0,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.291432588938658,
+        "reserve_cash_fraction_assumption": 0.0,
+        "rule": "top5_persistent",
+        "start_ms": 1704067200000,
+        "weekly_rebalance_count": 143
+      },
+      "notional_ratio": 1.0,
+      "period": "combined",
+      "portfolio_goal_validated": false,
+      "rule": "top5_persistent"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 143,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 2996,
+        "credit_event_count": 2600,
+        "debit_event_count": 396,
+        "end_ms": 1790380800000,
+        "final_funding_index": 1.1422100254376346,
+        "funding_index_cagr_pct": 4.978019845955985,
+        "funding_index_max_drawdown_pct": 0.12837294985623693,
+        "funding_index_return_pct": 14.221002543763461,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [
+          {
+            "effective_ms": 1747818000000,
+            "removed_weight": 0.0,
+            "symbol": "EOSUSDT"
+          },
+          {
+            "effective_ms": 1757322000000,
+            "removed_weight": 0.0,
+            "symbol": "MKRUSDT"
+          }
+        ],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.012821032439467788,
+        "notional_ratio": 0.5,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.1550310578770987,
+        "reserve_cash_fraction_assumption": 0.5,
+        "rule": "top1_30",
+        "start_ms": 1704067200000,
+        "weekly_rebalance_count": 143
+      },
+      "notional_ratio": 0.5,
+      "period": "combined",
+      "portfolio_goal_validated": false,
+      "rule": "top1_30"
+    },
+    {
+      "income_component_reaches_50pct": false,
+      "metrics": {
+        "active_weekly_rebalance_count": 143,
+        "applied_collision_event_count": 0,
+        "applied_funding_event_count": 2996,
+        "credit_event_count": 2600,
+        "debit_event_count": 396,
+        "end_ms": 1790380800000,
+        "final_funding_index": 1.3046192486467147,
+        "funding_index_cagr_pct": 10.203090568772504,
+        "funding_index_max_drawdown_pct": 0.25659690251728096,
+        "funding_index_return_pct": 30.461924864671474,
+        "goal_achieved": false,
+        "initial_funding_index": 1.0,
+        "is_net_portfolio_return": false,
+        "is_trading_backtest": false,
+        "lifecycle_audit": [
+          {
+            "effective_ms": 1747818000000,
+            "removed_weight": 0.0,
+            "symbol": "EOSUSDT"
+          },
+          {
+            "effective_ms": 1757322000000,
+            "removed_weight": 0.0,
+            "symbol": "MKRUSDT"
+          }
+        ],
+        "limits": [
+          "Funding-income index only; index drawdown is not portfolio drawdown.",
+          "Free continuous notional reset between payments is idealized.",
+          "No spot prices, basis, fees, slippage, loans, margin or liquidation are modeled.",
+          "A notional ratio of 1.0 leaves no assumed reserve cash.",
+          "Neither the 50% net annual return nor 10% portfolio drawdown target can be approved here."
+        ],
+        "negative_funding_index_contributions": -0.028457424540637728,
+        "notional_ratio": 1.0,
+        "portfolio_drawdown_measured": false,
+        "positive_funding_index_contributions": 0.333076673187348,
+        "reserve_cash_fraction_assumption": 0.0,
+        "rule": "top1_30",
+        "start_ms": 1704067200000,
+        "weekly_rebalance_count": 143
+      },
+      "notional_ratio": 1.0,
+      "period": "combined",
+      "portfolio_goal_validated": false,
+      "rule": "top1_30"
+    }
+  ],
+  "selected_winner": null
+}
