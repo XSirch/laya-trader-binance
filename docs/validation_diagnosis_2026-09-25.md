@@ -12,8 +12,10 @@ six larger altcoin cases lacked displayed depth and every evaluable case had
 negative conditional net cash after fixed costs. Eight Deribit inverse
 BTC/ETH delivery books also failed the both-size 4% gate; BTC March 2027 was
 best at +1.458% annualized conditional after-cost return. The ongoing BTC
-March 2027 COIN-M forward watch remains read-only and cannot by itself
-establish realized profit.
+March 2027 COIN-M forward watch remains read-only; its first three samples
+failed, so its 10-of-12 gate is already mathematically unreachable, although
+the scheduled run continues to preserve all observations. It cannot by
+itself establish realized profit.
 
 BitMEX is excluded from further venue screening: its [official closure
 notice](https://www.bitmex.com/wind-down/) says trading and new positions
@@ -575,6 +577,31 @@ or shadow position was opened. The ignored full public-API report is
 Reproduce a new snapshot with
 `uv run python -u scripts/deribit_inverse_delivery_universe_screen.py`.
 
+### Deribit longer inverse maturities
+
+The separate [long-maturity Deribit protocol](deribit_inverse_long_delivery_protocol.md)
+was committed at `a33d16a` after the shorter-maturity inverse study and
+before any June/September 2027 book read. It is explicitly post-selection
+exploration, not an independent holdout. It reuses the same inverse evaluator,
+costs, two sizes, freshness and 4%-annualized both-size gate for BTC/ETH June
+and September 2027. All four contracts had valid displayed entry depth and
+timely paired books; the oldest futures book was 5.163 seconds behind the
+later venue-clock read. Conditional annualized returns after the unchanged
+charges were BTC June +2.322%, BTC September +2.791%, ETH June +1.577% and
+ETH September +2.045% at 1,000 USDC. **0/4 passed** the 4% gate.
+
+The best 1,000 USDC case, BTC September 2027, had 1,000 USD future face,
+951.842 USDC spot acquisition cost, 48.158 gross entry basis, and +27.077
+conditional cash after charges on 975.638 illustrative reserved capital over
+about 363 days. It would need another 11.731 USDC of conditional net to
+reach the fixed gate. A year of exchange, collateral, index and exit risk
+remains unverified; this is neither a fill nor realized profit. No order or
+shadow position was opened. The ignored full public-API report is
+`outputs/deribit_inverse_long_delivery.json`, SHA256
+`451b5d60f09b674503f4c79ced7ef7272ba1bd50fde6e56ccd8b3d69a12e5805`.
+Reproduce a new time-varying snapshot with
+`uv run python -u scripts/deribit_inverse_long_delivery_screen.py`.
+
 ### Kraken inverse retail top-quote screen
 
 The [Kraken retail top-quote protocol](kraken_inverse_retail_top_quote_protocol.md)
@@ -600,7 +627,21 @@ The missing bids are directly visible under `sources.future_tickers.payload`.
 
 ### BTC March 2027 prospective quote watch and settlement-range audit
 
-The closest contract, BTCUSD_270326, entered a bounded 12-sample, 30-minute [forward observation protocol](binance_coinm_btc_mar_forward_watch_protocol.md), committed at `28a3be1` before the first new book read. It reuses the unchanged inverse-contract evaluator and requires at least 10 of 12 both-size samples above 4% annualized before account-specific review. The local read-only process started at 2026-09-26 07:54 UTC and writes append-only raw API evidence plus `progress.json` under `outputs/binance_coinm_btc_mar_forward_watch/20260926T075419.396417Z/`. Its first sample had fresh full-depth books and +2.085% annualized **conditional** return at both sizes, below the fixed gate. The schedule's last sample is due at about 13:24 UTC if the notebook stays on; the run has no verdict until it finishes. No order or shadow position was opened.
+The closest contract, BTCUSD_270326, entered a bounded 12-sample, 30-minute
+[forward observation protocol](binance_coinm_btc_mar_forward_watch_protocol.md),
+committed at `28a3be1` before the first new book read. It reuses the unchanged
+inverse-contract evaluator and requires at least 10 of 12 both-size samples
+above 4% annualized before account-specific review. The local read-only
+process started at 2026-09-26 07:54 UTC and writes append-only raw API
+evidence plus `progress.json` under
+`outputs/binance_coinm_btc_mar_forward_watch/20260926T075419.396417Z/`.
+The first three scheduled samples had timely full-depth books, but their
+annualized **conditional** after-cost estimates were +2.085%, +2.109% and
++2.014% at both sizes. Thus 0/3 passed; with only nine samples remaining,
+the required 10/12 is mathematically impossible even if all remaining
+samples pass. The collector remains active to preserve the complete frozen
+schedule, whose last sample is due about 13:24 UTC if the notebook stays on.
+No order or shadow position was opened.
 
 Separately, a [settlement-range audit](binance_coinm_settlement_mismatch_audit_protocol.md) was frozen at `52bf751` before reading minute candles around every BTC quarterly expiry from 2023 Q1 through 2026 Q3. Binance states that settlement at 08:00 UTC uses 1,800 one-second index observations over the preceding 30 minutes. All 15 dates had the required 30 COIN-M index-price and five post-settlement spot candles. The audit compared the mean of the 30 index-minute highs with the lowest spot trade during 08:00-08:04 UTC. This is a broad adverse **candle-range scenario**, not the actual settlement price or an executable exit bid. In **8/15** dates its `1 - spot_low/index_high_mean` gap exceeded the existing 10 bps spot/index charge; the largest was **43.54 bps** on 2025-12-26. Thus the fixed 10 bps does not cover this historical adverse range, although no observed spot sale is established. No fee or threshold was changed in the running quote watch. The ignored raw API report SHA256 is `22154a55c82d352ce94428ff1635a0eabed3cd231737cc044b2f0dd453953ddc`; reproduce with `uv run python -u scripts/binance_coinm_settlement_mismatch_audit.py`. Actual account eligibility, settlement-index value, spot exit book and margin path remain open evidence.
 
