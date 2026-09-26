@@ -1,0 +1,9 @@
+# Correção técnica antes do primeiro ajuste concluído
+
+O replay do commit `ccf47242070397ca69c5b37213e8f627551e8e23` verificou os inputs e chegou ao primeiro `model.fit`, mas terminou com `ValueError: window shape cannot be larger than input array shape`. A origem local foi `sklearn/ensemble/_hist_gradient_boosting/binning.py:82`, ao chamar `sliding_window_view(distinct_values, 2)`. A dependência instalada e fixada no lock é scikit-learn 1.9.1.
+
+O código remove os valores ausentes antes de calcular os valores distintos. A proteção para exatamente um valor distinto não cobre o caso de zero valores, encontrado quando as oito colunas de posicionamento estão inteiramente vazias no treino inicial. A implementação está no [repositório oficial do scikit-learn](https://github.com/scikit-learn/scikit-learn/blob/1.9.1/sklearn/ensemble/_hist_gradient_boosting/binning.py); a evidência da falha é a cópia instalada examinada localmente. Não houve troca de versão ou alteração do pacote instalado.
+
+Nenhum ajuste foi concluído nessa tentativa; não houve previsões, replays de carteira nem relatório financeiro. Os rótulos foram construídos em memória pelo fluxo normal, mas seus valores e retornos condicionais não foram usados para escolher a correção. O reparo trata exclusivamente a matriz de treino e previsão: campos totalmente ausentes no treino viram constantes até o próximo ajuste. Os estados brutos continuam ausentes, com disponibilidade explícita.
+
+O arquivo original `results/funding_event_inputs.json` permanece preservado, SHA-256 `a4f7557d934cd11798379d29b6c04e375ec87b13df0144b9aadf081126f07d21`, assim como `docs/funding_event_freeze_2026-09-26.json`. A revisão 2 tem novos hashes e novo freeze antes do primeiro replay financeiro concluído. Não foram alterados universo, datas, custos, funding, exposição, trailing, modelo ou hiperparâmetros.

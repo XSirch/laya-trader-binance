@@ -30,7 +30,7 @@ from .trailing_stop import TrailingStop
 from .tree_research import canonical, digest_states, sha
 
 
-CONFIG = {"schema_version": 1, "models": ["control75", "augmented80"],
+CONFIG = {"schema_version": 2, "models": ["control75", "augmented80"],
           "periods": {"development": ["2023-01-01", "2024-01-01"],
                       "combined": ["2024-01-01", "2026-09-26"]},
           "gross_limits": [1.0, 2.0], "portfolio_trailing": [None, .04],
@@ -38,10 +38,13 @@ CONFIG = {"schema_version": 1, "models": ["control75", "augmented80"],
           "decision_utc_hour": 1, "execution_utc_hour": 2, "label_hours": 24,
           "minimum_training_days": 365, "maximum_pairs": 3,
           "target_net_cagr_pct": 50, "maximum_drawdown_pct": 10,
-          "historical_point_in_time_verified": False}
+          "historical_point_in_time_verified": False,
+          "missing_training_columns": "constant_zero_until_refit"}
 PROTOCOL = ROOT / "docs/funding_event_protocol_2026-09-26.md"
 SOURCES = ROOT / "docs/funding_event_sources_2026-09-26.md"
-INPUTS = RESULTS / "funding_event_inputs.json"
+INPUTS = RESULTS / "funding_event_inputs_v2.json"
+PREVIOUS_INPUTS = RESULTS / "funding_event_inputs.json"
+PREVIOUS_INPUTS_SHA = "a4f7557d934cd11798379d29b6c04e375ec87b13df0144b9aadf081126f07d21"
 BASELINE = RESULTS / "tree_prediction_inputs.json"
 BASELINE_SHA = "d13b5e1b0f4d348c681b85ea788a1e0eadb675fc84472e85ec779fcde50f7483"
 CODE = ("funding_event_research.py", "funding_event_features.py", "funding_event_prediction.py",
@@ -54,8 +57,12 @@ def anchors():
         raise ValueError("funding event protocol differs from fixed configuration")
     if sha(BASELINE) != BASELINE_SHA:
         raise ValueError("preserved baseline changed")
+    if sha(PREVIOUS_INPUTS) != PREVIOUS_INPUTS_SHA:
+        raise ValueError("preserved pre-runtime-fix inputs changed")
     return {"positioning_anchors": positioning_anchors(), "protocol_sha256": sha(PROTOCOL),
             "method_sources_sha256": sha(SOURCES), "baseline_inputs_sha256": BASELINE_SHA,
+            "previous_inputs_sha256": PREVIOUS_INPUTS_SHA,
+            "runtime_revision_sha256": sha(ROOT / "docs/funding_event_runtime_revision_2026-09-26.md"),
             "code_sha256": {name: sha(ROOT / "src/jev_trader" / name) for name in CODE}}
 
 
@@ -114,6 +121,10 @@ def prepare_inputs(frozen):
               "exact_funding_marks_sha256": hashlib.sha256(canonical(
                   [[s, t, mark] for (s, t), mark in sorted(exact_marks.items())])).hexdigest(),
               "historical_point_in_time_verified": False}
+    previous = json.loads(PREVIOUS_INPUTS.read_text(encoding="utf-8"))
+    for key in inputs.keys() - {"anchors", "config"}:
+        if json.loads(json.dumps(inputs[key])) != previous[key]:
+            raise ValueError("runtime correction changed economic inputs: " + key)
     if anchors() != frozen:
         raise ValueError("sources changed during input preparation")
     if INPUTS.exists():

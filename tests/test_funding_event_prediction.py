@@ -10,7 +10,7 @@ import unittest
 
 from jev_trader.funding_event_prediction import DAY_MS, HOUR_MS, build_forecasts
 from jev_trader.positioning_features import FEATURES as POSITIONING_FIELDS
-from jev_trader.tree_prediction import ESTIMATOR_PARAMETERS
+from jev_trader.tree_prediction import ESTIMATOR_PARAMETERS, _hash
 
 
 FIRST_DAY = int(datetime(2022, 1, 1, tzinfo=timezone.utc).timestamp() * 1000)
@@ -234,6 +234,69 @@ class FundingEventPredictionTests(unittest.TestCase):
                              for symbol, rows in reversed(list(self.hourly["klines"].items()))}}
         self.assertEqual(baseline, build(hourly, states))
 
+    def test_all_null_mask_is_training_only_and_fixed_until_next_monthly_fit(self):
+        class SpyEstimator(Estimator):
+            def fit(self, x, y, sample_weight):
+                super().fit(x, y, sample_weight)
+                self.seen_predictions = []
+                return self
+
+            def predict(self, x):
+                self.seen_predictions.append([list(row) for row in x])
+                return super().predict(x)
+
+        class SpyFactory(Factory):
+            def __call__(self, **parameters):
+                model = SpyEstimator(**parameters)
+                self.estimators.append(model)
+                return model
+
+        states = copy.deepcopy(self.states)
+        newly_observed = self.dates[366]
+        masked_fields = POSITIONING_FIELDS[:-1]
+        for rows in states.values():
+            for day, row in rows.items():
+                for index, field in enumerate(masked_fields):
+                    row[field] = None if day < newly_observed else 5.0 + index
+        before = copy.deepcopy(states)
+        factory = SpyFactory()
+        result = build(self.hourly, states, factory=factory)
+        self.assertEqual(states, before)
+        for name, length in (("control75", 75), ("augmented80", 80)):
+            fits = result[name]["fit_audits"]
+            self.assertEqual(fits[0]["all_missing_training_fields"], list(masked_fields))
+            self.assertEqual(fits[1]["all_missing_training_fields"], [])
+            self.assertNotEqual(fits[0]["training_input_sha256"], fits[0]["transformed_training_input_sha256"])
+            self.assertEqual(fits[1]["training_input_sha256"], fits[1]["transformed_training_input_sha256"])
+            self.assertEqual(fits[0]["feature_transform_sha256"], _hash(fits[0]["feature_transform"]))
+            fields = (CONTROL + EVENT)[:length]
+            for audit in result[name]["prediction_audits"]:
+                day, symbols = audit["day_ms"], audit["predicted_symbols"]
+                raw_vectors = [[None if states[symbol][day][field] is None else float(states[symbol][day][field])
+                                for field in fields] for symbol in symbols]
+                active_mask = masked_fields if audit["signal_ms"] < fits[1]["fit_cutoff_ms"] else ()
+                effective = [[0.0 if field in active_mask else value for field, value in zip(fields, row)]
+                             for row in raw_vectors]
+                self.assertEqual(audit["all_missing_training_fields"], list(active_mask))
+                self.assertEqual(audit["prediction_input_sha256"],
+                                 _hash({"fields": fields, "symbols": symbols, "vectors": raw_vectors}))
+                self.assertEqual(audit["transformed_prediction_input_sha256"],
+                                 _hash({"fields": fields, "symbols": symbols, "vectors": effective}))
+        for model in factory.estimators[:2]:
+            for field in masked_fields:
+                index = CONTROL.index(field)
+                self.assertTrue(all(row[index] == 0 for row in model.x))
+                self.assertTrue(all(row[index] == 0 for batch in model.seen_predictions for row in batch))
+            partial_index = CONTROL.index(POSITIONING_FIELDS[-1])
+            self.assertTrue(any(math.isnan(row[partial_index]) for row in model.x))
+            self.assertTrue(any(not math.isnan(row[partial_index]) for row in model.x))
+        for model in factory.estimators[2:4]:
+            first_index = CONTROL.index(masked_fields[0])
+            self.assertTrue(any(math.isnan(row[first_index]) for row in model.x))
+            self.assertTrue(any(row[first_index] == 5.0 for row in model.x))
+            self.assertTrue(all(row[first_index] == 5.0 for batch in model.seen_predictions for row in batch))
+        json.dumps(result, allow_nan=False)
+
     @unittest.skipUnless(importlib.util.find_spec("sklearn") is not None, "sklearn unavailable in this interpreter")
     def test_real_hgb_accepts_nullable_positioning_and_is_deterministic(self):
         hourly, states, _ = fixture(days=368)
@@ -244,6 +307,23 @@ class FundingEventPredictionTests(unittest.TestCase):
             self.assertFalse(first[name]["design"]["injected_estimator"])
             self.assertEqual(first[name]["fit_audits"][0]["training_days"], 365)
             self.assertTrue(first[name]["prediction_errors"])
+
+    @unittest.skipUnless(importlib.util.find_spec("sklearn") is not None, "sklearn unavailable in this interpreter")
+    def test_real_hgb_handles_all_eight_positioning_columns_absent_from_training(self):
+        hourly, states, _ = fixture(days=368)
+        for rows in states.values():
+            for row in rows.values():
+                for field in POSITIONING_FIELDS:
+                    row[field] = None
+        first = build_forecasts(hourly, states, CONTROL, EVENT, [])
+        second = build_forecasts(hourly, states, CONTROL, EVENT, [])
+        self.assertEqual(first, second)
+        for name in ("control75", "augmented80"):
+            self.assertEqual(first[name]["fit_audits"][0]["all_missing_training_fields"], list(POSITIONING_FIELDS))
+            self.assertTrue(first[name]["prediction_errors"])
+            self.assertTrue(all(row[field] is None for rows in first[name]["signals"].values()
+                                for row in rows.values() for field in POSITIONING_FIELDS))
+        json.dumps(first, allow_nan=False)
 
 
 if __name__ == "__main__":

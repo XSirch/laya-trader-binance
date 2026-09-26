@@ -99,6 +99,11 @@ def _model_matrix(rows, array):
     return array([[math.nan if value is None else value for value in row] for row in rows])
 
 
+def _constant_missing_vectors(vectors, indices):
+    """Apply only the mask learned from this model's completed training sample."""
+    return [[0.0 if index in indices else value for index, value in enumerate(row)] for row in vectors]
+
+
 def build_forecasts(hourly, states, control_fields, event_fields, lifecycle_events, estimator_factory=None, *, progress=None):
     """Return matched 75/80-field forecasts and common identity/label audits."""
     control, augmented = _fields(control_fields, event_fields)
@@ -128,7 +133,7 @@ def build_forecasts(hourly, states, control_fields, event_fields, lifecycle_even
     fields_by_model = {"control75": control, "augmented80": augmented}
     output = {name: {"signals": {symbol: {} for symbol in sorted(states)}, "fit_audits": [],
                      "prediction_audits": [], "prediction_errors": []} for name in fields_by_model}
-    models, fit_month, fit_cutoff = {}, None, None
+    models, transforms, fit_month, fit_cutoff = {}, {}, None, None
     matched_fits, matched_predictions = [], []
     for day in dates:
         decision = day + HOUR_MS
@@ -156,15 +161,29 @@ def build_forecasts(hourly, states, control_fields, event_fields, lifecycle_even
             matched_fits.append(shared)
             for name, fields in fields_by_model.items():
                 rows = [{**row, "features": row["features"][:len(fields)]} for row in training]
+                raw_vectors = [row["features"] for row in rows]
+                missing_indices = frozenset(index for index in range(len(fields))
+                                            if all(row[index] is None for row in raw_vectors))
+                missing_fields = [field for index, field in enumerate(fields) if index in missing_indices]
+                transform = {"fields": list(fields), "all_missing_training_fields": missing_fields,
+                             "constant_value": 0.0,
+                             "other_missing_values": "Preserve null in audits; encode NaN only in model matrices.",
+                             "scope": "Training-only mask; retained unchanged until next monthly fit."}
+                effective_vectors = _constant_missing_vectors(raw_vectors, missing_indices)
+                effective_rows = [{**row, "features": vector} for row, vector in zip(rows, effective_vectors)]
                 model = factory(**ESTIMATOR_PARAMETERS)
                 with thread_limit():
-                    model.fit(_model_matrix([row["features"] for row in rows], array),
+                    model.fit(_model_matrix(effective_vectors, array),
                               array([row["target"] for row in rows]),
                               sample_weight=array([row["sample_weight"] for row in rows]))
                 models[name] = model
+                transforms[name] = {"indices": missing_indices, "audit": transform, "sha256": _hash(transform)}
                 output[name]["fit_audits"].append({**shared, "first_training_signal_ms": known[0]["signal_ms"],
                     "last_training_signal_ms": known[-1]["signal_ms"], "fields": list(fields),
-                    "training_input_sha256": _hash(rows), "estimator_parameters": dict(ESTIMATOR_PARAMETERS)})
+                    "training_input_sha256": _hash(rows), "transformed_training_input_sha256": _hash(effective_rows),
+                    "all_missing_training_fields": missing_fields, "feature_transform": transform,
+                    "feature_transform_sha256": transforms[name]["sha256"],
+                    "estimator_parameters": dict(ESTIMATOR_PARAMETERS)})
             fit_month, fit_cutoff = month, decision
             if progress is not None:
                 progress({"fit_cutoff_ms": decision, "training_days": len(known), "training_samples": count})
@@ -176,8 +195,10 @@ def build_forecasts(hourly, states, control_fields, event_fields, lifecycle_even
         for name, fields in fields_by_model.items():
             vectors = [[None if current[symbol][field] is None else float(current[symbol][field])
                         for field in fields] for symbol in symbols]
+            transform = transforms[name]
+            effective_vectors = _constant_missing_vectors(vectors, transform["indices"])
             with thread_limit():
-                raw = [float(value) for value in models[name].predict(_model_matrix(vectors, array))]
+                raw = [float(value) for value in models[name].predict(_model_matrix(effective_vectors, array))]
             if len(raw) != len(symbols) or any(not math.isfinite(value) for value in raw):
                 raise ValueError("estimator returned malformed or nonfinite predictions")
             prediction_rows = []
@@ -188,6 +209,10 @@ def build_forecasts(hourly, states, control_fields, event_fields, lifecycle_even
             output[name]["prediction_audits"].append({
                 **common_prediction, "prediction_assets": len(symbols),
                 "prediction_input_sha256": _hash({"fields": fields, "symbols": symbols, "vectors": vectors}),
+                "transformed_prediction_input_sha256": _hash({"fields": fields, "symbols": symbols,
+                                                               "vectors": effective_vectors}),
+                "all_missing_training_fields": transform["audit"]["all_missing_training_fields"],
+                "feature_transform_sha256": transform["sha256"],
                 "predictions_sha256": _hash(prediction_rows)})
     evaluation = []
     for group in groups:
@@ -211,7 +236,8 @@ def build_forecasts(hourly, states, control_fields, event_fields, lifecycle_even
             "label": "(asset 02:00-to-next-day-02:00 price return - beta_ratio * BTC return) / (1 + abs(beta_ratio))",
             "prediction_centering": "None; BTC synthetic hedge prediction is zero.",
             "label_funding_included": False, "label_costs_included": False,
-            "nullable_fields": list(POSITIONING_FIELDS), "null_model_encoding": "IEEE NaN only inside model matrices",
+            "nullable_fields": list(POSITIONING_FIELDS),
+            "null_model_encoding": "Training-all-null columns fixed at zero through next refit; other nulls become NaN only in model matrices.",
             "native_thread_limit": 1, "hyperparameter_search": False,
             "historical_point_in_time_verified": False, **runtime}
     shared_labels = [{key: value for key, value in group.items() if key != "vectors"} for group in groups]

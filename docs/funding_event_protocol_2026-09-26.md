@@ -39,7 +39,15 @@ Trailing de 4% segue a máxima da carteira observada nas aberturas horárias; ap
 Não há confirmação independente: o histórico já foi pesquisado, os arquivos podem ter revisões e os horários de publicação são presumidos. Fills horários e custos assumidos não comprovam condições de execução real. Um eventual resultado nominal de 50%/10% exige validação adicional e não conclui automaticamente a meta.
 
 ```json
-{"schema_version":1,"models":["control75","augmented80"],"periods":{"development":["2023-01-01","2024-01-01"],"combined":["2024-01-01","2026-09-26"]},"gross_limits":[1.0,2.0],"portfolio_trailing":[null,0.04],"side_costs":[0.0015,0.003],"funding_slot_utc_hour":0,"decision_utc_hour":1,"execution_utc_hour":2,"label_hours":24,"minimum_training_days":365,"maximum_pairs":3,"target_net_cagr_pct":50,"maximum_drawdown_pct":10,"historical_point_in_time_verified":false}
+{"schema_version":2,"models":["control75","augmented80"],"periods":{"development":["2023-01-01","2024-01-01"],"combined":["2024-01-01","2026-09-26"]},"gross_limits":[1.0,2.0],"portfolio_trailing":[null,0.04],"side_costs":[0.0015,0.003],"funding_slot_utc_hour":0,"decision_utc_hour":1,"execution_utc_hour":2,"label_hours":24,"minimum_training_days":365,"maximum_pairs":3,"target_net_cagr_pct":50,"maximum_drawdown_pct":10,"historical_point_in_time_verified":false,"missing_training_columns":"constant_zero_until_refit"}
 ```
 
 Preparação: `.venv-tree/Scripts/python.exe -m jev_trader.funding_event_research --prepare-only`. Depois dos testes, da verificação dos inputs e do commit de congelamento, executar o mesmo módulo sem a opção. Preservar o watcher paper existente; não publicar alterações remotas nesta etapa.
+
+## Revisão técnica 2, anterior às previsões
+
+A primeira tentativa, congelada em `ccf47242070397ca69c5b37213e8f627551e8e23`, parou no primeiro ajuste do modelo: scikit-learn 1.9.1 falhou no cálculo de bins para colunas inteiramente ausentes no treino inicial. Nenhum ajuste terminou e nenhuma previsão ou resultado de carteira foi produzido. O estado bruto, os vetores, as regras financeiras e os hiperparâmetros permanecem iguais. Os inputs v1 e o freeze original são preservados; v2 verifica sua igualdade econômica antes de prosseguir.
+
+A correção identifica, exclusivamente no conjunto de treino de cada ajuste, as colunas cujos valores são todos ausentes. Essas colunas ficam constantes em zero na matriz do modelo, tanto no treino quanto na previsão, até o ajuste seguinte. Novos valores observados não reativam a coluna entre ajustes. Colunas parcialmente observadas continuam usando NaN para faltantes; os estados e hashes brutos preservam null. Persistir a máscara por ajuste e hashes adicionais das entradas transformadas. Isso desativa variáveis sem informação aprendível naquele treino; não estima valores de mercado inexistentes. Testes com o estimador real devem cobrir todas as oito colunas de posicionamento ausentes e a transição para disponibilidade posterior.
+
+Os artefatos desta revisão são `results/funding_event_inputs_v2.json` e `docs/funding_event_freeze_v2_2026-09-26.json`. A [nota de execução](funding_event_runtime_revision_2026-09-26.md) preserva a causa e a referência ao código da dependência.
