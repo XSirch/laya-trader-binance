@@ -35,3 +35,5 @@ src/jev_trader/positioning_*.py text eol=lf
 docs/positioning_acquisition_protocol_*.md text eol=lf
 docs/derivatives_metrics_coverage_*.json text eol=lf
 docs/positioning_acquisition_*.json text eol=lf
+docs/positioning_prediction_protocol_*.md text eol=lf
+docs/positioning_prediction_*.json text eol=lf
