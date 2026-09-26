@@ -68,10 +68,11 @@ def price_opens(symbol: str, first_day: str, last_day: str) -> pd.DataFrame:
     frame = load_symbol_klines(cfg, symbol)
     start = pd.Timestamp(first_day, tz="UTC")
     end = pd.Timestamp(last_day, tz="UTC") + timedelta(days=1)
-    return frame.loc[
-        (frame.timestamp >= start) & (frame.timestamp < end),
-        ["timestamp", "open"],
-    ].sort_values("timestamp")
+    prices = frame.loc[
+        (frame.open_time >= start) & (frame.open_time < end),
+        ["open_time", "open"],
+    ].rename(columns={"open_time": "timestamp"})
+    return prices.sort_values("timestamp")
 
 
 def audit_one(symbol: str, day: str, prices: pd.DataFrame) -> dict:

@@ -73,7 +73,7 @@ def hourly_one(symbol: str, day: str, prices: pd.DataFrame) -> list[dict]:
 
 
 def hourly_features(last_day: str) -> pd.DataFrame:
-    cache = ROOT / f"outputs/book_depth_hourly_causal_{FIRST_DAY}_{last_day}.parquet"
+    cache = ROOT / f"outputs/book_depth_hourly_open_aligned_{FIRST_DAY}_{last_day}.parquet"
     if cache.is_file():
         return pd.read_parquet(cache)
     days = pd.date_range(FIRST_DAY, last_day, freq="D").strftime("%Y-%m-%d")
