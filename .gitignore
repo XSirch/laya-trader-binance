@@ -2,18 +2,7 @@
 __pycache__/
 .pytest_cache/
 .ruff_cache/
-*.py[cod]
 .env
-.DS_Store
-
-# Market data / generated datasets / checkpoints
-data/raw/
-data/processed/
-data/dataset/*.jsonl
-data/dataset/*.parquet
-data/dataset/manifest.json
-checkpoints/
-outputs/
-
-# Keep directory placeholders if added later
-!data/**/.gitkeep
+data/
+results/
+*.py[cod]
