@@ -98,8 +98,15 @@ For a current 60-field signal snapshot and one simulated accounting tick, run
 `uv run python -m jev_trader.forward_paper --series forward_paper_v2`.
 This preserves reference and 4% portfolio-trailing accounts with explicit
 funding, bid/ask, fee and continuity checks. It sends no orders and exits after
-one tick; a continuous service has not been started. See
+one tick. See
 [the paper accounting checkpoint](docs/forward_paper_2026-09-26.md).
+
+An optional local supervisor can acquire hourly paper ticks for at most 72 hours:
+`powershell -NoProfile -File scripts/start_forward_watch.ps1 -Series forward_paper_v2 -Hours 72`.
+It has no OS autostart, paid model calls or real-order route. Verify its actual
+process and heartbeat before claiming it is running. The 2026-09-26 checkpoint
+verifies a live 72-hour run; it does not establish future uptime or profitability. See
+[the bounded supervisor documentation](docs/forward_watch_2026-09-26.md).
 
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 

@@ -1,0 +1,49 @@
+{
+    "checked_utc":  "2026-09-26T19:41:40.5118556+00:00",
+    "supervisor_running_verified":  true,
+    "heartbeat_age_ms":  8148,
+    "creation_matches_run":  true,
+    "source_hash_matches":  true,
+    "os_process":  {
+                       "pid":  24932,
+                       "parent_pid":  26276,
+                       "created_utc":  "2026-09-26T19:35:14.0920170+00:00",
+                       "executable":  "C:\\Users\\chris\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+                       "command_line":  "\"C:\\Projetos\\laya-trader-binance\\.venv\\Scripts\\python.exe\" -m jev_trader.forward_watch --series forward_paper_v2 --hours 72 "
+                   },
+    "status":  {
+                   "attempted_hour_ms":  1790449200000,
+                   "attempts":  1,
+                   "autostart_installed":  false,
+                   "child_pid":  null,
+                   "expires_ms":  1790710514194,
+                   "heartbeat_ms":  1790451692363,
+                   "initial_paper_record_sha256":  "ca259ec4663530371464c4cc9dca81e1d57466f1f3144358ff3bd18f983eb798",
+                   "jev_calls_enabled":  false,
+                   "last_paper_error":  null,
+                   "last_paper_record_sha256":  "f4d78631dd28c3e2b924e70c2085dad146ef321598c054d40aad00ca1389f381",
+                   "last_paper_status":  "outside_scheduled_window",
+                   "max_hours":  72.0,
+                   "missed_hours":  [
+
+                                    ],
+                   "next_window_deadline_ms":  1790453090000,
+                   "next_window_start_ms":  1790452865000,
+                   "orders_enabled":  false,
+                   "phase":  "waiting",
+                   "pid":  24932,
+                   "preflight_outcome":  "preflight_observed",
+                   "processed_hours":  [
+
+                                       ],
+                   "run_directory":  "C:\\Projetos\\laya-trader-binance\\results\\forward_paper_v2\\watch_runs\\20260926T193514-94e2e4be",
+                   "run_id":  "20260926T193514-94e2e4be",
+                   "series":  "forward_paper_v2",
+                   "started_ms":  1790451314194,
+                   "watcher_source_sha256":  "6071b4be0a1c77a76789fdece3b370f3e03019ff0c566b61596747c4bc9b4609"
+               },
+    "limits":  [
+                   "Point-in-time OS verification only.",
+                   "No profit or trade execution is inferred from a live process."
+               ]
+}
