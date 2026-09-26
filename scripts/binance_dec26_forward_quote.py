@@ -204,7 +204,7 @@ def evaluate(base: str, sources: dict) -> dict:
     return result
 
 
-def main() -> None:
+def collect() -> dict:
     report = {
         "protocol": "docs/binance_dec26_forward_quote_protocol.md",
         "protocol_commit": PROTOCOL_COMMIT,
@@ -257,6 +257,11 @@ def main() -> None:
         report["results"][base].get("both_sizes_qualify", False)
         for base in BASES)
     report["finished_utc"] = utc_now()
+    return report
+
+
+def main() -> None:
+    report = collect()
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print("saved", REPORT, flush=True)
