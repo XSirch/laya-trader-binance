@@ -16,6 +16,7 @@ docs/forward_*.json text eol=crlf
 docs/forward_evaluation_protocol_*.md text eol=lf
 docs/broad_jev_protocol_*.md text eol=lf
 docs/residual_protocol_*.md text eol=lf
+docs/residual_lifecycle_protocol_*.md text eol=lf
 docs/residual_*.json text eol=crlf
 docs/target50_*.json text eol=crlf
 docs/target50_protocol_*.md text eol=lf

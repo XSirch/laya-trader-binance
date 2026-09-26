@@ -1,0 +1,1936 @@
+{
+  "created_utc": "2026-09-26T20:49:10.443842+00:00",
+  "deployable": false,
+  "elapsed_seconds": 25.21791850000227,
+  "full_report_sha256": "0b52e68ff889e0d74f9120e049847d6b2d7a1a2709c68c52d3b81ba58dfd5a97",
+  "goal_achieved": false,
+  "inputs": {
+    "anchors": {
+      "baseline_sha256": "17fb5c7e91728ef4604dc94347647a220fb555dbd9dd3f2ff4319ee451469ff1",
+      "code_sha256": {
+        "binance_data.py": "464f3e057a119f26c9209a49135286617fc86e5a6ff15784cd641a90cb056cbf",
+        "broad_data.py": "d905e107025dcdc0bac6f0c7443ac86a9f00ed5ef5b8e99807c550fb14103a27",
+        "broad_execution.py": "38cde34b4c55bc09c68cf631db439668743a92a8167738c89611aad301b44ba5",
+        "broad_extension.py": "448bc66ad0dfe975e2253ab293b1e7e71c6ba25b5373319cd8e8d8503d6c84b9",
+        "broad_hourly.py": "b321ecd9babbec2bcd7433c8dfb1199d6a3e2548119edd22c70cbba24d178fab",
+        "broad_prediction.py": "1348cf6c2b8a2ce011a19eff38546cf8c7204df9620781ed6af886af3ff7e358",
+        "broad_research.py": "9144a4b085a71b2a6ee0a701b748fb8694e1409ee5f6a5cfd3b73c50179a154b",
+        "broad_technical.py": "b0f8588ee511630afe32f135e16aa0a8f1d78bc02480a65e411d3a6ef3cf27ce",
+        "cli.py": "f69c9f83af500f28c16cc70dbb2c7445856bcac2c199d27ccac14bd4f748fea5",
+        "derivatives_data.py": "135e2d54fbd75c8ef43ad7bba762ca62f3e11b582a8f683ea7dba4abc08fa919",
+        "market_state.py": "2234141e3892647489b4ce9af1944c6539c26c7271abef19bae03cfaf58a720f",
+        "residual_policy.py": "90e92c05c3299f388a9312a117ab0747f84cdb758e89403a704745dcc251eb41",
+        "residual_research.py": "6647493ff874920917168b776fa36116668ba49cf1a47007f073da5711a37051",
+        "scheduled_execution.py": "cb3fd2cd0c13b25b385b9a892acae4c0e3f5857d0950768aec8d8dc1495171ae",
+        "settlement_bounds.py": "8688c7aaa787ddb63ecadde903574e27a2876fed6ab6298f0763b9bdebd790f5",
+        "statistics.py": "c1f7e91a1472ad1ed7d540aa705c6e3eb2f34dd95d8f15adb42f3e3e99e9e426",
+        "strategies.py": "ab48d354fa0a2f9fb3ff2fd1092304c86f66b61c8ee8a20c887de84c64f7fbc3",
+        "target50_research.py": "9cc4ff0838a0fa5760dca90e6dc834dd1661f297d75d5753bcb3bce6e60f37dc",
+        "trailing_stop.py": "f88d343b52b1ae6bb34017d67becf1e277e4ac1cb9243d968e71421cc990c716"
+      },
+      "freeze_sha256": "8fe84cb7140c6c265b02dbfe2825dabfe2a6fc7ff8d5c9cef14e19cc22fe9b85",
+      "lifecycle_sha256": "39c792b41326d378b53b718386f1560178833673604afb1d550b02d74d2ac5ff",
+      "manifest_sha256": {
+        "cohort.json": "f7716d2b673f37cecfd9779b9090b4c63681a8e4b667340e5586972a8661ed57",
+        "hourly_manifest.json": "f2e78dc78dead43cdfc60f7f28f80c8d14f628db9dbbe83c49dc23e1e3a2ea40",
+        "manifest.json": "bb5ca5238319ba119a2a86596203d4c9adcfce46fd113832ebf1c41a8a0fad33",
+        "training_hourly_manifest.json": "981683918a103732e73e703a383920db3329fc7f920cc370722852e30f97f6c6"
+      },
+      "protocol_sha256": "ca1b9d23bc5492e59c89d98f870e7bfcca5d5d756ca063e741d7fc9349abb97e",
+      "settlement_sha256": "ab5e52a7c327558e98b8791d3437905070c9419bd0ea6c5db5b5d74d3a437943"
+    },
+    "config": {
+      "cadence": "daily",
+      "delay_hours": 1,
+      "entry_z": 1.25,
+      "exit_z": 0.5,
+      "factor_window": 60,
+      "hurdle_side_cost": 0.0015,
+      "maximum_drawdown_pct": 10,
+      "maximum_signal_days": 10,
+      "periods": {
+        "combined": [
+          "2024-01-01",
+          "2026-09-26"
+        ],
+        "development": [
+          "2022-01-01",
+          "2024-01-01"
+        ]
+      },
+      "portfolio_trailing": [
+        null,
+        0.04
+      ],
+      "residual_window": 60,
+      "risk_scales": [
+        1,
+        2
+      ],
+      "schema_version": 1,
+      "side_costs": [
+        0.0015,
+        0.003
+      ],
+      "target_net_cagr_pct": 50
+    },
+    "feature_quality": {
+      "economic_fields": 10,
+      "included_observations": {
+        "AAVEUSDT": 1894,
+        "ADAUSDT": 1894,
+        "BCHUSDT": 1894,
+        "BNBUSDT": 1894,
+        "BTCUSDT": 1894,
+        "CRVUSDT": 1894,
+        "DOGEUSDT": 1894,
+        "DOTUSDT": 1894,
+        "EOSUSDT": 1402,
+        "ETHUSDT": 1894,
+        "GRTUSDT": 1894,
+        "LINKUSDT": 1894,
+        "LTCUSDT": 1894,
+        "MKRUSDT": 1512,
+        "SUSHIUSDT": 1894,
+        "TRXUSDT": 1894,
+        "UNIUSDT": 1894,
+        "XLMUSDT": 1894,
+        "XRPUSDT": 1894,
+        "YFIUSDT": 1894
+      },
+      "observations_with_missing_inputs_excluded": {
+        "AAVEUSDT": 0,
+        "ADAUSDT": 0,
+        "BCHUSDT": 0,
+        "BNBUSDT": 0,
+        "BTCUSDT": 0,
+        "CRVUSDT": 0,
+        "DOGEUSDT": 0,
+        "DOTUSDT": 0,
+        "EOSUSDT": 0,
+        "ETHUSDT": 0,
+        "GRTUSDT": 0,
+        "LINKUSDT": 0,
+        "LTCUSDT": 0,
+        "MKRUSDT": 0,
+        "SUSHIUSDT": 0,
+        "TRXUSDT": 0,
+        "UNIUSDT": 0,
+        "XLMUSDT": 0,
+        "XRPUSDT": 0,
+        "YFIUSDT": 0
+      },
+      "technical_fields": 50,
+      "timeframe": "completed daily candles only"
+    },
+    "fields": [
+      "momentum7",
+      "momentum30",
+      "momentum90",
+      "reversal1",
+      "reversal7",
+      "carry30",
+      "volatility",
+      "taker_flow20",
+      "beta60",
+      "time_series_ensemble",
+      "technical.momentum.macd_histogram_pct",
+      "technical.momentum.macd_pct",
+      "technical.momentum.return_pct.1",
+      "technical.momentum.return_pct.30",
+      "technical.momentum.return_pct.7",
+      "technical.momentum.return_pct.90",
+      "technical.momentum.rsi14",
+      "technical.momentum.stochastic_k14",
+      "technical.participation.distance_vwap20_pct",
+      "technical.participation.obv_change20_over_volume",
+      "technical.participation.quote_volume",
+      "technical.participation.relative_volume20",
+      "technical.participation.taker_buy_fraction20",
+      "technical.participation.trade_count",
+      "technical.participation.volume_zscore20",
+      "technical.structure.close_position_in_bar",
+      "technical.structure.distance_prior_high20_pct",
+      "technical.structure.distance_prior_low20_pct",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.236",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.382",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.5",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.618",
+      "technical.structure.fibonacci.180.distance_to_level_pct.0.786",
+      "technical.structure.fibonacci.180.high_after_low",
+      "technical.structure.fibonacci.180.retracement_fraction",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.236",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.382",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.5",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.618",
+      "technical.structure.fibonacci.60.distance_to_level_pct.0.786",
+      "technical.structure.fibonacci.60.high_after_low",
+      "technical.structure.fibonacci.60.retracement_fraction",
+      "technical.trend.adx14",
+      "technical.trend.distance_ema_pct.12",
+      "technical.trend.distance_ema_pct.200",
+      "technical.trend.distance_ema_pct.26",
+      "technical.trend.distance_ema_pct.50",
+      "technical.trend.distance_sma_pct.10",
+      "technical.trend.distance_sma_pct.100",
+      "technical.trend.distance_sma_pct.20",
+      "technical.trend.distance_sma_pct.200",
+      "technical.trend.distance_sma_pct.50",
+      "technical.trend.minus_di14",
+      "technical.trend.plus_di14",
+      "technical.trend.sma50_slope_5bars_pct",
+      "technical.volatility.atr14_pct",
+      "technical.volatility.bollinger_position",
+      "technical.volatility.bollinger_width_pct",
+      "technical.volatility.drawdown_from_high60_pct",
+      "technical.volatility.realized20_per_bar_pct"
+    ],
+    "model_quality": {
+      "history_missing": 0,
+      "models_rejected": 10368,
+      "models_valid": 22850
+    },
+    "model_state_sha256": "9e99ed3a11e043bb66a8fc5f00686eacaa8a20cecc2536a33fb5a893a4134a94",
+    "overlap": {
+      "candles_compared": 864,
+      "funding_compared": 54
+    },
+    "settlement_evidence": {
+      "events": [
+        {
+          "event_url": "https://www.binance.com/en/support/announcement/detail/1e89a9ca957c4b0ca7502e60b993e201",
+          "lower": 0.7615981666666667,
+          "minute_count": 30,
+          "rule_url": "https://www.binance.com/en-AU/support/announcement/detail/4bcabddf0e81423ebca242e185bf157d",
+          "settlement_ms": 1747818000000,
+          "source": {
+            "bytes": 25714,
+            "frequency": "daily",
+            "interval": "1m",
+            "kind": "indexPriceKlines",
+            "month": "2025-05-21",
+            "sha256": "253a6184eefd5a8a0523b7f62c98ceefc07d27f5ac2515272f278deda6825053",
+            "symbol": "EOSUSDT",
+            "url": "https://data.binance.vision/data/futures/um/daily/indexPriceKlines/EOSUSDT/1m/EOSUSDT-1m-2025-05-21.zip"
+          },
+          "symbol": "EOSUSDT",
+          "upper": 0.7634580833333333
+        },
+        {
+          "event_url": "https://www.binance.com/en-GB/support/announcement/binance-will-support-the-maker-mkr-token-swap-redenomination-and-rebranding-to-sky-sky-bf29506a33a94c17a5d5a01e74e646d2",
+          "lower": 1648.8463707243332,
+          "minute_count": 30,
+          "rule_url": "https://www.binance.com/en-AU/support/announcement/detail/4bcabddf0e81423ebca242e185bf157d",
+          "settlement_ms": 1757322000000,
+          "source": {
+            "bytes": 36954,
+            "frequency": "daily",
+            "interval": "1m",
+            "kind": "indexPriceKlines",
+            "month": "2025-09-08",
+            "sha256": "2e43d35b593c93acd46acba1ba5dfe8778ced4bc2d0aeafec8a8c2ca5068de45",
+            "symbol": "MKRUSDT",
+            "url": "https://data.binance.vision/data/futures/um/daily/indexPriceKlines/MKRUSDT/1m/MKRUSDT-1m-2025-09-08.zip"
+          },
+          "symbol": "MKRUSDT",
+          "upper": 1650.7850756096666
+        }
+      ],
+      "exact_settlement_prices_verified": false,
+      "limits": [
+        "Assumes the published general settlement rule applied without an exceptional override.",
+        "Index candle extrema must cover the settlement rule's secondwise samples.",
+        "A bounded accounting scenario is not an observed settlement transaction."
+      ],
+      "method": "Bounds on equally weighted 1800-second index average from 30 one-minute OHLC ranges."
+    },
+    "sources": {
+      "daily": {
+        "count": 4182,
+        "manifest_sha256": "986ceae28d9fac68b0d6cfca6a3b00b6005c8691fb0ff42427793261f05ed2a4"
+      },
+      "hourly": {
+        "count": 1283,
+        "manifest_sha256": "40c52bdf0f801d04012da96cd5df399b4d7142be86e751c30acd1b25061c2d41"
+      },
+      "rest": {
+        "count": 54,
+        "manifest_sha256": "b53805cbde414224ace2dab85fd4cc34d1c7b4096ab48ccc2861091eaa564416"
+      },
+      "training_hourly": {
+        "count": 1045,
+        "manifest_sha256": "a6a761243083e5086e7833ee1c437961b726252ca8ce4a8e82873a549bf2d7f7"
+      }
+    }
+  },
+  "inputs_file_sha256": "86ec3f6f6f38d3f9637e1ef34bbbe7959cff4d223bb2ee193daad471d7da575a",
+  "jev_calls": 0,
+  "limits": [
+    "Previously researched history; not an independent prospective trial.",
+    "BTC/ETH neutrality and volatility are estimated, not guaranteed future exposure limits.",
+    "Model factor and residual windows are disjoint, but OU stationarity is not proven.",
+    "Entry hurdle excludes favorable drift/carry and does not cover every daily turnover cost.",
+    "Signal episode lifespan can differ from actual exposure after trailing stops.",
+    "Any contract settlement bound is an adverse accounting scenario, not an exact fill.",
+    "Hourly portfolio stops and margin heuristics do not reproduce exchange liquidation.",
+    "Returns exclude taxes and real account-specific execution/operating expenses."
+  ],
+  "orders_sent": 0,
+  "scenarios": [
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 27.237411567138846,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 0.3443396370200241,
+            "funding_pnl": 0.018048131120341326,
+            "net": 1.2703404873844084,
+            "price_pnl": 1.5966319932840911
+          },
+          "ADAUSDT": {
+            "fees": 0.3963383423060856,
+            "funding_pnl": 0.0006912290159047688,
+            "net": 1.4237318014936595,
+            "price_pnl": 1.8193789147838404
+          },
+          "BCHUSDT": {
+            "fees": 0.6508164680248,
+            "funding_pnl": 0.2705568994680226,
+            "net": 2.1543355060784792,
+            "price_pnl": 2.534595074635257
+          },
+          "BNBUSDT": {
+            "fees": 0.7071092850825647,
+            "funding_pnl": -0.32095445418624485,
+            "net": 0.47971812784014645,
+            "price_pnl": 1.507781867108956
+          },
+          "BTCUSDT": {
+            "fees": 2.4522106799059786,
+            "funding_pnl": -0.050633634912517204,
+            "net": -3.5391928784329743,
+            "price_pnl": -1.0363485636144787
+          },
+          "CRVUSDT": {
+            "fees": 0.52884932009589,
+            "funding_pnl": 0.0902640149104979,
+            "net": -0.6397770810724167,
+            "price_pnl": -0.20119177588702458
+          },
+          "DOGEUSDT": {
+            "fees": 0.728674066102449,
+            "funding_pnl": 0.031646995412775436,
+            "net": -2.322296141927274,
+            "price_pnl": -1.625269071237601
+          },
+          "DOTUSDT": {
+            "fees": 0.7137740724081234,
+            "funding_pnl": 0.029026665191473542,
+            "net": 0.6131091126017051,
+            "price_pnl": 1.297856519818355
+          },
+          "EOSUSDT": {
+            "fees": 0.6015019049084287,
+            "funding_pnl": 0.09653763470596435,
+            "net": -0.12229737792994883,
+            "price_pnl": 0.38266689227251555
+          },
+          "ETHUSDT": {
+            "fees": 4.016049460313935,
+            "funding_pnl": -0.09222842195027157,
+            "net": -21.77992326984138,
+            "price_pnl": -17.671645387577172
+          },
+          "GRTUSDT": {
+            "fees": 0.6222616056191532,
+            "funding_pnl": 0.059683558453993736,
+            "net": 0.8847586434874068,
+            "price_pnl": 1.4473366906525662
+          },
+          "LINKUSDT": {
+            "fees": 0.4605971122540882,
+            "funding_pnl": -0.042378173521145514,
+            "net": -0.5121993482197392,
+            "price_pnl": -0.009224062444505502
+          },
+          "LTCUSDT": {
+            "fees": 0.6269819759426821,
+            "funding_pnl": 0.04674748051699138,
+            "net": 1.743298519115434,
+            "price_pnl": 2.3235330145411246
+          },
+          "MKRUSDT": {
+            "fees": 0.4512796957506265,
+            "funding_pnl": -0.07055678223432918,
+            "net": -2.61727635417554,
+            "price_pnl": -2.0954398761905844
+          },
+          "SUSHIUSDT": {
+            "fees": 0.3192428839526309,
+            "funding_pnl": 0.01584912664882396,
+            "net": -0.1709170737172253,
+            "price_pnl": 0.13247668358658163
+          },
+          "TRXUSDT": {
+            "fees": 0.7392013027042231,
+            "funding_pnl": 0.11469591126403356,
+            "net": -1.2064126607301713,
+            "price_pnl": -0.5819072692899817
+          },
+          "UNIUSDT": {
+            "fees": 0.4650917910540962,
+            "funding_pnl": -0.010857582641108223,
+            "net": 1.9235537274175485,
+            "price_pnl": 2.399503101112753
+          },
+          "XLMUSDT": {
+            "fees": 0.5391268798041393,
+            "funding_pnl": 0.11815515015721136,
+            "net": -2.1959317300685464,
+            "price_pnl": -1.7749600004216184
+          },
+          "XRPUSDT": {
+            "fees": 0.3424512804239511,
+            "funding_pnl": -0.040940476126615805,
+            "net": 0.3958746753239593,
+            "price_pnl": 0.7792664318745263
+          },
+          "YFIUSDT": {
+            "fees": 0.3334006210316261,
+            "funding_pnl": 0.05240033229894545,
+            "net": 0.17048767512512988,
+            "price_pnl": 0.45148796385781054
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1081,
+        "cash_time_pct": 6.170091324200913,
+        "entries": 632,
+        "fees_pct_initial": 16.039298384705507,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 11044
+        },
+        "funding_pct_initial": 0.31575360359274807,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.10634837055793021,
+        "max_drawdown_pct": 27.015006237267357,
+        "monthly_returns_pct": {
+          "2022-01": -3.0488999144203888,
+          "2022-02": -0.24282703968039332,
+          "2022-03": -0.18406932250570884,
+          "2022-04": 0.8583912774893898,
+          "2022-05": 0.6980499452497124,
+          "2022-06": -4.304078546618673,
+          "2022-07": -2.39176531254337,
+          "2022-08": -3.5602537359255892,
+          "2022-09": 1.2339458483082488,
+          "2022-10": -4.9200329775787255,
+          "2022-11": 4.6310273369269295,
+          "2022-12": -3.5003103145098913,
+          "2023-01": -0.5761871270890007,
+          "2023-02": 1.0816751052761475,
+          "2023-03": -5.7298220853215565,
+          "2023-04": -1.112626830523089,
+          "2023-05": -0.318211409518776,
+          "2023-06": -1.5457859292469456,
+          "2023-07": -3.9198926337400963,
+          "2023-08": -0.3293038320346109,
+          "2023-09": -0.2625858248492374,
+          "2023-10": -1.729613719685863,
+          "2023-11": 3.5033356814110572,
+          "2023-12": -0.9365970013403113
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4204,
+        "positive_months": 6,
+        "rebalances": 730,
+        "return_pct": -24.04701564024696,
+        "stop_count": 0,
+        "traded_notional_multiple_initial": 106.92865589803654
+      },
+      "net_cagr_pct": -12.848990619871167,
+      "period": "development",
+      "portfolio_trailing": null,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 1,
+      "side_cost": 0.0015,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 0
+    },
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 38.58154690935122,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 0.629924081197183,
+            "funding_pnl": 0.015403794566680083,
+            "net": 0.9611789540105852,
+            "price_pnl": 1.5756992406410881
+          },
+          "ADAUSDT": {
+            "fees": 0.7218114861056795,
+            "funding_pnl": 0.001439292877023371,
+            "net": 0.9815721568223844,
+            "price_pnl": 1.7019443500510407
+          },
+          "BCHUSDT": {
+            "fees": 1.2142348767989966,
+            "funding_pnl": 0.2505634730985176,
+            "net": 1.3198249844976204,
+            "price_pnl": 2.2834963881980994
+          },
+          "BNBUSDT": {
+            "fees": 1.3060364552599493,
+            "funding_pnl": -0.29025351506831104,
+            "net": -0.07619091465333236,
+            "price_pnl": 1.520099055674928
+          },
+          "BTCUSDT": {
+            "fees": 4.520218023183596,
+            "funding_pnl": -0.04123199639757969,
+            "net": -5.598059377509855,
+            "price_pnl": -1.0366093579286786
+          },
+          "CRVUSDT": {
+            "fees": 0.959008837420599,
+            "funding_pnl": 0.08253969045224152,
+            "net": -1.0922481718331025,
+            "price_pnl": -0.21577902486474496
+          },
+          "DOGEUSDT": {
+            "fees": 1.3282993241231342,
+            "funding_pnl": 0.02837735440551277,
+            "net": -2.925813086550086,
+            "price_pnl": -1.6258911168324643
+          },
+          "DOTUSDT": {
+            "fees": 1.3080584232527848,
+            "funding_pnl": 0.023289007991716116,
+            "net": 0.0314222260261357,
+            "price_pnl": 1.3161916412872043
+          },
+          "EOSUSDT": {
+            "fees": 1.1015799837750477,
+            "funding_pnl": 0.08430222649420398,
+            "net": -0.8354870477238547,
+            "price_pnl": 0.1817907095569889
+          },
+          "ETHUSDT": {
+            "fees": 7.274963569476059,
+            "funding_pnl": -0.08133770460454058,
+            "net": -24.061222076713086,
+            "price_pnl": -16.704920802632486
+          },
+          "GRTUSDT": {
+            "fees": 1.1360334284100226,
+            "funding_pnl": 0.04835817004890552,
+            "net": 0.32064910964242044,
+            "price_pnl": 1.4083243680035376
+          },
+          "LINKUSDT": {
+            "fees": 0.8342386340732812,
+            "funding_pnl": -0.03913052247279957,
+            "net": -0.8848007409923795,
+            "price_pnl": -0.011431584446298744
+          },
+          "LTCUSDT": {
+            "fees": 1.170087854455159,
+            "funding_pnl": 0.045772113959577844,
+            "net": 1.2927636504869937,
+            "price_pnl": 2.417079390982575
+          },
+          "MKRUSDT": {
+            "fees": 0.8436392350265615,
+            "funding_pnl": -0.0656305887881582,
+            "net": -2.9677950227363254,
+            "price_pnl": -2.0585251989216053
+          },
+          "SUSHIUSDT": {
+            "fees": 0.5734416170416917,
+            "funding_pnl": 0.014618053721135097,
+            "net": -0.4858980019089371,
+            "price_pnl": 0.07292556141161957
+          },
+          "TRXUSDT": {
+            "fees": 1.3722079063250254,
+            "funding_pnl": 0.10829372592097745,
+            "net": -1.8180690813247857,
+            "price_pnl": -0.5541549009207376
+          },
+          "UNIUSDT": {
+            "fees": 0.8637508672249744,
+            "funding_pnl": -0.013107954263886522,
+            "net": 1.3649834874376983,
+            "price_pnl": 2.241842308926559
+          },
+          "XLMUSDT": {
+            "fees": 0.9960615232289107,
+            "funding_pnl": 0.11181721554562307,
+            "net": -2.465479343992163,
+            "price_pnl": -1.581235036308875
+          },
+          "XRPUSDT": {
+            "fees": 0.6318542719177158,
+            "funding_pnl": -0.034702718394419275,
+            "net": 0.0023566449576419533,
+            "price_pnl": 0.6689136352697771
+          },
+          "YFIUSDT": {
+            "fees": 0.6124698094202136,
+            "funding_pnl": 0.04765926624228782,
+            "net": -0.13435983115967698,
+            "price_pnl": 0.4304507120182488
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1081,
+        "cash_time_pct": 6.170091324200913,
+        "entries": 632,
+        "fees_pct_initial": 29.39792020771652,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 11044
+        },
+        "funding_pct_initial": 0.297038385334707,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.10643533342026579,
+        "max_drawdown_pct": 38.44031375092233,
+        "monthly_returns_pct": {
+          "2022-01": -3.7922458069502007,
+          "2022-02": -0.7196486708899386,
+          "2022-03": -0.7183832983400418,
+          "2022-04": -0.17538878875759112,
+          "2022-05": -0.0996020926832264,
+          "2022-06": -4.899065011141945,
+          "2022-07": -2.874718638599927,
+          "2022-08": -3.936863434937965,
+          "2022-09": 0.4211327844958257,
+          "2022-10": -5.949033541131521,
+          "2022-11": 3.814488020718998,
+          "2022-12": -4.104314908671769,
+          "2023-01": -1.3168481040182867,
+          "2023-02": 0.18651844326629252,
+          "2023-03": -6.6664382531116395,
+          "2023-04": -1.6029160819735044,
+          "2023-05": -1.3101160289323732,
+          "2023-06": -2.6951535730804443,
+          "2023-07": -4.571353825712343,
+          "2023-08": -0.9192591717614773,
+          "2023-09": -1.0051990083152496,
+          "2023-10": -2.8329925118149135,
+          "2023-11": 2.469398622896457,
+          "2023-12": -1.8446684352475318
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4204,
+        "positive_months": 4,
+        "rebalances": 730,
+        "return_pct": -37.07067148321605,
+        "stop_count": 0,
+        "traded_notional_multiple_initial": 97.99306735905549
+      },
+      "net_cagr_pct": -20.67199200989354,
+      "period": "development",
+      "portfolio_trailing": null,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 1,
+      "side_cost": 0.003,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 0
+    },
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 27.331473295895712,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 0.34842038488038135,
+            "funding_pnl": 0.01829243129152756,
+            "net": 1.142375861605881,
+            "price_pnl": 1.4725038151947347
+          },
+          "ADAUSDT": {
+            "fees": 0.4136938747170348,
+            "funding_pnl": 0.000567931304491384,
+            "net": 1.3470049041686682,
+            "price_pnl": 1.7601308475812114
+          },
+          "BCHUSDT": {
+            "fees": 0.6888355764621058,
+            "funding_pnl": 0.26794719151358476,
+            "net": 2.1484455830616334,
+            "price_pnl": 2.5693339680101546
+          },
+          "BNBUSDT": {
+            "fees": 0.7239064376493761,
+            "funding_pnl": -0.31577831715793475,
+            "net": 0.40698563903802476,
+            "price_pnl": 1.4466703938453356
+          },
+          "BTCUSDT": {
+            "fees": 2.5245307839716764,
+            "funding_pnl": -0.05079628373976133,
+            "net": -3.4054035023832987,
+            "price_pnl": -0.8300764346718614
+          },
+          "CRVUSDT": {
+            "fees": 0.5528135551015059,
+            "funding_pnl": 0.08874289451581897,
+            "net": -0.8412196721510948,
+            "price_pnl": -0.3771490115654079
+          },
+          "DOGEUSDT": {
+            "fees": 0.7644456868399176,
+            "funding_pnl": 0.02968727813932723,
+            "net": -2.8334216471139757,
+            "price_pnl": -2.0986632384133856
+          },
+          "DOTUSDT": {
+            "fees": 0.7353630275103696,
+            "funding_pnl": 0.028957865158264803,
+            "net": 0.6906543790954,
+            "price_pnl": 1.3970595414475049
+          },
+          "EOSUSDT": {
+            "fees": 0.6160307580019451,
+            "funding_pnl": 0.09592452111846506,
+            "net": -0.20415681244426642,
+            "price_pnl": 0.3159494244392136
+          },
+          "ETHUSDT": {
+            "fees": 4.109667577365088,
+            "funding_pnl": -0.0948523280872416,
+            "net": -21.274247277248858,
+            "price_pnl": -17.069727371796528
+          },
+          "GRTUSDT": {
+            "fees": 0.6363011844169938,
+            "funding_pnl": 0.05919505743060241,
+            "net": 0.8918893988581176,
+            "price_pnl": 1.4689955258445089
+          },
+          "LINKUSDT": {
+            "fees": 0.4581508028392732,
+            "funding_pnl": -0.04313170332057017,
+            "net": -0.22087537197023246,
+            "price_pnl": 0.2804071341896109
+          },
+          "LTCUSDT": {
+            "fees": 0.6324489461653618,
+            "funding_pnl": 0.0471836999104169,
+            "net": 1.7267101801694864,
+            "price_pnl": 2.311975426424431
+          },
+          "MKRUSDT": {
+            "fees": 0.45033554769238093,
+            "funding_pnl": -0.07100324623905617,
+            "net": -2.6591687862036943,
+            "price_pnl": -2.1378299922722572
+          },
+          "SUSHIUSDT": {
+            "fees": 0.35495940128919484,
+            "funding_pnl": 0.01622421627548698,
+            "net": -0.11116321488965877,
+            "price_pnl": 0.2275719701240491
+          },
+          "TRXUSDT": {
+            "fees": 0.7468895796532509,
+            "funding_pnl": 0.11320947050325945,
+            "net": -1.108747186265917,
+            "price_pnl": -0.47506707711592566
+          },
+          "UNIUSDT": {
+            "fees": 0.47260186140870913,
+            "funding_pnl": -0.01002303546673844,
+            "net": 1.885038115222531,
+            "price_pnl": 2.367663012097979
+          },
+          "XLMUSDT": {
+            "fees": 0.5380807615121906,
+            "funding_pnl": 0.11779669687016119,
+            "net": -2.1806043762417917,
+            "price_pnl": -1.7603203115997623
+          },
+          "XRPUSDT": {
+            "fees": 0.35308600097734655,
+            "funding_pnl": -0.04104230042979521,
+            "net": 0.28175324048517436,
+            "price_pnl": 0.6758815418923161
+          },
+          "YFIUSDT": {
+            "fees": 0.3326383894849461,
+            "funding_pnl": 0.05230125779014295,
+            "net": 0.1729488842746508,
+            "price_pnl": 0.45328601596945395
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1146,
+        "cash_time_pct": 6.541095890410959,
+        "entries": 665,
+        "fees_pct_initial": 16.45320013793906,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 10977
+        },
+        "funding_pct_initial": 0.30940329738045247,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.10634837055793016,
+        "max_drawdown_pct": 27.10935547407284,
+        "monthly_returns_pct": {
+          "2022-01": -3.0488999144203888,
+          "2022-02": -0.24282703968039332,
+          "2022-03": -0.18406932250570884,
+          "2022-04": 0.8583912774893898,
+          "2022-05": 0.6980499452497124,
+          "2022-06": -4.304078546618673,
+          "2022-07": -2.39176531254337,
+          "2022-08": -3.5167299379158745,
+          "2022-09": 1.233945848307827,
+          "2022-10": -5.20142469753786,
+          "2022-11": 4.631027336926463,
+          "2022-12": -3.500310314509647,
+          "2023-01": -0.5761871270888785,
+          "2023-02": 1.0816751052758145,
+          "2023-03": -6.003531527960082,
+          "2023-04": -1.4260146117190842,
+          "2023-05": -0.3182114095191202,
+          "2023-06": -1.5457859292467568,
+          "2023-07": -3.215844260634737,
+          "2023-08": -0.3293038320345887,
+          "2023-09": -0.26258582484879334,
+          "2023-10": -1.7296137196861183,
+          "2023-11": 3.503335681410813,
+          "2023-12": -0.9365970013398117
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4231,
+        "positive_months": 6,
+        "rebalances": 730,
+        "return_pct": -24.145201660933758,
+        "stop_count": 38,
+        "traded_notional_multiple_initial": 109.68800091959346
+      },
+      "net_cagr_pct": -12.905339808306133,
+      "period": "development",
+      "portfolio_trailing": 0.04,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 1,
+      "side_cost": 0.0015,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 5
+    },
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 38.23106140540942,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 0.6808655594086204,
+            "funding_pnl": 0.017738622594654006,
+            "net": 1.0011207378604385,
+            "price_pnl": 1.6642476746744048
+          },
+          "ADAUSDT": {
+            "fees": 0.7771553539407979,
+            "funding_pnl": 0.0023660980805669776,
+            "net": 1.2181039678883443,
+            "price_pnl": 1.9928932237485752
+          },
+          "BCHUSDT": {
+            "fees": 1.3107919629098181,
+            "funding_pnl": 0.2283983862735348,
+            "net": 1.7354582180699292,
+            "price_pnl": 2.8178517947062125
+          },
+          "BNBUSDT": {
+            "fees": 1.3931623886973707,
+            "funding_pnl": -0.2771607771041694,
+            "net": -0.3388883600400301,
+            "price_pnl": 1.33143480576151
+          },
+          "BTCUSDT": {
+            "fees": 4.8106842797237075,
+            "funding_pnl": -0.04302784154788475,
+            "net": -6.110260534283752,
+            "price_pnl": -1.2565484130121585
+          },
+          "CRVUSDT": {
+            "fees": 1.0498035445874447,
+            "funding_pnl": 0.08185525668346477,
+            "net": -1.26817063087075,
+            "price_pnl": -0.3002223429667701
+          },
+          "DOGEUSDT": {
+            "fees": 1.414991197502914,
+            "funding_pnl": 0.025045499250089902,
+            "net": -2.9043733478237215,
+            "price_pnl": -1.514427649570898
+          },
+          "DOTUSDT": {
+            "fees": 1.3747806361380348,
+            "funding_pnl": 0.01865863445265827,
+            "net": 0.24628753371728485,
+            "price_pnl": 1.6024095354026613
+          },
+          "EOSUSDT": {
+            "fees": 1.1019058049660002,
+            "funding_pnl": 0.08391607792164447,
+            "net": -0.8442551447808582,
+            "price_pnl": 0.17373458226349764
+          },
+          "ETHUSDT": {
+            "fees": 7.738419470848291,
+            "funding_pnl": -0.08834612307324045,
+            "net": -25.13890380305434,
+            "price_pnl": -17.312138209132808
+          },
+          "GRTUSDT": {
+            "fees": 1.223022459042056,
+            "funding_pnl": 0.047117201239431646,
+            "net": 0.16984138733976956,
+            "price_pnl": 1.3457466451423938
+          },
+          "LINKUSDT": {
+            "fees": 0.8583037023383921,
+            "funding_pnl": -0.0375644601919747,
+            "net": -0.11809141947543236,
+            "price_pnl": 0.7777767430549345
+          },
+          "LTCUSDT": {
+            "fees": 1.1710447720315462,
+            "funding_pnl": 0.04572755584862481,
+            "net": 1.2818752152368378,
+            "price_pnl": 2.4071924314197592
+          },
+          "MKRUSDT": {
+            "fees": 0.8768992717942694,
+            "funding_pnl": -0.06595420304305888,
+            "net": -2.9472669660021067,
+            "price_pnl": -2.004413491164778
+          },
+          "SUSHIUSDT": {
+            "fees": 0.6677361923046511,
+            "funding_pnl": 0.014576868185201467,
+            "net": -0.33461983348355245,
+            "price_pnl": 0.3185394906358972
+          },
+          "TRXUSDT": {
+            "fees": 1.4405409785422651,
+            "funding_pnl": 0.10698429594712727,
+            "net": -1.5085423685593637,
+            "price_pnl": -0.17498568596422584
+          },
+          "UNIUSDT": {
+            "fees": 0.900294455031239,
+            "funding_pnl": -0.012605169590011883,
+            "net": 1.5907247615360158,
+            "price_pnl": 2.5036243861572665
+          },
+          "XLMUSDT": {
+            "fees": 1.0280595354905657,
+            "funding_pnl": 0.1160231830483767,
+            "net": -2.6070261246683586,
+            "price_pnl": -1.6949897722261693
+          },
+          "XRPUSDT": {
+            "fees": 0.6558340960200539,
+            "funding_pnl": -0.03312050687471228,
+            "net": -0.16008775391098223,
+            "price_pnl": 0.5288668489837839
+          },
+          "YFIUSDT": {
+            "fees": 0.61310086641742,
+            "funding_pnl": 0.04984951301096574,
+            "net": -0.3749555835512416,
+            "price_pnl": 0.1882957698552127
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1259,
+        "cash_time_pct": 7.186073059360731,
+        "entries": 690,
+        "fees_pct_initial": 31.08739652773539,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 10890
+        },
+        "funding_pct_initial": 0.28047811111128856,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.10643533342026579,
+        "max_drawdown_pct": 38.071374621079954,
+        "monthly_returns_pct": {
+          "2022-01": -3.7922458069502007,
+          "2022-02": -0.8947468079121279,
+          "2022-03": -0.7183832983405858,
+          "2022-04": -0.1753887887569916,
+          "2022-05": 0.26697033544478277,
+          "2022-06": -4.81547346628145,
+          "2022-07": -2.9786035121474375,
+          "2022-08": -3.936863422912684,
+          "2022-09": 0.4211327844959145,
+          "2022-10": -6.486955213660018,
+          "2022-11": 3.8144880207187315,
+          "2022-12": -4.128649361345227,
+          "2023-01": -1.3168481040299662,
+          "2023-02": 0.18651844326684763,
+          "2023-03": -6.528042138432633,
+          "2023-04": -1.4946475201351506,
+          "2023-05": -1.31011602893224,
+          "2023-06": -2.6951535730806997,
+          "2023-07": -3.4917919627874716,
+          "2023-08": -0.9192591717619547,
+          "2023-09": -1.0051990083153717,
+          "2023-10": -2.8329925118145027,
+          "2023-11": 2.46939862289699,
+          "2023-12": -3.3046669721080724
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4262,
+        "positive_months": 5,
+        "rebalances": 730,
+        "return_pct": -37.412030048854575,
+        "stop_count": 64,
+        "traded_notional_multiple_initial": 103.62465509245145
+      },
+      "net_cagr_pct": -20.887440977335697,
+      "period": "development",
+      "portfolio_trailing": 0.04,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 1,
+      "side_cost": 0.003,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 11
+    },
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 47.58693737124568,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 0.587277818681081,
+            "funding_pnl": 0.026539520618287283,
+            "net": 2.546532567376943,
+            "price_pnl": 3.1072708654397365
+          },
+          "ADAUSDT": {
+            "fees": 0.6696084951476926,
+            "funding_pnl": 0.0018089481344407228,
+            "net": 2.5640714827871576,
+            "price_pnl": 3.231871029800409
+          },
+          "BCHUSDT": {
+            "fees": 1.1448276585733723,
+            "funding_pnl": 0.4766419036790686,
+            "net": 3.3997861838138457,
+            "price_pnl": 4.067971938708149
+          },
+          "BNBUSDT": {
+            "fees": 1.2312958103963978,
+            "funding_pnl": -0.5465361184007286,
+            "net": 1.2575703402475702,
+            "price_pnl": 3.0354022690446967
+          },
+          "BTCUSDT": {
+            "fees": 4.235195637299176,
+            "funding_pnl": -0.07114259215924719,
+            "net": -6.426105676865862,
+            "price_pnl": -2.119767447407438
+          },
+          "CRVUSDT": {
+            "fees": 0.8864633210197488,
+            "funding_pnl": 0.15164670974371672,
+            "net": -1.157862751361054,
+            "price_pnl": -0.4230461400850219
+          },
+          "DOGEUSDT": {
+            "fees": 1.2338525636223079,
+            "funding_pnl": 0.0526567156784672,
+            "net": -4.325648383929235,
+            "price_pnl": -3.1444525359853945
+          },
+          "DOTUSDT": {
+            "fees": 1.2237689510843344,
+            "funding_pnl": 0.0406325062673564,
+            "net": 1.2840586429786127,
+            "price_pnl": 2.4671950877955906
+          },
+          "EOSUSDT": {
+            "fees": 1.0330226718475068,
+            "funding_pnl": 0.15868695765718693,
+            "net": -0.6513004074126215,
+            "price_pnl": 0.2230353067776985
+          },
+          "ETHUSDT": {
+            "fees": 6.739950420711398,
+            "funding_pnl": -0.1488308198088526,
+            "net": -39.0229301642583,
+            "price_pnl": -32.134148923738046
+          },
+          "GRTUSDT": {
+            "fees": 1.0552485494271675,
+            "funding_pnl": 0.08387678539238182,
+            "net": 1.7271269286442583,
+            "price_pnl": 2.6984986926790437
+          },
+          "LINKUSDT": {
+            "fees": 0.7756583192632384,
+            "funding_pnl": -0.07427607096250444,
+            "net": -0.9811647108278315,
+            "price_pnl": -0.13123032060208872
+          },
+          "LTCUSDT": {
+            "fees": 1.1015934898167574,
+            "funding_pnl": 0.09030722385726216,
+            "net": 3.9242271959019956,
+            "price_pnl": 4.935513461861491
+          },
+          "MKRUSDT": {
+            "fees": 0.8006659738322183,
+            "funding_pnl": -0.12518146919138437,
+            "net": -4.997093865896055,
+            "price_pnl": -4.071246422872453
+          },
+          "SUSHIUSDT": {
+            "fees": 0.5237798051701438,
+            "funding_pnl": 0.027911645495625706,
+            "net": -0.4188249053404787,
+            "price_pnl": 0.07704325433403927
+          },
+          "TRXUSDT": {
+            "fees": 1.2913616742172467,
+            "funding_pnl": 0.20848377927177603,
+            "net": -2.1923600174560036,
+            "price_pnl": -1.1094821225105327
+          },
+          "UNIUSDT": {
+            "fees": 0.8254051746720972,
+            "funding_pnl": -0.027965100466813286,
+            "net": 3.266712715852656,
+            "price_pnl": 4.120082990991566
+          },
+          "XLMUSDT": {
+            "fees": 0.9460500891035074,
+            "funding_pnl": 0.21610031037801233,
+            "net": -3.5584807283929996,
+            "price_pnl": -2.828530949667504
+          },
+          "XRPUSDT": {
+            "fees": 0.5980501191920458,
+            "funding_pnl": -0.06379701041687914,
+            "net": 0.5062858652025805,
+            "price_pnl": 1.1681329948115053
+          },
+          "YFIUSDT": {
+            "fees": 0.5770813773606845,
+            "funding_pnl": 0.08975025327190905,
+            "net": 0.2808833973326974,
+            "price_pnl": 0.768214521421473
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1081,
+        "cash_time_pct": 6.170091324200913,
+        "entries": 632,
+        "fees_pct_initial": 27.480157920438135,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 11044
+        },
+        "funding_pct_initial": 0.5673140780390816,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.21352736175579284,
+        "max_drawdown_pct": 47.26586217566042,
+        "monthly_returns_pct": {
+          "2022-01": -6.052452588593571,
+          "2022-02": -0.5003074511637395,
+          "2022-03": -0.40383969260524566,
+          "2022-04": 1.688182398560767,
+          "2022-05": 1.334425976612974,
+          "2022-06": -8.483946133179288,
+          "2022-07": -4.791413855839566,
+          "2022-08": -7.052987968237634,
+          "2022-09": 2.4445214374093416,
+          "2022-10": -9.658240293769282,
+          "2022-11": 9.407216520094064,
+          "2022-12": -6.913561854355111,
+          "2023-01": -1.1836751470984397,
+          "2023-02": 2.1360030240209493,
+          "2023-03": -11.19357744833187,
+          "2023-04": -2.266311893669337,
+          "2023-05": -0.6549110306815487,
+          "2023-06": -3.123841235836411,
+          "2023-07": -7.731152891312398,
+          "2023-08": -0.6740667088146024,
+          "2023-09": -0.5447420981301576,
+          "2023-10": -3.4570114052483003,
+          "2023-11": 7.036533938914347,
+          "2023-12": -1.9346923192942844
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4204,
+        "positive_months": 6,
+        "rebalances": 730,
+        "return_pct": -42.9745162916017,
+        "stop_count": 0,
+        "traded_notional_multiple_initial": 183.20105280292094
+      },
+      "net_cagr_pct": -24.484780535048234,
+      "period": "development",
+      "portfolio_trailing": null,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 2,
+      "side_cost": 0.0015,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 0
+    },
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 62.674357054072026,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 0.991281157426994,
+            "funding_pnl": 0.019371856610422435,
+            "net": 1.9919045242340534,
+            "price_pnl": 2.9638138250506247
+          },
+          "ADAUSDT": {
+            "fees": 1.122744221607692,
+            "funding_pnl": 0.003990146726059722,
+            "net": 1.8010514284432129,
+            "price_pnl": 2.919805503324845
+          },
+          "BCHUSDT": {
+            "fees": 2.005475166251464,
+            "funding_pnl": 0.4116895042647384,
+            "net": 1.6978692169752774,
+            "price_pnl": 3.2916548789620035
+          },
+          "BNBUSDT": {
+            "fees": 2.126012640866136,
+            "funding_pnl": -0.4510463264632421,
+            "net": 0.4499339314585814,
+            "price_pnl": 3.026992898787959
+          },
+          "BTCUSDT": {
+            "fees": 7.278510059535864,
+            "funding_pnl": -0.045722935776161454,
+            "net": -9.404997566667186,
+            "price_pnl": -2.0807645713551604
+          },
+          "CRVUSDT": {
+            "fees": 1.471415785678534,
+            "funding_pnl": 0.1268966205305055,
+            "net": -1.7608931558522107,
+            "price_pnl": -0.4163739907041825
+          },
+          "DOGEUSDT": {
+            "fees": 2.0788775050576525,
+            "funding_pnl": 0.042573348533087085,
+            "net": -5.101177012505552,
+            "price_pnl": -3.0648728559809864
+          },
+          "DOTUSDT": {
+            "fees": 2.0821233055418022,
+            "funding_pnl": 0.02574762268264963,
+            "net": 0.37679485733881946,
+            "price_pnl": 2.433170540197972
+          },
+          "EOSUSDT": {
+            "fees": 1.7636664103433248,
+            "funding_pnl": 0.12416775364700876,
+            "net": -1.960782945945386,
+            "price_pnl": -0.32128428924906993
+          },
+          "ETHUSDT": {
+            "fees": 11.210859739693431,
+            "funding_pnl": -0.11849855685578886,
+            "net": -40.30888627434137,
+            "price_pnl": -28.979527977792152
+          },
+          "GRTUSDT": {
+            "fees": 1.7835457976070432,
+            "funding_pnl": 0.052032039476130484,
+            "net": 0.8691377661813611,
+            "price_pnl": 2.6006515243122736
+          },
+          "LINKUSDT": {
+            "fees": 1.2859677949282653,
+            "funding_pnl": -0.06420868731887244,
+            "net": -1.498736090807737,
+            "price_pnl": -0.1485596085605992
+          },
+          "LTCUSDT": {
+            "fees": 1.938998990235824,
+            "funding_pnl": 0.08666757646873334,
+            "net": 3.2511113301127965,
+            "price_pnl": 5.103442743879887
+          },
+          "MKRUSDT": {
+            "fees": 1.419728671217608,
+            "funding_pnl": -0.11042180381454657,
+            "net": -5.4216997370064535,
+            "price_pnl": -3.891549261974299
+          },
+          "SUSHIUSDT": {
+            "fees": 0.8515508671568448,
+            "funding_pnl": 0.02414762016487253,
+            "net": -0.8777563220704134,
+            "price_pnl": -0.050353075078441126
+          },
+          "TRXUSDT": {
+            "fees": 2.261228060520601,
+            "funding_pnl": 0.18534512763287977,
+            "net": -3.012227105770996,
+            "price_pnl": -0.936344172883275
+          },
+          "UNIUSDT": {
+            "fees": 1.4379808405824344,
+            "funding_pnl": -0.03328444149337882,
+            "net": 2.1421852271537203,
+            "price_pnl": 3.6134505092295335
+          },
+          "XLMUSDT": {
+            "fees": 1.636341242452545,
+            "funding_pnl": 0.19546743136000583,
+            "net": -3.64630332621993,
+            "price_pnl": -2.2054295151273906
+          },
+          "XRPUSDT": {
+            "fees": 1.030863620028394,
+            "funding_pnl": -0.04668347025773341,
+            "net": -0.2461165974249717,
+            "price_pnl": 0.8314304928611558
+          },
+          "YFIUSDT": {
+            "fees": 0.9837776690469248,
+            "funding_pnl": 0.07518622299932046,
+            "net": -0.21438904200670209,
+            "price_pnl": 0.6942024040409022
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1081,
+        "cash_time_pct": 6.170091324200913,
+        "entries": 632,
+        "fees_pct_initial": 46.760949545779326,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 11044
+        },
+        "funding_pct_initial": 0.5034166491166902,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.2138788960065404,
+        "max_drawdown_pct": 62.50232779938681,
+        "monthly_returns_pct": {
+          "2022-01": -7.490310486324048,
+          "2022-02": -1.4486550813300192,
+          "2022-03": -1.4665954986397,
+          "2022-04": -0.38759529528834546,
+          "2022-05": -0.26518760789848717,
+          "2022-06": -9.62116134803319,
+          "2022-07": -5.734511996134339,
+          "2022-08": -7.7838275080298835,
+          "2022-09": 0.8042293817267954,
+          "2022-10": -11.610751161079468,
+          "2022-11": 7.7103418076097,
+          "2022-12": -8.077658605634209,
+          "2023-01": -2.653215649311047,
+          "2023-02": 0.3384477570085753,
+          "2023-03": -12.94975055573141,
+          "2023-04": -3.234314269913785,
+          "2023-05": -2.6230146207480765,
+          "2023-06": -5.376337010122967,
+          "2023-07": -8.982787931042823,
+          "2023-08": -1.8463512989227437,
+          "2023-09": -2.021810935951718,
+          "2023-10": -5.620675087526883,
+          "2023-11": 4.911181314797219,
+          "2023-12": -3.729219062279765
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4204,
+        "positive_months": 4,
+        "rebalances": 730,
+        "return_pct": -60.87397689472191,
+        "stop_count": 0,
+        "traded_notional_multiple_initial": 155.869831819265
+      },
+      "net_cagr_pct": -37.44920215914262,
+      "period": "development",
+      "portfolio_trailing": null,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 2,
+      "side_cost": 0.003,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 0
+    },
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 49.99311835152197,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 0.6524696316839397,
+            "funding_pnl": 0.027702366932047886,
+            "net": 2.521822171878211,
+            "price_pnl": 3.1465894366301024
+          },
+          "ADAUSDT": {
+            "fees": 0.808393770001895,
+            "funding_pnl": -0.0028435134104073012,
+            "net": 1.8207843662077414,
+            "price_pnl": 2.6320216496200435
+          },
+          "BCHUSDT": {
+            "fees": 1.25662144447946,
+            "funding_pnl": 0.46049541371811237,
+            "net": 2.7526695249660693,
+            "price_pnl": 3.5487955557274167
+          },
+          "BNBUSDT": {
+            "fees": 1.3615236755342168,
+            "funding_pnl": -0.5095893426147553,
+            "net": 1.6982761791440106,
+            "price_pnl": 3.5693891972929825
+          },
+          "BTCUSDT": {
+            "fees": 4.989267751484096,
+            "funding_pnl": -0.08776221494459509,
+            "net": -5.9338317603192365,
+            "price_pnl": -0.8568017938905459
+          },
+          "CRVUSDT": {
+            "fees": 0.9988882221214742,
+            "funding_pnl": 0.14445939392374446,
+            "net": -1.8059992991603744,
+            "price_pnl": -0.9515704709626446
+          },
+          "DOGEUSDT": {
+            "fees": 1.346167381117612,
+            "funding_pnl": 0.04961699971302333,
+            "net": -5.097383194303994,
+            "price_pnl": -3.8008328128994053
+          },
+          "DOTUSDT": {
+            "fees": 1.4205667785730198,
+            "funding_pnl": 0.027215710779902095,
+            "net": 1.3244755885999961,
+            "price_pnl": 2.7178266563931137
+          },
+          "EOSUSDT": {
+            "fees": 1.1022541220565354,
+            "funding_pnl": 0.1514336875965014,
+            "net": 0.6999113229620713,
+            "price_pnl": 1.6507317574221054
+          },
+          "ETHUSDT": {
+            "fees": 7.839853560423013,
+            "funding_pnl": -0.1878138823346986,
+            "net": -38.76648234083119,
+            "price_pnl": -30.738814898073475
+          },
+          "GRTUSDT": {
+            "fees": 1.1505456020327396,
+            "funding_pnl": 0.07707797740026774,
+            "net": -0.6664585151053389,
+            "price_pnl": 0.40700910952713304
+          },
+          "LINKUSDT": {
+            "fees": 0.802448934956204,
+            "funding_pnl": -0.07082807096909433,
+            "net": -0.5114469028816395,
+            "price_pnl": 0.3618301030436588
+          },
+          "LTCUSDT": {
+            "fees": 1.1495920138735471,
+            "funding_pnl": 0.08924527995411831,
+            "net": 4.317909871440392,
+            "price_pnl": 5.378256605359821
+          },
+          "MKRUSDT": {
+            "fees": 0.9017470668629495,
+            "funding_pnl": -0.12108591803288828,
+            "net": -4.866327453675813,
+            "price_pnl": -3.8434944687799755
+          },
+          "SUSHIUSDT": {
+            "fees": 0.571244376328951,
+            "funding_pnl": 0.025378490485834425,
+            "net": 2.102027089463643,
+            "price_pnl": 2.6478929753067595
+          },
+          "TRXUSDT": {
+            "fees": 1.4297086362834066,
+            "funding_pnl": 0.14906604565772572,
+            "net": -2.165166837354122,
+            "price_pnl": -0.8845242467284412
+          },
+          "UNIUSDT": {
+            "fees": 0.9522864656189973,
+            "funding_pnl": -0.022685881558405813,
+            "net": 2.0885596460009586,
+            "price_pnl": 3.0635319931783616
+          },
+          "XLMUSDT": {
+            "fees": 1.045428145993316,
+            "funding_pnl": 0.2183690709803154,
+            "net": -4.074761693399444,
+            "price_pnl": -3.2477026183864446
+          },
+          "XRPUSDT": {
+            "fees": 0.7133298629170617,
+            "funding_pnl": -0.06392013174716037,
+            "net": -1.42817859799053,
+            "price_pnl": -0.6509286033263079
+          },
+          "YFIUSDT": {
+            "fees": 0.5645377514529304,
+            "funding_pnl": 0.08774061951449731,
+            "net": 0.30811538486831624,
+            "price_pnl": 0.7849125168067492
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1438,
+        "cash_time_pct": 8.207762557077626,
+        "entries": 779,
+        "fees_pct_initial": 31.056875193795364,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 10704
+        },
+        "funding_pct_initial": 0.44127210104408576,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.21352736175579262,
+        "max_drawdown_pct": 49.68678308888682,
+        "monthly_returns_pct": {
+          "2022-01": -5.918242783756844,
+          "2022-02": -0.4972054314911212,
+          "2022-03": -0.8604361981161213,
+          "2022-04": 1.688182398560567,
+          "2022-05": 1.7099811873009463,
+          "2022-06": -8.98476044636869,
+          "2022-07": -5.408203456843341,
+          "2022-08": -6.079054811207696,
+          "2022-09": 2.60734044886044,
+          "2022-10": -9.993319280830448,
+          "2022-11": 7.371295607446959,
+          "2022-12": -7.4343066376622025,
+          "2023-01": -1.1836751465003292,
+          "2023-02": 2.8930367775901855,
+          "2023-03": -14.420127460245237,
+          "2023-04": -2.1465018367312405,
+          "2023-05": -0.6549110306819483,
+          "2023-06": -3.316397160081297,
+          "2023-07": -6.402866588787215,
+          "2023-08": -0.6740667088151686,
+          "2023-09": -0.5447420981290918,
+          "2023-10": -3.7825831621060457,
+          "2023-11": 7.036533938913703,
+          "2023-12": -2.0951816047084626
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4353,
+        "positive_months": 6,
+        "rebalances": 730,
+        "return_pct": -45.68148544948928,
+        "stop_count": 178,
+        "traded_notional_multiple_initial": 207.04583462530238
+      },
+      "net_cagr_pct": -26.29890465501159,
+      "period": "development",
+      "portfolio_trailing": 0.04,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 2,
+      "side_cost": 0.0015,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 29
+    },
+    {
+      "active_decision_days": 685,
+      "end": "2024-01-01",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": {
+        "adverse_intrahour_drawdown_bound_pct": 68.63381715827568,
+        "asset_attribution_pct_initial": {
+          "AAVEUSDT": {
+            "fees": 1.0214120232357071,
+            "funding_pnl": 0.01757962400430112,
+            "net": 1.979941979352942,
+            "price_pnl": 2.9837743785843482
+          },
+          "ADAUSDT": {
+            "fees": 1.3409178744520478,
+            "funding_pnl": 0.005066946862036206,
+            "net": -0.5143622477196822,
+            "price_pnl": 0.8214886798703293
+          },
+          "BCHUSDT": {
+            "fees": 2.2664510859385647,
+            "funding_pnl": 0.38026067448933887,
+            "net": 0.4251259228421119,
+            "price_pnl": 2.3113163342913374
+          },
+          "BNBUSDT": {
+            "fees": 2.323538974236543,
+            "funding_pnl": -0.3793122397291877,
+            "net": 0.5567442399890796,
+            "price_pnl": 3.25959545395481
+          },
+          "BTCUSDT": {
+            "fees": 8.436986409544508,
+            "funding_pnl": -0.033278619185071114,
+            "net": -10.431896036279051,
+            "price_pnl": -1.9616310075494723
+          },
+          "CRVUSDT": {
+            "fees": 1.615564502376139,
+            "funding_pnl": 0.11257152364199335,
+            "net": -1.9767788599895844,
+            "price_pnl": -0.47378588125543886
+          },
+          "DOGEUSDT": {
+            "fees": 2.1666763912960287,
+            "funding_pnl": 0.033141302889769686,
+            "net": -5.270449365590749,
+            "price_pnl": -3.1369142771844896
+          },
+          "DOTUSDT": {
+            "fees": 2.261644411033657,
+            "funding_pnl": 0.024190421374896465,
+            "net": 1.3838587323719935,
+            "price_pnl": 3.621312722030754
+          },
+          "EOSUSDT": {
+            "fees": 1.887398750855325,
+            "funding_pnl": 0.11271012339270786,
+            "net": -0.7746959411085476,
+            "price_pnl": 0.9999926863540695
+          },
+          "ETHUSDT": {
+            "fees": 12.514369556502464,
+            "funding_pnl": -0.12263613859877663,
+            "net": -39.85081291014498,
+            "price_pnl": -27.21380721504374
+          },
+          "GRTUSDT": {
+            "fees": 1.880234171573868,
+            "funding_pnl": 0.0389262824429798,
+            "net": 0.6207620164919034,
+            "price_pnl": 2.462069905622792
+          },
+          "LINKUSDT": {
+            "fees": 1.2970428577057351,
+            "funding_pnl": -0.05560913940677896,
+            "net": -1.437417371081299,
+            "price_pnl": -0.08476537396878499
+          },
+          "LTCUSDT": {
+            "fees": 1.9305545161679916,
+            "funding_pnl": 0.08449398521169325,
+            "net": 4.079744478202138,
+            "price_pnl": 5.925805009158436
+          },
+          "MKRUSDT": {
+            "fees": 1.6066689530153542,
+            "funding_pnl": -0.10153450453258395,
+            "net": -5.894335116980887,
+            "price_pnl": -4.186131659432949
+          },
+          "SUSHIUSDT": {
+            "fees": 0.9366805933110761,
+            "funding_pnl": 0.02405891045564136,
+            "net": -1.6257471126631098,
+            "price_pnl": -0.7131254298076749
+          },
+          "TRXUSDT": {
+            "fees": 2.438182388955241,
+            "funding_pnl": 0.13615353242525977,
+            "net": -3.5818375193793632,
+            "price_pnl": -1.2798086628493823
+          },
+          "UNIUSDT": {
+            "fees": 1.5176042376218144,
+            "funding_pnl": -0.03550440765014059,
+            "net": 2.1518123739475143,
+            "price_pnl": 3.7049210192194697
+          },
+          "XLMUSDT": {
+            "fees": 1.8487973431759348,
+            "funding_pnl": 0.19519135856466788,
+            "net": -4.781775785892275,
+            "price_pnl": -3.128169801281009
+          },
+          "XRPUSDT": {
+            "fees": 1.226357813599904,
+            "funding_pnl": -0.04887456484910216,
+            "net": -1.4778131827463452,
+            "price_pnl": -0.20258080429733888
+          },
+          "YFIUSDT": {
+            "fees": 0.9201492894438369,
+            "funding_pnl": 0.07284129520685628,
+            "net": -0.5830260821014951,
+            "price_pnl": 0.26428191213548563
+          }
+        },
+        "bounded_settlements": [],
+        "cash_hours": 1506,
+        "cash_time_pct": 8.595890410958905,
+        "entries": 807,
+        "fees_pct_initial": 51.437232144041666,
+        "funding_observations": {
+          "exact_marks": 0,
+          "exact_marks_within_previous_candle_only": 0,
+          "hourly_bounds": 10637
+        },
+        "funding_pct_initial": 0.4604363670104998,
+        "margin_stress_failures": 0,
+        "max_abs_net_weight": 0.21387889600654061,
+        "max_drawdown_pct": 68.49939694798113,
+        "monthly_returns_pct": {
+          "2022-01": -7.161591994720029,
+          "2022-02": -1.796770996885766,
+          "2022-03": -2.2857266339252336,
+          "2022-04": -1.299579037913634,
+          "2022-05": 0.4743695700434758,
+          "2022-06": -10.816253106692397,
+          "2022-07": -5.815538180503288,
+          "2022-08": -6.731984884162145,
+          "2022-09": 0.36200931071057596,
+          "2022-10": -14.55646608887573,
+          "2022-11": 5.4638764821842045,
+          "2022-12": -8.828736609009702,
+          "2023-01": -2.653215649492502,
+          "2023-02": 0.9799041157307453,
+          "2023-03": -18.014504647645126,
+          "2023-04": -3.30256546163723,
+          "2023-05": -2.6230146207476657,
+          "2023-06": -5.8761686630453,
+          "2023-07": -10.909834692349019,
+          "2023-08": -2.206998684363337,
+          "2023-09": -2.0218109359516623,
+          "2023-10": -6.0997243466138995,
+          "2023-11": 4.339215921714179,
+          "2023-12": -3.208894983886512
+        },
+        "months": 24,
+        "observed_hours": 17520,
+        "order_changes": 4370,
+        "positive_months": 5,
+        "rebalances": 730,
+        "return_pct": -67.00295778847818,
+        "stop_count": 216,
+        "traded_notional_multiple_initial": 171.4574404801384
+      },
+      "net_cagr_pct": -42.556948016734154,
+      "period": "development",
+      "portfolio_trailing": 0.04,
+      "relies_on_bounded_settlements": false,
+      "risk_scale": 2,
+      "side_cost": 0.003,
+      "start": "2022-01-01",
+      "status": "complete",
+      "stop_tick_count": 35
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": null,
+      "risk_scale": 1,
+      "side_cost": 0.0015,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": null,
+      "risk_scale": 1,
+      "side_cost": 0.003,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": 0.04,
+      "risk_scale": 1,
+      "side_cost": 0.0015,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": 0.04,
+      "risk_scale": 1,
+      "side_cost": 0.003,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": null,
+      "risk_scale": 2,
+      "side_cost": 0.0015,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": null,
+      "risk_scale": 2,
+      "side_cost": 0.003,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": 0.04,
+      "risk_scale": 2,
+      "side_cost": 0.0015,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    },
+    {
+      "end": "2026-09-26",
+      "error": "unverified execution liquidity EOSUSDT at 1747875600000",
+      "meets_nominal_target": false,
+      "meets_target_and_adverse_bound": false,
+      "metrics": null,
+      "period": "combined",
+      "portfolio_trailing": 0.04,
+      "risk_scale": 2,
+      "side_cost": 0.003,
+      "start": "2024-01-01",
+      "status": "invalid_execution"
+    }
+  ],
+  "selected_winner": null,
+  "weekly_reproduction": {
+    "none/double_stress": {
+      "absolute_tolerance": 1e-09,
+      "daily_path_and_orders_equal": true,
+      "differences": {
+        "fees_pct_initial": 0.0,
+        "max_drawdown_pct": 0.0,
+        "return_pct": 0.0,
+        "stop_count": 0
+      },
+      "passed": true
+    },
+    "none/stress": {
+      "absolute_tolerance": 1e-09,
+      "daily_path_and_orders_equal": true,
+      "differences": {
+        "fees_pct_initial": 0.0,
+        "max_drawdown_pct": 0.0,
+        "return_pct": 0.0,
+        "stop_count": 0
+      },
+      "passed": true
+    },
+    "portfolio_pct_4pct/double_stress": {
+      "absolute_tolerance": 1e-09,
+      "daily_path_and_orders_equal": true,
+      "differences": {
+        "fees_pct_initial": 0.0,
+        "max_drawdown_pct": 0.0,
+        "return_pct": 0.0,
+        "stop_count": 0
+      },
+      "passed": true
+    },
+    "portfolio_pct_4pct/stress": {
+      "absolute_tolerance": 1e-09,
+      "daily_path_and_orders_equal": true,
+      "differences": {
+        "fees_pct_initial": 0.0,
+        "max_drawdown_pct": 0.0,
+        "return_pct": 0.0,
+        "stop_count": 0
+      },
+      "passed": true
+    }
+  }
+}
