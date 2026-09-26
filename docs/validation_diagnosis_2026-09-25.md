@@ -36,6 +36,8 @@ An exploratory WBETH plus short-ETH perpetual replay had complete monthly
 price and funding inputs for January 2024-August 2026, but only 4/32 months
 showed positive stressed cash; 2025 and 2026 were negative even without the
 separate depeg and capital charges.
+The analogous BNSOL plus short-SOL replay had only 2/22 positive months,
+both in 2024; every evaluated 2025-2026 month was negative after costs.
 
 ## Existing 15 minute Laya checkpoint
 
@@ -392,6 +394,36 @@ The ignored complete public API report is
 `4ab792e837c9ec2867f91b2fac3f8ce0c579f213c7402c1bdd7b031473c19c00`.
 Reproduce the same fixed historical window with
 `uv run python -u scripts/wbeth_funding_monthly_replay.py`.
+
+### BNSOL/SOL perpetual monthly replay
+
+The [BNSOL rule](bnsol_funding_monthly_replay_protocol.md), committed at
+`10ba64d` before reading older data, reused the WBETH replay's monthly
+economics unchanged for all complete BNSOLSOL months available from
+November 2024 through August 2026. It is also **post-selection exploration**:
+the recent BNSOL/SOL close-price change and SOLUSDT funding had already been
+previewed. The public archive has all 670 daily closes in each of the three
+required series and 2,007 SOLUSDT funding events; all 22 monthly entry/exit
+and settlement windows were evaluable.
+
+Only **2/22 months** had positive stressed cash, both in November-December
+2024, against the fixed 17/22 preliminary gate. Every month in 2025 and
+January-August 2026 was negative. Annualized stressed return on the 2.05x
+reserve was **-4.754% in 2025 and -6.193% in 2026 to August**. The gross
+close-price proxies before all costs were +3.478% and +2.061% respectively,
+also below the 4% research hurdle. Even excluding depeg stress and capital
+charge, 2025 and 2026 remain negative after fixed trading fees and slippage
+(-16.949 and -30.872 USDT across the monthly 1,000-USDT positions). The
+two-month 2024 inception segment is too short to establish a durable edge.
+Daily closes omit executable depth and the intraday October 2025
+[BNSOL depeg and collateral liquidation event](https://www.binance.com/en/support/announcement/detail/0989d6c7f32545bfb019e3249eaabc3f);
+account margin and redemption remain unverified. No order or shadow position
+was opened.
+
+The ignored complete API report is `outputs/bnsol_funding_monthly_replay.json`,
+SHA256 `b0608ca2e43bf6304e610fff9793a92cddfff7643d52d01ee119efe120736e03`.
+Reproduce the fixed historical window with
+`uv run python -u scripts/bnsol_funding_monthly_replay.py`.
 
 ## BTC/ETH spot versus quarterly delivery futures
 
