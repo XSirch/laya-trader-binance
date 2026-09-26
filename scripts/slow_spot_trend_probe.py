@@ -39,7 +39,8 @@ def load_prices(last_month: str) -> pd.DataFrame:
         raise RuntimeError(f"Incomplete spot archive coverage: {failures}")
     prices = pd.concat({symbol: spot_opens(symbol, last_month)
                         for symbol in SYMBOLS}, axis=1).sort_index()
-    expected = pd.date_range("2023-01-01", prices.index[-1], tz="UTC", freq="D")
+    expected = pd.date_range(pd.Timestamp("2023-01-01", tz="UTC"),
+                             prices.index[-1], freq="D")
     if not prices.index.equals(expected) or prices.isna().any().any():
         raise ValueError("Spot daily opens have a date gap")
     if not np.isfinite(prices.to_numpy()).all() or prices.le(0).any().any():

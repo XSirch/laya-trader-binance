@@ -162,6 +162,17 @@ A separate, unlevered spot rule was motivated by [Han, Kang and Ryu's time-serie
 
 The calibration profit came mainly from May (+14.95% assigned to exit month); January and June lost money, and February-April held cash. The prespecified gate needed at least 12 invested windows, four positive months, positive stressed return, less than 25% modeled drawdown, and a positive lower block-bootstrap bound. It failed three of those five checks, despite the positive aggregate return. The same-date equal-weight spot buy-and-hold basket returned -14.88% during calibration, but avoiding that drawdown in this one period does not establish robust profit. The 2025 H2 outcome was not calculated. Run `uv run python -u scripts/market_trend_28_5_probe.py`; the report and window ledger are ignored under `outputs/`. The local report SHA256 is `79b45f8b76f7ab60e09d6262f22405ce8f2d11acf51040116f63bb9e591c9f13`.
 
+## Slow BTC/ETH spot trend, 365-day signal and monthly hold
+
+The distinct, unlevered slow-trend rule and gate were fixed in `docs/slow_spot_trend_protocol.md` at commit `27ade9f`, before calculating this rule's monthly results. It bought BTC and/or ETH spot for one month when that coin's own 365-day return through the previous daily open was positive. Each eligible coin received 49.5% of capital, with idle USDT earning zero. Every month paid a full 12 bps-per-side round trip; the stress raised this to 14 bps per side. The 62 required monthly archives for 2023-July 2025 were present, and the replay required a continuous daily series.
+
+| Stage | Active coin-months | Positive months | Stressed compounded return | Maximum modeled daily drawdown | Two-month block 95% interval for stressed mean month |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| February-December 2024 development | 22 | 6/11 | +74.94% | -36.31% | [-2.78%, +17.80%] |
+| January-June 2025 calibration | 8 | 4/6 | **-12.37%** | **-32.31%** | [-11.36%, +4.98%] |
+
+The predeclared calibration gate failed on stressed profit, drawdown and the bootstrap lower bound. February 2025 alone lost 24.89% in the stressed monthly replay and dominated the half-year loss. The 2025 H2 return was not calculated for this rule. This daily-open simulation does not establish fill availability at that price or the assumed slippage for a specific account. Reproduce with `uv run python -u scripts/slow_spot_trend_probe.py`; the ignored report SHA256 is `541e4819abe0d3d169440379ad1f3a00a6b1381f2bf25a4ce771af2cbaca9b21`.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
@@ -286,6 +297,6 @@ The local report SHA256 is `98c45a5b591eec14701a95edd7679f66c14c08b8e3f64ab1ee3f
 
 ## Next research gate
 
-The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, both fixed book-depth pilots, wider-barrier and daily-horizon label probes, weekly and daily cross-sectional carry rules, and both momentum families fail their calibration or out-of-sample execution gate. The separate spot-perpetual hedge screen showed positive historical monthly returns, but its initial consistency gate failed in 2024 H2 and the retained-position version breached modeled futures margin in November 2024. A daily, better-collateralized carry replay stayed above its modeled margin requirement yet failed its cost-stressed 2025 gate. The quarterly BTC/ETH basis rule has now also failed the frozen 2026 evaluation after costs. Avoid more changes to these rules based on already inspected periods; a fresh prospective period and exchange-specific execution evidence are needed before revisiting them. A positive independent-signal average by itself is insufficient.
+The existing 15m Laya checkpoint, 1h/4h price-flow baselines, lagged funding, premium-index and positioning-metrics probes, both fixed book-depth pilots, wider-barrier and daily-horizon label probes, weekly and daily cross-sectional carry rules, and both short- and slow-horizon spot trend rules fail their calibration or out-of-sample execution gate. The separate spot-perpetual hedge screen showed positive historical monthly returns, but its initial consistency gate failed in 2024 H2 and the retained-position version breached modeled futures margin in November 2024. A daily, better-collateralized carry replay stayed above its modeled margin requirement yet failed its cost-stressed 2025 gate. The quarterly BTC/ETH basis rule has now also failed the frozen 2026 evaluation after costs. Avoid more changes to these rules based on already inspected periods; a fresh prospective period and exchange-specific execution evidence are needed before revisiting them. A positive independent-signal average by itself is insufficient.
 
 Earlier exploratory scripts and generated data are retained locally under `outputs/`, which is ignored by Git. The premium-index, funding, wider-barrier, carry, positioning-metrics, daily-horizon, daily cross-sectional, momentum, and book-depth scripts are tracked under `scripts/`. The Colab A100 runtime was disconnected after confirming the checkpoint and reports were in Drive.
