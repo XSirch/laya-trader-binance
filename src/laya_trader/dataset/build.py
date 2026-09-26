@@ -254,6 +254,8 @@ def build_dataset(config_path: str | Path) -> dict:
             "fee_bps_per_side": cfg.labels.fee_bps_per_side,
             "slippage_bps_per_side": cfg.labels.slippage_bps_per_side,
             "min_edge_r": cfg.labels.min_edge_r,
+            "drop_ambiguous": cfg.labels.drop_ambiguous,
+            "same_bar_touch_resolution": "stop_for_affected_side",
         },
         "splits": {},
         "errors": errors,
@@ -289,6 +291,8 @@ def build_dataset(config_path: str | Path) -> dict:
                 "start": pd.Timestamp(combined["timestamp"].min()).isoformat(),
                 "end": pd.Timestamp(combined["timestamp"].max()).isoformat(),
                 "argmax_action": counts,
+                "ambiguous_long_rows": int(combined["long_ambiguous"].sum()),
+                "ambiguous_short_rows": int(combined["short_ambiguous"].sum()),
             }
         else:
             parquet_path.unlink(missing_ok=True)

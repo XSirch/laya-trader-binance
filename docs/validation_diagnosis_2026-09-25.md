@@ -2,7 +2,7 @@
 
 ## Decision
 
-No candidate has demonstrated a robust, executable edge after costs. Multiple exploratory probes have now inspected 2025 H2, so it is no longer an untouched holdout for these ideas. The frozen quarterly-basis rule also failed its January-September 2026 final test, reported below. Do not launch another full Laya training run or enable live orders on the current evidence.
+No candidate has demonstrated a robust, executable edge after costs. Multiple exploratory probes have now inspected 2025 H2, so it is no longer an untouched holdout for these ideas. The frozen quarterly-basis rule also failed its January-September 2026 final test. A later audit found future-dependent ambiguous-bar exclusion in the older label dataset; the corrected positioning-metrics evaluation also fails below. Do not launch another full Laya training run or enable live orders on the current evidence.
 
 ## Existing 15 minute Laya checkpoint
 
@@ -79,7 +79,7 @@ The large earlier gain was mostly relative price movement, not funding carry, an
 
 The current 15m `tradeable` target comes from `max(long_r, short_r)` after observing the future path. In the local training split, 69.09% of rows had a positive best-side return in hindsight, although the mean long and mean short returns were -0.2867 R and -0.2428 R after costs. This distinction can explain why the model predicts tradeability near 0.68 while its action probabilities stay nearly uniform. It is an inference from the label definition and measured splits, not proof that a different label would create a tradable edge. A future label or teacher should estimate conditional expected net return from causal inputs, then be checked out of sample before spending GPU time.
 
-## Historical positioning-metrics probe
+## Historical positioning-metrics probe (legacy labels; corrected below)
 
 Downloaded 5,480 daily archives for the same five symbols from the [Binance USD-M metrics archive](https://data.binance.vision/?prefix=data/futures/um/daily/metrics/), covering 2023-2025. Each archive contains five-minute open-interest value, top-trader and global long/short ratios, and taker-volume ratios. The fixed features were the 24-hour change in open-interest value, the two long/short ratios, their log difference, and the trailing one-hour taker ratio. Every metric was joined at least one hour after its source timestamp; stale or incomplete observations were excluded. The baseline and augmented model used the same rows, weak gradient booster, 14 bps round-trip cost, and conservative nonoverlap per symbol. Threshold selection used only 2025 H1. The project trade-count rule requires `max(100, 0.5% of split rows)`: 107 calibration trades and 108 validation trades here.
 
@@ -93,6 +93,22 @@ Downloaded 5,480 daily archives for the same five symbols from the [Binance USD-
 The even-sample metrics variant falls 13 trades short of the 108-trade validation minimum. Its 95% week-block bootstrap interval for mean R is [-0.1126, +0.4711]. With the full training set, the metrics variant falls 15 trades short and misses the profitable-month requirement; its interval is [-0.2583, +0.3612] R. ETH was negative in both variants, and the results are sensitive to the training sample. As a further chronological check, training on full 2023 data and selecting on 2024 H1 produced no qualifying threshold for either model; the metrics variant at threshold 0.10 had 122 calibration trades, +0.0762 R, and only 3/6 positive months. Its 2024 H2 was therefore not used. These are exploratory 2025 H2 comparisons, which have already been inspected by several hypotheses. Funding cash flows, portfolio sizing, and simultaneous cross-symbol exposure are not included. Neither variant supports a new GPU run or use of the untouched 2026 final test.
 
 The dataset and probe scripts are `scripts/build_one_hour_full_five.py`, `scripts/metrics_probe.py`, `scripts/metrics_inner_probe.py`, and `scripts/analyze_metrics_probe.py`. Build the uncapped dataset with `uv run python -u scripts/build_one_hour_full_five.py`, then run the main probe with `uv run --with scikit-learn python -u scripts/metrics_probe.py --full-data --validation`. Daily source ZIPs and JSON reports remain in ignored `outputs/` files.
+
+### Correction: ambiguous-bar selection
+
+The original 1h metrics data inherited `drop_ambiguous = true`. It removed a row whenever a future candle first touched both the target and stop for either side. A live decision cannot know that fact, so the original metrics table above is a diagnostic of a future-filtered sample, not valid evidence of tradable profit. The common labeling code and dataset configuration now retain these rows and score the affected side as a stop when OHLC data cannot establish intrabar order. New dataset manifests record the ambiguity policy and per-split counts. Existing generated datasets and the completed Laya checkpoint still reflect their original labeling; they are not retroactively corrected. The local dataset manifest's old config hash differs from the current configuration hash, so resuming that checkpoint against a newly built dataset would mix label policies.
+
+The five-symbol 1h data was rebuilt through 2025 with the same features, model, cost, chronological splits, and conservative full-horizon nonoverlap. Calibration still selected thresholds only from 2025 H1; 2025 H2 remained the next period. The corrected outcomes were:
+
+| Training sample | 2025 H1 selection | 2025 H2 after 14 bps cost | Additional 4 bps stress | H2 gate |
+|---|---|---|---:|---|
+| Full 2023-2024, plus metrics | 0.075; 133 trades; +0.2558 R; 4/6 positive months | 118 trades; +0.0130 R; 2/6 positive months | -0.0236 R | Fail |
+| Even sampled, plus metrics | No threshold passed calibration | Not evaluated | Not evaluated | Fail |
+| Even sampled, price/flow only | 0.075; 153 trades; +0.1462 R; 5/6 positive months | 121 trades; -0.0237 R; 2/6 positive months | -0.0579 R | Fail |
+
+The corrected full-data metric model had 86,845 training, 21,540 calibration, and 21,790 validation rows after causal metric availability checks. The even-sampled training variant had 12,533 rows. The trade minimums remained 107 and 108. The original full-data metric result was +0.0767 R on 93 H2 trades; the corrected evaluation is much weaker despite covering more rows. The even-sampled metric variant no longer qualifies for validation. Neither justifies evaluating 2026 or spending another GPU run. Reproduce the corrected research with `uv run python -u scripts/build_one_hour_conservative_five.py`, then `uv run --with scikit-learn python -u scripts/metrics_conservative_probe.py` and its `--even-train` variant. The generated datasets, trades, and reports are ignored under `outputs/`.
+
+The local corrected full-data report SHA256 is `9fd873a5491e43814b182c2682021408af7d30333aee05a73bc02bd995e25352`; the even-sampled report SHA256 is `8e32343a21dcbbbdffa4c6627e64a599ab421d1713bd44cf5d2a8cce1bd7a06b2`.
 
 ## Daily-horizon label probe
 

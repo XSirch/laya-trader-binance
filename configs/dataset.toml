@@ -44,7 +44,7 @@ slippage_bps_per_side = 2.0
 min_edge_r = 0.10
 target_temperature = 0.35
 tradeable_temperature = 0.25
-drop_ambiguous = true
+drop_ambiguous = false
 
 [splits]
 train_end = "2024-12-31T23:59:59Z"

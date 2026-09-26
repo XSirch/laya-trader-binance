@@ -36,7 +36,7 @@ class LabelConfig:
     min_edge_r: float = 0.10
     target_temperature: float = 0.35
     tradeable_temperature: float = 0.25
-    drop_ambiguous: bool = True
+    drop_ambiguous: bool = False
 
 
 @dataclass(frozen=True)

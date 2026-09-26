@@ -76,6 +76,11 @@ def add_triple_barrier_labels(df: pd.DataFrame, cfg: LabelConfig) -> pd.DataFram
         np.where(ssl_idx < stp_idx, -1.0, (entry - time_exit) / risk_distance),
     )
 
+    # OHLC bars do not reveal which barrier was touched first inside one bar.
+    # Keep the row and charge the stop to the affected side when the order is unknown.
+    long_r = np.where(long_ambiguous, -1.0, long_r)
+    short_r = np.where(short_ambiguous, -1.0, short_r)
+
     round_trip_bps = 2.0 * (cfg.fee_bps_per_side + cfg.slippage_bps_per_side)
     round_trip_return = round_trip_bps * 1e-4
     cost_r = round_trip_return / (risk_distance / entry)
