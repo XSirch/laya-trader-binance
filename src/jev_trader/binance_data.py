@@ -108,11 +108,11 @@ def _time_ms(raw: str) -> int:
     return value
 
 
-def spacing_gaps(bars: list[Bar]) -> list[dict]:
+def spacing_gaps(bars: list[Bar], max_gap_hours: int = 24) -> list[dict]:
     gaps = []
     for previous, current in zip(bars, bars[1:]):
         delta = current.open_ms - previous.open_ms
-        if delta <= 0 or delta % HOUR_MS != 0 or delta > 24 * HOUR_MS:
+        if delta <= 0 or delta % HOUR_MS != 0 or delta > max_gap_hours * HOUR_MS:
             raise ValueError(f"invalid timestamp spacing near {previous.open_ms}")
         if delta > HOUR_MS:
             gaps.append({"after_open_ms": previous.open_ms,
@@ -121,7 +121,7 @@ def spacing_gaps(bars: list[Bar]) -> list[dict]:
     return gaps
 
 
-def parse_archive(path: Path) -> list[Bar]:
+def parse_archive(path: Path, max_gap_hours: int = 24) -> list[Bar]:
     with zipfile.ZipFile(path) as archive:
         names = [name for name in archive.namelist() if name.lower().endswith(".csv")]
         if len(names) != 1:
@@ -148,7 +148,7 @@ def parse_archive(path: Path) -> list[Bar]:
                 result.append(bar)
     if not result:
         raise ValueError(f"empty archive: {path}")
-    spacing_gaps(result)
+    spacing_gaps(result, max_gap_hours)
     return result
 
 

@@ -51,6 +51,23 @@ The extended implementation corrects entry-cost compounding: entry costs reduce
 capital before the subsequent market return. Earlier reports retain their
 historical values; fresh replays use the corrected execution arithmetic.
 
+## Derivatives research (simulation only)
+
+The ongoing research now includes fully collateralized spot/perpetual carry,
+long/short futures hypotheses, and causal mixtures of strategy signals. All use
+observed funding and futures/mark-price history; none can place an order.
+
+```powershell
+uv run python -m jev_trader.derivatives_data
+uv run python -m jev_trader.carry
+uv run python -m jev_trader.directional
+uv run python -m jev_trader.adaptive
+```
+
+The first command obtains and verifies public archives. The loader supplements
+missing monthly candles only from separately checksum-verified daily archives.
+See the [derivatives research checkpoint](docs/derivatives_research_2026-09-26.md).
+
 ## Fixed research design
 
 - Data: official Binance Spot 1h archives, 2023-01 through 2026-08 inclusive. Each ZIP is matched to its `.CHECKSUM`; timestamp gaps and OHLC sanity are checked. The extra August archive supplies the 2026-08-01 exit open. No candle is invented for a gap. The exact source ZIP hashes and gap counts are recorded in `data/binance/spot/1h/manifest.json`.
