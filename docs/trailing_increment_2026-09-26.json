@@ -1,0 +1,207 @@
+{
+  "aggregate_return_difference_pp": 8.409643313536552,
+  "analysis_sha256": "8e98384237375fc71a97a78827e33c1cb5d3c8fde496685d9a7e4d67dcb2131d",
+  "asset_incremental_attribution_pp": {
+    "AAVEUSDT": 1.8204013666527168,
+    "ADAUSDT": 0.380282693379687,
+    "BCHUSDT": -2.215106386310364,
+    "BNBUSDT": -1.3063240306824149,
+    "BTCUSDT": -0.10009251054934087,
+    "CRVUSDT": 0.9268402153274676,
+    "DOGEUSDT": 4.164503733834548,
+    "DOTUSDT": 0.5347528694496004,
+    "EOSUSDT": 0.4104423876193093,
+    "ETHUSDT": -0.5370158563147434,
+    "GRTUSDT": -0.9089718762869063,
+    "LINKUSDT": 1.2944379011883775,
+    "LTCUSDT": 0.56380619353945,
+    "MKRUSDT": 0.022529889136375374,
+    "SUSHIUSDT": 2.7120155668907717,
+    "TRXUSDT": -0.1298582237535797,
+    "UNIUSDT": -2.012280925353542,
+    "XLMUSDT": 2.8738921946639193,
+    "XRPUSDT": -0.10752852965699267,
+    "YFIUSDT": 0.02291664075475297
+  },
+  "best_incremental_days": [
+    [
+      "1732406400000",
+      0.03214251228352359
+    ],
+    [
+      "1733702400000",
+      0.020002538592287178
+    ],
+    [
+      "1711670400000",
+      0.012683600358807053
+    ],
+    [
+      "1731283200000",
+      0.011549080667348239
+    ],
+    [
+      "1752969600000",
+      0.01103828910569045
+    ],
+    [
+      "1790380800000",
+      0.010192040136628873
+    ],
+    [
+      "1787356800000",
+      0.009400932040290251
+    ],
+    [
+      "1732320000000",
+      0.008148516090892089
+    ],
+    [
+      "1740700800000",
+      0.007070377025002865
+    ],
+    [
+      "1711929600000",
+      0.006989679217412596
+    ]
+  ],
+  "deployable": false,
+  "limits": [
+    "Paired relative equity is a diagnostic, not a separately tradable strategy.",
+    "Zeroing selected historical increments is an ex-post concentration diagnostic, not a simulated executable portfolio.",
+    "Asset attribution differences include changed exposure and compounding; removing an asset requires a new replay.",
+    "Bootstrap adjusts only nine trailing variants, not the full prior research history.",
+    "All observations were previously inspected; no prospective confirmation."
+  ],
+  "monthly_relative_returns_pct": {
+    "2024-01": 0.0,
+    "2024-02": 0.0,
+    "2024-03": 1.237743371334199,
+    "2024-04": -0.051980001202767134,
+    "2024-05": -3.219646771412954e-13,
+    "2024-06": 3.9968028886505635e-13,
+    "2024-07": -1.887379141862766e-13,
+    "2024-08": 3.552713678800501e-13,
+    "2024-09": -3.3306690738754696e-13,
+    "2024-10": 6.883382752675971e-13,
+    "2024-11": 5.790980854324457,
+    "2024-12": 2.368571451926438,
+    "2025-01": 8.881784197001252e-13,
+    "2025-02": -0.5418548658693179,
+    "2025-03": -1.0370134838889267,
+    "2025-04": 4.440892098500626e-14,
+    "2025-05": 0.11029495250447496,
+    "2025-06": -3.9968028886505635e-13,
+    "2025-07": -0.17532594893511222,
+    "2025-08": -2.8674396190808693e-09,
+    "2025-09": -2.3314683517128287e-13,
+    "2025-10": 2.6645352591003757e-13,
+    "2025-11": -2.0862480485624224,
+    "2025-12": -4.090191518812958e-08,
+    "2026-01": -2.3314683517128287e-13,
+    "2026-02": 9.769962616701378e-13,
+    "2026-03": 5.995204332975845e-13,
+    "2026-04": 3.1086244689504383e-13,
+    "2026-05": -2.3314683517128287e-13,
+    "2026-06": 1.7763568394002505e-13,
+    "2026-07": -2.6645352591003757e-13,
+    "2026-08": 1.7728552585110746,
+    "2026-09": -0.8351177442916802
+  },
+  "months_outperforming": 5,
+  "months_underperforming": 8,
+  "paired_bootstrap_by_block_days": {
+    "14": {
+      "benchmark": "No-stop portfolio; annualized metrics describe relative wealth, not cash excess or arithmetic alpha.",
+      "block_days": 14,
+      "days": 999,
+      "draws": 2000,
+      "family_size": 9,
+      "limits": [
+        "Centered circular moving-block bootstrap; finite-sample approximation.",
+        "Adjustment covers only the supplied family, not every prior research trial.",
+        "No risk-free yield, live fills, delisting uncertainty or structural breaks are resolved by a p-value."
+      ],
+      "max_mean_reality_check_pvalue": 0.6281859070464768,
+      "seed": 1907,
+      "selected_annualized_geometric_return_95_interval_pct": [
+        -1.793597545677173,
+        7.155181088281848
+      ],
+      "selected_annualized_log_return_pct": 2.3047233584287707,
+      "selected_mean_family_adjusted_pvalue": 0.6281859070464768,
+      "selection": "portfolio_pct_4pct"
+    },
+    "30": {
+      "benchmark": "No-stop portfolio; annualized metrics describe relative wealth, not cash excess or arithmetic alpha.",
+      "block_days": 30,
+      "days": 999,
+      "draws": 2000,
+      "family_size": 9,
+      "limits": [
+        "Centered circular moving-block bootstrap; finite-sample approximation.",
+        "Adjustment covers only the supplied family, not every prior research trial.",
+        "No risk-free yield, live fills, delisting uncertainty or structural breaks are resolved by a p-value."
+      ],
+      "max_mean_reality_check_pvalue": 0.6051974012993503,
+      "seed": 1907,
+      "selected_annualized_geometric_return_95_interval_pct": [
+        -2.1519570336435963,
+        8.308110412899598
+      ],
+      "selected_annualized_log_return_pct": 2.3047233584287707,
+      "selected_mean_family_adjusted_pvalue": 0.6051974012993503,
+      "selection": "portfolio_pct_4pct"
+    },
+    "60": {
+      "benchmark": "No-stop portfolio; annualized metrics describe relative wealth, not cash excess or arithmetic alpha.",
+      "block_days": 60,
+      "days": 999,
+      "draws": 2000,
+      "family_size": 9,
+      "limits": [
+        "Centered circular moving-block bootstrap; finite-sample approximation.",
+        "Adjustment covers only the supplied family, not every prior research trial.",
+        "No risk-free yield, live fills, delisting uncertainty or structural breaks are resolved by a p-value."
+      ],
+      "max_mean_reality_check_pvalue": 0.5787106446776612,
+      "seed": 1907,
+      "selected_annualized_geometric_return_95_interval_pct": [
+        -2.329312713325432,
+        8.822130810135853
+      ],
+      "selected_annualized_log_return_pct": 2.3047233584287707,
+      "selected_mean_family_adjusted_pvalue": 0.5787106446776612,
+      "selection": "portfolio_pct_4pct"
+    },
+    "90": {
+      "benchmark": "No-stop portfolio; annualized metrics describe relative wealth, not cash excess or arithmetic alpha.",
+      "block_days": 90,
+      "days": 999,
+      "draws": 2000,
+      "family_size": 9,
+      "limits": [
+        "Centered circular moving-block bootstrap; finite-sample approximation.",
+        "Adjustment covers only the supplied family, not every prior research trial.",
+        "No risk-free yield, live fills, delisting uncertainty or structural breaks are resolved by a p-value."
+      ],
+      "max_mean_reality_check_pvalue": 0.6066966516741629,
+      "seed": 1907,
+      "selected_annualized_geometric_return_95_interval_pct": [
+        -2.194539385816232,
+        9.172608745546407
+      ],
+      "selected_annualized_log_return_pct": 2.3047233584287707,
+      "selected_mean_family_adjusted_pvalue": 0.6066966516741629,
+      "selection": "portfolio_pct_4pct"
+    }
+  },
+  "relative_gain_after_zeroing_best_incremental_days_pct": {
+    "1": 3.1420986817291303,
+    "10": -6.399794118025204,
+    "3": -0.17471605648218175,
+    "5": -2.4042324136213
+  },
+  "relative_wealth_gain_pct": 6.511200495640179,
+  "source_sha256": "17fb5c7e91728ef4604dc94347647a220fb555dbd9dd3f2ff4319ee451469ff1"
+}
