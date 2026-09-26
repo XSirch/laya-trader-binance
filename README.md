@@ -166,16 +166,17 @@ inputs. Two checksum-verified samples expose duplicate rows and historical
 publication/revision uncertainty; this inventory contains no strategy result.
 
 The [weekly archive plan](docs/positioning_acquisition_protocol_2026-09-26.md)
-freezes 4,896 contract-valid Friday observations for that same cohort. An
-initial 100-file pilot verified every archive, with 80 usable snapshots and
-20 explicitly unavailable because positioning ratios were absent. The
-[matched comparison protocol](docs/positioning_prediction_protocol_2026-09-26.md)
-uses the same eligible assets and dates for the original 60 fields and an
-augmentation with eight positioning fields. Its inputs can be verified
-without fitting or replaying using `.venv-tree/Scripts/python.exe -m
-jev_trader.positioning_research --prepare-only`; the complete acquisition
-must finish first. Archive integrity does not establish historical publication
-timing, and this preparation is not a trading result.
+froze 4,896 contract-valid Friday observations for that same cohort. The
+[completed acquisition](docs/positioning_acquisition_2026-09-26.md) verified
+every archive and retained 3,899 usable snapshots, with quality failures
+explicitly excluded. The [matched comparison](docs/positioning_prediction_research_2026-09-26.md)
+uses the same eligible assets and dates for 60 versus 68 fields. All sixteen
+later scenarios lose money; the sixteen 2023 scenarios remain in cash because
+the required training history is unavailable. No scenario satisfies 50%/10%,
+and the extra fields do not improve aggregate predictive error. Reproduce
+with `.venv-tree/Scripts/python.exe -m jev_trader.positioning_research`;
+`--prepare-only` verifies inputs without training or portfolio replay.
+Archive integrity does not establish historical publication timing.
 
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
