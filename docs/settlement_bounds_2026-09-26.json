@@ -1,0 +1,49 @@
+{
+  "events": [
+    {
+      "symbol": "EOSUSDT",
+      "settlement_ms": 1747818000000,
+      "lower": 0.7615981666666667,
+      "upper": 0.7634580833333333,
+      "minute_count": 30,
+      "rule_url": "https://www.binance.com/en-AU/support/announcement/detail/4bcabddf0e81423ebca242e185bf157d",
+      "event_url": "https://www.binance.com/en/support/announcement/detail/1e89a9ca957c4b0ca7502e60b993e201",
+      "source": {
+        "kind": "indexPriceKlines",
+        "symbol": "EOSUSDT",
+        "month": "2025-05-21",
+        "url": "https://data.binance.vision/data/futures/um/daily/indexPriceKlines/EOSUSDT/1m/EOSUSDT-1m-2025-05-21.zip",
+        "sha256": "253a6184eefd5a8a0523b7f62c98ceefc07d27f5ac2515272f278deda6825053",
+        "bytes": 25714,
+        "frequency": "daily",
+        "interval": "1m"
+      }
+    },
+    {
+      "symbol": "MKRUSDT",
+      "settlement_ms": 1757322000000,
+      "lower": 1648.8463707243332,
+      "upper": 1650.7850756096666,
+      "minute_count": 30,
+      "rule_url": "https://www.binance.com/en-AU/support/announcement/detail/4bcabddf0e81423ebca242e185bf157d",
+      "event_url": "https://www.binance.com/en-GB/support/announcement/binance-will-support-the-maker-mkr-token-swap-redenomination-and-rebranding-to-sky-sky-bf29506a33a94c17a5d5a01e74e646d2",
+      "source": {
+        "kind": "indexPriceKlines",
+        "symbol": "MKRUSDT",
+        "month": "2025-09-08",
+        "url": "https://data.binance.vision/data/futures/um/daily/indexPriceKlines/MKRUSDT/1m/MKRUSDT-1m-2025-09-08.zip",
+        "sha256": "2e43d35b593c93acd46acba1ba5dfe8778ced4bc2d0aeafec8a8c2ca5068de45",
+        "bytes": 36954,
+        "frequency": "daily",
+        "interval": "1m"
+      }
+    }
+  ],
+  "exact_settlement_prices_verified": false,
+  "method": "Bounds on equally weighted 1800-second index average from 30 one-minute OHLC ranges.",
+  "limits": [
+    "Assumes the published general settlement rule applied without an exceptional override.",
+    "Index candle extrema must cover the settlement rule's secondwise samples.",
+    "A bounded accounting scenario is not an observed settlement transaction."
+  ]
+}

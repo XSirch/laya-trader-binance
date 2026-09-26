@@ -30,12 +30,12 @@ def eligible(states):
             and .005 <= f["volatility"] <= .15}
 
 
-def rank_vectors(states):
+def rank_vectors(states, fields=FIELDS):
     """Midranks preserve equal observations instead of inventing symbol alpha."""
     output = {s: [] for s in states}
     if len(states) < 2:
         return output
-    for field in FIELDS:
+    for field in fields:
         values = sorted(f[field] for f in states.values())
         for s, f in states.items():
             lower = sum(v < f[field] for v in values)
@@ -44,7 +44,7 @@ def rank_vectors(states):
     return output
 
 
-def training_weeks(data, states):
+def training_weeks(data, states, fields=FIELDS):
     prices = {s: {b.open_ms: b for b in bars} for s, bars in data["klines"].items()}
     marks = {s: {b.open_ms: b for b in bars} for s, bars in data["markPriceKlines"].items()}
     funding = {s: {} for s in prices}
@@ -58,7 +58,7 @@ def training_weeks(data, states):
         current = eligible({s: rows[t] for s, rows in states.items() if t in rows})
         if len(current) < 8:
             continue
-        vectors, targets = rank_vectors(current), {}
+        vectors, targets = rank_vectors(current, fields), {}
         for s in current:
             if t not in prices[s] or t + WEEK not in prices[s] or any(
                     day not in marks[s] for day in range(t, t + WEEK, DAY_MS)):
@@ -81,14 +81,14 @@ def training_weeks(data, states):
         n = len(current)
         ys = {s: targets[s] - mean for s in current}
         gram = [[sum(vectors[s][a] * vectors[s][b] for s in current) / n
-                 for b in range(len(FIELDS))] for a in range(len(FIELDS))]
-        rhs = [sum(vectors[s][a] * ys[s] for s in current) / n for a in range(len(FIELDS))]
+                 for b in range(len(fields))] for a in range(len(fields))]
+        rhs = [sum(vectors[s][a] * ys[s] for s in current) / n for a in range(len(fields))]
         weeks.append({"signal_ms": t, "label_end_ms": t + WEEK, "gram": gram, "rhs": rhs,
                       "targets": ys, "vectors": vectors})
     return weeks, unavailable, dates
 
 
-def forecasts(states, weeks, dates):
+def forecasts(states, weeks, dates, fields=FIELDS):
     output = {str(p): {s: {} for s in states} for p in PENALTIES}
     audits, errors = [], {str(p): [] for p in PENALTIES}
     labels = {week["signal_ms"]: week for week in weeks}
@@ -101,11 +101,11 @@ def forecasts(states, weeks, dates):
         current = eligible({s: rows[t] for s, rows in states.items() if t in rows})
         if len(current) < 8:
             continue
-        vectors = rank_vectors(current)
+        vectors = rank_vectors(current, fields)
         n = len(known)
-        gram = [[sum(w["gram"][a][b] for w in known) / n for b in range(len(FIELDS))]
-                for a in range(len(FIELDS))]
-        rhs = [sum(w["rhs"][a] for w in known) / n for a in range(len(FIELDS))]
+        gram = [[sum(w["gram"][a][b] for w in known) / n for b in range(len(fields))]
+                for a in range(len(fields))]
+        rhs = [sum(w["rhs"][a] for w in known) / n for a in range(len(fields))]
         audit = {"signal_ms": t, "latest_label_end_ms": max(w["label_end_ms"] for w in known),
                  "first_training_signal_ms": known[0]["signal_ms"], "training_weeks": n,
                  "prediction_assets": len(current), "coefficients": {}}
@@ -154,16 +154,25 @@ def summarize_errors(rows, start, end):
             "direction_accuracy": sum((r["prediction"] > 0) == (r["actual"] > 0) for r in rows) / len(rows)}
 
 
-def run():
+def run(state_builder=None, family="economic", settlement_scenario=False):
     data, _, _ = load_daily()
-    state = features(data)
-    weeks, unavailable, dates = training_weeks(data, state)
-    signals, audits, errors = forecasts(state, weeks, dates)
+    if state_builder is None:
+        state, fields, feature_quality = features(data), FIELDS, {}
+    else:
+        state, fields, feature_quality = state_builder(data)
+    print(f"family={family}; input_fields={len(fields)}", flush=True)
+    weeks, unavailable, dates = training_weeks(data, state, fields)
+    signals, audits, errors = forecasts(state, weeks, dates, fields)
+    print(f"causal forecasts complete: {len(audits)} weekly fits", flush=True)
     hourly, sources = load_hourly(data)
     training, training_sources = load_hourly(data, "training_hourly_manifest.json")
     for kind in hourly:
         for s in hourly[kind]:
             hourly[kind][s].update(training[kind][s])
+    bounds, settlement_evidence = None, None
+    if settlement_scenario:
+        from .settlement_bounds import load as load_settlement
+        bounds, settlement_evidence = load_settlement()
     results = {}
     variants = [(f"ridge{p}_{sizing}", signals[str(p)], sizing) for p in PENALTIES
                 for sizing in ("equal", "inverse_vol")] + [("zero", state, "zero")]
@@ -174,18 +183,22 @@ def run():
             for label, cost in (("base", .001), ("stress", .0015), ("double_stress", .003)):
                 try:
                     m = evaluate(hourly, data["fundingRate"], signal, sizing, *dates, cost,
-                                 target_policy=portfolio)
-                    m["status"] = "complete"
+                                 target_policy=portfolio, settlement_bounds=bounds)
+                    m["status"] = "bounded_settlement_scenario" if m["bounded_settlements"] else "complete"
                 except ValueError as exc:
                     m = {"status": "invalid_execution", "error": str(exc)}
                 results[name][period][label] = m
         m = results[name]["combined"]["stress"]
         print(name, {k: m[k] for k in ("status", "return_pct", "max_drawdown_pct", "positive_months", "months", "error") if k in m}, flush=True)
     candidates = [name for name in results if name != "zero" and
-                  results[name]["development"]["stress"]["status"] == "complete"]
+                  results[name]["development"]["stress"]["status"] in ("complete", "bounded_settlement_scenario")]
     selected = max(candidates, key=lambda name: results[name]["development"]["stress"]["return_pct"]) if candidates else None
-    report = {"created_utc": datetime.now(timezone.utc).isoformat(), "fields": FIELDS, "results": results,
+    report = {"created_utc": datetime.now(timezone.utc).isoformat(), "fields": fields, "results": results,
+              "family": family, "feature_quality": feature_quality,
+              "settlement_scenario": settlement_scenario, "settlement_evidence": settlement_evidence,
               "selected_on_development": selected, "training_audits": audits, "unavailable_label_weeks": unavailable,
+              "selection_scope": "Highest-return trading variant on development, for comparison only; not authorization to trade.",
+              "development_return_positive": selected is not None and results[selected]["development"]["stress"]["return_pct"] > 0,
               "prediction_scores": {p: {period: summarize_errors(rows, *dates) for period, dates in PERIODS.items()}
                                     for p, rows in errors.items()},
               "deployable": False, "verified_hourly_sources": len(sources) + len(training_sources),
@@ -198,12 +211,25 @@ def run():
                          "Training target uses midnight daily opens and adverse daily funding marks; execution delayed to 01:00.",
                          "Unavailable full cross-section weeks are omitted only when training after their end; no imputed delisting price."]}
     curves = {name: row["combined"]["stress"]["daily_equity"] for name, row in results.items()
-              if row["combined"]["stress"]["status"] == "complete"}
+              if row["combined"]["stress"]["status"] in ("complete", "bounded_settlement_scenario")}
     if selected in curves and len(curves) == len(results):
         report["statistical_diagnostic"] = family_bootstrap(curves, selected)
+        if settlement_scenario:
+            report["statistical_diagnostic"]["conditional_on_settlement_bounds"] = True
     else:
         report["statistical_diagnostic"] = {"status": "incomplete_family_execution", "valid_members": list(curves)}
-    (RESULTS / "broad_prediction.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if state_builder is not None:
+        import inspect
+        from pathlib import Path
+        source = Path(inspect.getfile(state_builder))
+        report["source_code_sha256"][source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
+    if settlement_scenario:
+        report["source_code_sha256"]["settlement_bounds.py"] = hashlib.sha256(
+            (ROOT / "src/jev_trader/settlement_bounds.py").read_bytes()).hexdigest()
+    filename = "broad_prediction.json" if family == "economic" else f"broad_{family}_prediction.json"
+    if settlement_scenario:
+        filename = filename.replace(".json", "_settlement_bounds.json")
+    (RESULTS / filename).write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"development selection: {selected}", flush=True)
     return report
 

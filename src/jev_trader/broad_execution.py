@@ -12,7 +12,7 @@ from .cli import ROOT, RESULTS
 
 
 def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1, exact_funding_marks=None,
-             target_policy=None):
+             target_policy=None, settlement_bounds=None):
     if delay_hours not in (1, 2):
         raise ValueError("execution delay must match frozen experiment")
     bars, marks = hourly["klines"], hourly["markPriceKlines"]
@@ -28,11 +28,29 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
     month_start = 1.0
     attribution = {s: {"price_pnl": 0.0, "funding_pnl": 0.0, "fees": 0.0} for s in bars}
     exact_count, bound_count, boundary_mark_count = 0, 0, 0
+    bounded_settlements = []
     start_ms, end_ms = utc_ms(start), utc_ms(end)
     for timestamp in range(start_ms, end_ms + 1, HOUR_MS):
-        for s, q in quantities.items():
+        settled = {}
+        for s, q in list(quantities.items()):
             if timestamp not in bars[s] or timestamp not in marks[s]:
-                raise ValueError(f"unresolved held price {s} at {timestamp}")
+                interval = (settlement_bounds or {}).get((s, timestamp))
+                if interval is None:
+                    raise ValueError(f"unresolved held price {s} at {timestamp}")
+                if not 0 < interval["lower"] <= interval["upper"]:
+                    raise ValueError("invalid settlement bounds")
+                price = interval["lower"] if q > 0 else interval["upper"]
+                pnl = q * (price - previous[s])
+                charge = abs(q) * price * side_cost
+                equity += pnl - charge
+                attribution[s]["price_pnl"] += pnl
+                attribution[s]["fees"] += charge
+                fees += charge
+                bounded_settlements.append({"symbol": s, "timestamp_ms": timestamp, "quantity": q,
+                                            "adverse_scenario_price": price, **interval})
+                settled[s] = q
+                del quantities[s]
+                continue
             price = bars[s][timestamp].open
             pnl = q * (price - previous[s])
             equity += pnl
@@ -72,6 +90,8 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
         if not terminal:
             for s, event in events.get(timestamp, []):
                 scalar = -quantities.get(s, 0) * event.rate
+                if s in settled:
+                    scalar = min(scalar, -settled[s] * event.rate)
                 if rebalance:
                     scalar = min(scalar, -old.get(s, 0) * event.rate)
                 if scalar:
@@ -120,6 +140,7 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
             "entries": entries, "rebalances": len(audit), "margin_stress_failures": margin_failures,
             "monthly_returns_pct": monthly, "positive_months": sum(v > 0 for v in monthly.values()),
             "months": len(monthly), "daily_equity": daily, "execution_audit": audit,
+            "bounded_settlements": bounded_settlements,
             "funding_observations": {"exact_marks": exact_count, "hourly_bounds": bound_count,
                                      "exact_marks_within_previous_candle_only": boundary_mark_count},
             "asset_attribution_pct_initial": {s: {**{k: 100 * v for k, v in values.items()},

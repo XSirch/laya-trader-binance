@@ -29,7 +29,7 @@ class Funding:
 
 
 def fetch(kind, symbol, month, frequency="monthly", interval="1h"):
-    if interval not in ("1h", "1d"):
+    if interval not in ("1m", "1h", "1d"):
         raise ValueError("unsupported research interval")
     suffix = f"{symbol}-fundingRate-{month}.zip" if kind == "fundingRate" else f"{symbol}-{interval}-{month}.zip"
     subpath = f"{kind}/{symbol}/{suffix}" if kind == "fundingRate" else f"{kind}/{symbol}/{interval}/{suffix}"
