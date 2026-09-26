@@ -34,7 +34,7 @@ if __name__ == "__main__":
     for name in ("manifest", "supplements", "hourly_manifest", "cohort", "data_quality", "absent_archives"):
         sources[name] = compact(json.loads((CACHE / f"{name}.json").read_text(encoding="utf-8")))
     save("broad_sources_2026-09-26.json", sources)
-    for name in ("broad_execution", "broad_august"):
+    for name in ("broad_execution", "broad_august", "broad_extension"):
         path = ROOT / "results" / f"{name}.json"
         if path.exists():
             save(f"{name}_2026-09-26.json", compact(json.loads(path.read_text(encoding="utf-8"))))

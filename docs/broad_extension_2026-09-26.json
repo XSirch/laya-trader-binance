@@ -1,0 +1,1140 @@
+{
+  "available_exact_funding_marks": 1422,
+  "created_utc": "2026-09-26T18:01:05.850634+00:00",
+  "deployable": false,
+  "exact_available_funding_diagnostic": {
+    "adverse_intrahour_drawdown_bound_pct": 7.116419166061528,
+    "asset_attribution_pct_initial": {
+      "AAVEUSDT": {
+        "fees": 0.018449165158855408,
+        "funding_pnl": 0.020539660448622963,
+        "net": -2.314247416379783,
+        "price_pnl": -2.3163379116695504
+      },
+      "ADAUSDT": {
+        "fees": 0.0119009141095546,
+        "funding_pnl": 0.00337694512226253,
+        "net": 0.39580739920558095,
+        "price_pnl": 0.40433136819287296
+      },
+      "BCHUSDT": {
+        "fees": 0.04178770328420963,
+        "funding_pnl": -0.007865541174652515,
+        "net": 2.0209913952275507,
+        "price_pnl": 2.070644639686413
+      },
+      "BNBUSDT": {
+        "fees": 0.02921895070858258,
+        "funding_pnl": -0.029497845492831996,
+        "net": 1.4534532272039686,
+        "price_pnl": 1.5121700234053832
+      },
+      "BTCUSDT": {
+        "fees": 0.03452204955900431,
+        "funding_pnl": -0.024449364301541168,
+        "net": 0.6015872450431418,
+        "price_pnl": 0.6605586589036874
+      },
+      "CRVUSDT": {
+        "fees": 0.03198394890744474,
+        "funding_pnl": 0.03253474801815778,
+        "net": -3.311016451810673,
+        "price_pnl": -3.3115672509213856
+      },
+      "DOGEUSDT": {
+        "fees": 0.01636604891711413,
+        "funding_pnl": 0.027242780394188253,
+        "net": -0.35909018758030914,
+        "price_pnl": -0.36996691905738327
+      },
+      "DOTUSDT": {
+        "fees": 0.023339319668193782,
+        "funding_pnl": -0.000961710771459615,
+        "net": -0.325964970621927,
+        "price_pnl": -0.30166394018227355
+      },
+      "EOSUSDT": {
+        "fees": 0.0,
+        "funding_pnl": 0.0,
+        "net": 0.0,
+        "price_pnl": 0.0
+      },
+      "ETHUSDT": {
+        "fees": 0.0,
+        "funding_pnl": 0.0,
+        "net": 0.0,
+        "price_pnl": 0.0
+      },
+      "GRTUSDT": {
+        "fees": 0.0,
+        "funding_pnl": 0.0,
+        "net": 0.0,
+        "price_pnl": 0.0
+      },
+      "LINKUSDT": {
+        "fees": 0.014624369122831304,
+        "funding_pnl": 0.020806339409309444,
+        "net": -1.0136517618305476,
+        "price_pnl": -1.0198337321170257
+      },
+      "LTCUSDT": {
+        "fees": 0.0,
+        "funding_pnl": 0.0,
+        "net": 0.0,
+        "price_pnl": 0.0
+      },
+      "MKRUSDT": {
+        "fees": 0.0,
+        "funding_pnl": 0.0,
+        "net": 0.0,
+        "price_pnl": 0.0
+      },
+      "SUSHIUSDT": {
+        "fees": 0.023215157206629894,
+        "funding_pnl": 0.01342585225505549,
+        "net": -0.05600133396880881,
+        "price_pnl": -0.04621202901723441
+      },
+      "TRXUSDT": {
+        "fees": 0.027218459382820543,
+        "funding_pnl": 0.10193132232538783,
+        "net": 0.38979481132527677,
+        "price_pnl": 0.3150819483827095
+      },
+      "UNIUSDT": {
+        "fees": 0.04906297390011977,
+        "funding_pnl": 0.03504027822673103,
+        "net": -3.01938133119483,
+        "price_pnl": -3.0053586355214414
+      },
+      "XLMUSDT": {
+        "fees": 0.02776320446505611,
+        "funding_pnl": -0.015153361300716229,
+        "net": 0.35116122705113345,
+        "price_pnl": 0.39407779281690575
+      },
+      "XRPUSDT": {
+        "fees": 0.013183514381182121,
+        "funding_pnl": -0.0075782378452586285,
+        "net": 0.5986431703229882,
+        "price_pnl": 0.6194049225494289
+      },
+      "YFIUSDT": {
+        "fees": 0.0,
+        "funding_pnl": 0.0,
+        "net": 0.0,
+        "price_pnl": 0.0
+      }
+    },
+    "entries": 21,
+    "fees_pct_initial": 0.36263577877159875,
+    "funding_observations": {
+      "exact_marks": 669,
+      "exact_marks_within_previous_candle_only": 2,
+      "hourly_bounds": 645
+    },
+    "funding_pct_initial": 0.16939186531325512,
+    "margin_stress_failures": 0,
+    "max_drawdown_pct": 6.622909571094182,
+    "monthly_returns_pct": {
+      "2026-08": -2.38122581090886,
+      "2026-09": -2.2605171857859374
+    },
+    "months": 2,
+    "positive_months": 0,
+    "rebalances": 8,
+    "return_pct": -4.587914978006835
+  },
+  "freeze_sha256": "8fe84cb7140c6c265b02dbfe2825dabfe2a6fc7ff8d5c9cef14e19cc22fe9b85",
+  "funding_mode": "adverse hourly bounds",
+  "limits": [
+    "Retrospective extension, not prospective evidence.",
+    "August outcome was already seen before September extension; strategy unchanged.",
+    "September is partial; it ends at September 26 00:00 UTC."
+  ],
+  "overlap": {
+    "candles_compared": 864,
+    "funding_compared": 54
+  },
+  "period": [
+    "2026-08-01",
+    "2026-09-26"
+  ],
+  "results": {
+    "0.001": {
+      "adverse_intrahour_drawdown_bound_pct": 7.0506629571405295,
+      "asset_attribution_pct_initial": {
+        "AAVEUSDT": {
+          "fees": 0.012303748045734518,
+          "funding_pnl": 0.02050288630447575,
+          "net": -2.308769739628485,
+          "price_pnl": -2.316968877887226
+        },
+        "ADAUSDT": {
+          "fees": 0.007934982445078202,
+          "funding_pnl": 0.0033773277462248027,
+          "net": 0.3998281101614351,
+          "price_pnl": 0.40438576486028843
+        },
+        "BCHUSDT": {
+          "fees": 0.02787360510398078,
+          "funding_pnl": -0.008001416271275874,
+          "net": 2.0357493893065137,
+          "price_pnl": 2.0716244106817707
+        },
+        "BNBUSDT": {
+          "fees": 0.019490042799726583,
+          "funding_pnl": -0.02960119700636159,
+          "net": 1.4637493452329924,
+          "price_pnl": 1.5128405850390805
+        },
+        "BTCUSDT": {
+          "fees": 0.023025105317362484,
+          "funding_pnl": -0.02452002816263487,
+          "net": 0.6132970344720191,
+          "price_pnl": 0.6608421679520166
+        },
+        "CRVUSDT": {
+          "fees": 0.02133063754612844,
+          "funding_pnl": 0.03240658547097764,
+          "net": -3.301454146742199,
+          "price_pnl": -3.312530094667048
+        },
+        "DOGEUSDT": {
+          "fees": 0.010917336413851517,
+          "funding_pnl": 0.027152252345564305,
+          "net": -0.35416464898383565,
+          "price_pnl": -0.37039956491554843
+        },
+        "DOTUSDT": {
+          "fees": 0.015569737170539166,
+          "funding_pnl": -0.0010322288533792068,
+          "net": -0.31848844331636855,
+          "price_pnl": -0.3018864772924502
+        },
+        "EOSUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "ETHUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "GRTUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "LINKUSDT": {
+          "fees": 0.009753226379867651,
+          "funding_pnl": 0.020758748067365523,
+          "net": -1.0090981718031233,
+          "price_pnl": -1.0201036934906211
+        },
+        "LTCUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "MKRUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "SUSHIUSDT": {
+          "fees": 0.01548460298945554,
+          "funding_pnl": 0.01330915675996814,
+          "net": -0.048571932972755326,
+          "price_pnl": -0.04639648674326793
+        },
+        "TRXUSDT": {
+          "fees": 0.018155169259254252,
+          "funding_pnl": 0.101702712043068,
+          "net": 0.39865874190918554,
+          "price_pnl": 0.31511119912537183
+        },
+        "UNIUSDT": {
+          "fees": 0.03272180571084695,
+          "funding_pnl": 0.034922282182976806,
+          "net": -3.005086545887855,
+          "price_pnl": -3.007287022359985
+        },
+        "XLMUSDT": {
+          "fees": 0.01851903961890806,
+          "funding_pnl": -0.015253652297478267,
+          "net": 0.36023251574155324,
+          "price_pnl": 0.3940052076579396
+        },
+        "XRPUSDT": {
+          "fees": 0.008794726529939819,
+          "funding_pnl": -0.007663659559571733,
+          "net": 0.6034035761687212,
+          "price_pnl": 0.6198619622582328
+        },
+        "YFIUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        }
+      },
+      "entries": 21,
+      "fees_pct_initial": 0.24187376533067392,
+      "funding_observations": {
+        "exact_marks": 0,
+        "exact_marks_within_previous_candle_only": 0,
+        "hourly_bounds": 1314
+      },
+      "funding_pct_initial": 0.16805976876991915,
+      "margin_stress_failures": 0,
+      "max_drawdown_pct": 6.556885725707362,
+      "monthly_returns_pct": {
+        "2026-08": -2.3324197233860255,
+        "2026-09": -2.189360263559692
+      },
+      "months": 2,
+      "positive_months": 0,
+      "rebalances": 8,
+      "return_pct": -4.4707149163424775
+    },
+    "0.0015": {
+      "adverse_intrahour_drawdown_bound_pct": 7.11755286009137,
+      "asset_attribution_pct_initial": {
+        "AAVEUSDT": {
+          "fees": 0.018449163287465816,
+          "funding_pnl": 0.020496484658945737,
+          "net": -2.314290532286145,
+          "price_pnl": -2.316337853657625
+        },
+        "ADAUSDT": {
+          "fees": 0.0119009141095546,
+          "funding_pnl": 0.00337694512226253,
+          "net": 0.39580739920558095,
+          "price_pnl": 0.40433136819287296
+        },
+        "BCHUSDT": {
+          "fees": 0.0417874788698509,
+          "funding_pnl": -0.007996610999453027,
+          "net": 2.0208514349513753,
+          "price_pnl": 2.070635524820679
+        },
+        "BNBUSDT": {
+          "fees": 0.029218835992533214,
+          "funding_pnl": -0.029587078935533192,
+          "net": 1.4533603746571704,
+          "price_pnl": 1.5121662895852366
+        },
+        "BTCUSDT": {
+          "fees": 0.034521868723146436,
+          "funding_pnl": -0.02450847591408223,
+          "net": 0.6015266590406796,
+          "price_pnl": 0.6605570036779083
+        },
+        "CRVUSDT": {
+          "fees": 0.03198392053828689,
+          "funding_pnl": 0.03239539406756407,
+          "net": -3.311156299086398,
+          "price_pnl": -3.3115677726156756
+        },
+        "DOGEUSDT": {
+          "fees": 0.016366007717341025,
+          "funding_pnl": 0.02713740267630251,
+          "net": -0.35919068781508134,
+          "price_pnl": -0.3699620827740428
+        },
+        "DOTUSDT": {
+          "fees": 0.023339139611519313,
+          "funding_pnl": -0.0010325261772861712,
+          "net": -0.3260328514502455,
+          "price_pnl": -0.30166118566144
+        },
+        "EOSUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "ETHUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "GRTUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "LINKUSDT": {
+          "fees": 0.01462437114685086,
+          "funding_pnl": 0.020751221389719673,
+          "net": -1.013709420801664,
+          "price_pnl": -1.0198362710445328
+        },
+        "LTCUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "MKRUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "SUSHIUSDT": {
+          "fees": 0.023215038078312135,
+          "funding_pnl": 0.013299893666054606,
+          "net": -0.05612470499855139,
+          "price_pnl": -0.04620956058629387
+        },
+        "TRXUSDT": {
+          "fees": 0.02721840754530246,
+          "funding_pnl": 0.10164743978090987,
+          "net": 0.3895109772715479,
+          "price_pnl": 0.31508194503594045
+        },
+        "UNIUSDT": {
+          "fees": 0.049062744675336625,
+          "funding_pnl": 0.034908535502502495,
+          "net": -3.019494323911343,
+          "price_pnl": -3.005340114738509
+        },
+        "XLMUSDT": {
+          "fees": 0.027763081119970192,
+          "funding_pnl": -0.015251036062176686,
+          "net": 0.3510675318235576,
+          "price_pnl": 0.3940816490057045
+        },
+        "XRPUSDT": {
+          "fees": 0.013183423740434684,
+          "funding_pnl": -0.0076581260872583485,
+          "net": 0.5985579061320826,
+          "price_pnl": 0.6193994559597756
+        },
+        "YFIUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        }
+      },
+      "entries": 21,
+      "fees_pct_initial": 0.3626343951559053,
+      "funding_observations": {
+        "exact_marks": 0,
+        "exact_marks_within_previous_candle_only": 0,
+        "hourly_bounds": 1314
+      },
+      "funding_pct_initial": 0.16797946268847191,
+      "margin_stress_failures": 0,
+      "max_drawdown_pct": 6.62404827423817,
+      "monthly_returns_pct": {
+        "2026-08": -2.3812669893489624,
+        "2026-09": -2.2619117046700055
+      },
+      "months": 2,
+      "positive_months": 0,
+      "rebalances": 8,
+      "return_pct": -4.5893165372674405
+    },
+    "0.003": {
+      "adverse_intrahour_drawdown_bound_pct": 7.323671874309856,
+      "asset_attribution_pct_initial": {
+        "AAVEUSDT": {
+          "fees": 0.03685959064051524,
+          "funding_pnl": 0.020477290427244773,
+          "net": -2.3308277209079464,
+          "price_pnl": -2.314445420694676
+        },
+        "ADAUSDT": {
+          "fees": 0.023792470870732968,
+          "funding_pnl": 0.0033757972503757174,
+          "net": 0.38375150457026935,
+          "price_pnl": 0.4041681781906266
+        },
+        "BCHUSDT": {
+          "fees": 0.08343754022887423,
+          "funding_pnl": -0.007982213229656738,
+          "net": 1.9762525302789986,
+          "price_pnl": 2.0676722837375294
+        },
+        "BNBUSDT": {
+          "fees": 0.05834039803675665,
+          "funding_pnl": -0.0295447643762183,
+          "net": 1.4222599351888492,
+          "price_pnl": 1.510145097601824
+        },
+        "BTCUSDT": {
+          "fees": 0.06894911064785703,
+          "funding_pnl": -0.024473850951023255,
+          "net": 0.5662793486499134,
+          "price_pnl": 0.6597023102487937
+        },
+        "CRVUSDT": {
+          "fees": 0.06389567414263486,
+          "funding_pnl": 0.03236184198283698,
+          "net": -3.34021585896282,
+          "price_pnl": -3.3086820268030226
+        },
+        "DOGEUSDT": {
+          "fees": 0.03267209155950945,
+          "funding_pnl": 0.027092898010307485,
+          "net": -0.37423064170809767,
+          "price_pnl": -0.36865144815889567
+        },
+        "DOTUSDT": {
+          "fees": 0.04658559541477385,
+          "funding_pnl": -0.0010334139686613312,
+          "net": -0.3486052236157955,
+          "price_pnl": -0.30098621423236027
+        },
+        "EOSUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "ETHUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "GRTUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "LINKUSDT": {
+          "fees": 0.02921594551823058,
+          "funding_pnl": 0.020728654883770334,
+          "net": -1.027521401396527,
+          "price_pnl": -1.0190341107620668
+        },
+        "LTCUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "MKRUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        },
+        "SUSHIUSDT": {
+          "fees": 0.0463589419921057,
+          "funding_pnl": 0.013272138764381658,
+          "net": -0.07873666123525083,
+          "price_pnl": -0.0456498580075268
+        },
+        "TRXUSDT": {
+          "fees": 0.05435080896408476,
+          "funding_pnl": 0.10148176649286489,
+          "net": 0.362125038544074,
+          "price_pnl": 0.3149940810152939
+        },
+        "UNIUSDT": {
+          "fees": 0.09800586673132847,
+          "funding_pnl": 0.03486734197839772,
+          "net": -3.0626443514976778,
+          "price_pnl": -2.999505826744747
+        },
+        "XLMUSDT": {
+          "fees": 0.0554333893659374,
+          "funding_pnl": -0.01524318039206682,
+          "net": 0.32363332100980485,
+          "price_pnl": 0.39430989076780903
+        },
+        "XRPUSDT": {
+          "fees": 0.02631491024803228,
+          "funding_pnl": -0.007641546714788051,
+          "net": 0.5840572983874556,
+          "price_pnl": 0.6180137553502758
+        },
+        "YFIUSDT": {
+          "fees": 0.0,
+          "funding_pnl": 0.0,
+          "net": 0.0,
+          "price_pnl": 0.0
+        }
+      },
+      "entries": 21,
+      "fees_pct_initial": 0.7242123343613734,
+      "funding_observations": {
+        "exact_marks": 0,
+        "exact_marks_within_previous_candle_only": 0,
+        "hourly_bounds": 1314
+      },
+      "funding_pct_initial": 0.16773876015776493,
+      "margin_stress_failures": 0,
+      "max_drawdown_pct": 6.831014591936957,
+      "monthly_returns_pct": {
+        "2026-08": -2.5276805165262872,
+        "2026-09": -2.47941403156805
+      },
+      "months": 2,
+      "positive_months": 0,
+      "rebalances": 8,
+      "return_pct": -4.9444228826943775
+    }
+  },
+  "source_code_sha256": {
+    "broad_execution.py": "17ed40d3f15166229eb2ce74a83a2443df90a137bf1ebfa333ce3ae4078bdea8",
+    "broad_extension.py": "448bc66ad0dfe975e2253ab293b1e7e71c6ba25b5373319cd8e8d8503d6c84b9"
+  },
+  "sources": [
+    {
+      "bytes": 9885,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:05.272673+00:00",
+      "rows": 79,
+      "sha256": "01dbb0f082483b48939866406ee02fd3d6b048696e14441011714d5d2aa05b07",
+      "symbol": "AAVEUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=AAVEUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9653,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.937590+00:00",
+      "rows": 79,
+      "sha256": "c43042806e79c48f2fcd9d30dd5114a8a4c979e376656602cd1959ed31d7580a",
+      "symbol": "ADAUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=ADAUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9820,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.079961+00:00",
+      "rows": 79,
+      "sha256": "28b0d69585c3997d1c8edc1411c2259838c158ff1e044a7f84b7f0b7e5646487",
+      "symbol": "BCHUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=BCHUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9797,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:03.708006+00:00",
+      "rows": 79,
+      "sha256": "c314c2da8a14bad12ab4e0cafe373c633cda19f4a696664ba41316da912c588b",
+      "symbol": "BNBUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=BNBUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9957,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:57.573631+00:00",
+      "rows": 79,
+      "sha256": "05ec3d1e54c94770028193f7102d269b6cb299b9de2b5d154ad76d31bcd68bb1",
+      "symbol": "BTCUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9654,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:04.720344+00:00",
+      "rows": 79,
+      "sha256": "9ccbe59a003a60a8a852b1b9f030a03ec6e1897b4556ed3b156cfb9cce3153b3",
+      "symbol": "CRVUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=CRVUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9722,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:00.328547+00:00",
+      "rows": 79,
+      "sha256": "331514d79e540439d58be98d65360641a097041b7dec44dfe29171ff6b1e51d7",
+      "symbol": "DOGEUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=DOGEUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9658,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:00.700271+00:00",
+      "rows": 79,
+      "sha256": "b198a464843393f9b7811b2bca2ec7d62a2bc0fa2e0a22b14a07d84e829b8b75",
+      "symbol": "DOTUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=DOTUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9884,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:58.407628+00:00",
+      "rows": 79,
+      "sha256": "1192f5ef35d71f470bd0391809c43c891c67a63be715c0e30a1284373ea8616c",
+      "symbol": "ETHUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=ETHUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9655,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:05.596426+00:00",
+      "rows": 79,
+      "sha256": "5107856f205a46ac3509fbc5d37855105d2cddc3f9359e0aef2e78aa3674425c",
+      "symbol": "GRTUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=GRTUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9806,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:59.284733+00:00",
+      "rows": 79,
+      "sha256": "c6db0e388e12ea157da776ba0fe74bd65c6a091ad3add4d5d01f68d790e0da91",
+      "symbol": "LINKUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=LINKUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9722,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:59.792397+00:00",
+      "rows": 79,
+      "sha256": "3ec2513754e98e7047dfffeb91d40768fc3f52388a6100b88b93f44129015bcd",
+      "symbol": "LTCUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=LTCUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9812,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:02.848540+00:00",
+      "rows": 79,
+      "sha256": "2438086b8d90ef19c1e186688935a3dc7b797148ddb0aa0a3b1a3f8d2d8e103f",
+      "symbol": "SUSHIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=SUSHIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9702,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:04.173182+00:00",
+      "rows": 79,
+      "sha256": "75b623b620173607fa5c608383540d2b48b934b1c7c84bb0d71610c8efe869b7",
+      "symbol": "TRXUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=TRXUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9649,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:02.332533+00:00",
+      "rows": 79,
+      "sha256": "6fd7c80ae1ca6c2173c607fbead3a263dfefd443a175cd214b3f448649a63276",
+      "symbol": "UNIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=UNIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9647,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.535634+00:00",
+      "rows": 79,
+      "sha256": "4a065e6a024b440d7e43d1e0287f0b14cbe72e251c3961970e51ddad6e732e20",
+      "symbol": "XLMUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=XLMUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9659,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:58.884247+00:00",
+      "rows": 79,
+      "sha256": "04f5f136637b8a2fa525eed00ab0119586919fcf10650f27f68ef00275059e0f",
+      "symbol": "XRPUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=XRPUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 9885,
+      "endpoint": "fundingRate",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:03.203852+00:00",
+      "rows": 79,
+      "sha256": "ffbbd40434a83cf0cb6e192913919971c8eebd1e01cf200ee8e7d431eec2dee6",
+      "symbol": "YFIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/fundingRate?symbol=YFIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1000"
+    },
+    {
+      "bytes": 80939,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:05.037011+00:00",
+      "rows": 625,
+      "sha256": "93fc6864c6bd163dac408afd4b1eb2e9d2bb7d3ab50959267b230133856810b0",
+      "symbol": "AAVEUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=AAVEUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 83847,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.697506+00:00",
+      "rows": 625,
+      "sha256": "429d3cc5c49f6a85a91db914eacfaa04be401589660e7de8f65e0d7dc9f30b51",
+      "symbol": "ADAUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=ADAUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 81810,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:00.820568+00:00",
+      "rows": 625,
+      "sha256": "a9503ff9f220d53f88b7888710ef9ad569d79bcef5b5961a3ff3c25f44fc50bd",
+      "symbol": "BCHUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=BCHUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 83962,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:03.591517+00:00",
+      "rows": 625,
+      "sha256": "071f440cbdb69691541ef663224786d79954fe82042dce46dace1ae6d9e6ffb6",
+      "symbol": "BNBUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=BNBUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 88987,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:57.848900+00:00",
+      "rows": 625,
+      "sha256": "502d5397256c4b67f55cb9772c585a30a7c197147cbd75723517cc0da6328e8d",
+      "symbol": "BTCUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 89089,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:04.488714+00:00",
+      "rows": 625,
+      "sha256": "13f4b6fc02c1b9bd3a8f22d791dee23070c6fb8d9d8f448eddda17b7e5ef7b96",
+      "symbol": "CRVUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=CRVUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 89236,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:59.870144+00:00",
+      "rows": 625,
+      "sha256": "3a1aa95daf8adaa484a4b5d58b6c68c1bbdd4240556e448ee12c641b2c79baa3",
+      "symbol": "DOGEUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=DOGEUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 89496,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:00.460745+00:00",
+      "rows": 625,
+      "sha256": "8782bf67413db435c2a9cf2079ce26ba8bbc6c84a3b7d5cc2e5ec6f5f5328801",
+      "symbol": "DOTUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=DOTUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 88276,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:57.865799+00:00",
+      "rows": 625,
+      "sha256": "407644fde23927a7676f150b77fd6cd98b9fbc2e8a3362ff9abcd52153a51999",
+      "symbol": "ETHUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=ETHUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 80466,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:05.348804+00:00",
+      "rows": 625,
+      "sha256": "27ffcdbc21ce30f989b7eb975eaf88866a96c4aaae9e41bcad8234c43307afaa",
+      "symbol": "GRTUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=GRTUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 82726,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:59.165015+00:00",
+      "rows": 625,
+      "sha256": "e04a43d217d38d0d454a008b2eba8f2c781afc455e4e9b58bdf7f220b30a5e69",
+      "symbol": "LINKUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=LINKUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 79891,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:59.516390+00:00",
+      "rows": 625,
+      "sha256": "895e14efcb50585819ff13b3d5454df6a1646ea371cf9165e35435888bf08b52",
+      "symbol": "LTCUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=LTCUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 76053,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:02.564652+00:00",
+      "rows": 625,
+      "sha256": "bdd3eb75d53d66e38e37f317cb01cb29b245b53538f7979d5205f16de2af5baa",
+      "symbol": "SUSHIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=SUSHIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 81517,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:03.893201+00:00",
+      "rows": 625,
+      "sha256": "841739c1bc14d58ec5aa3488d52a0fd1e9ebb8a3bbdf89b849403b02e4193a2b",
+      "symbol": "TRXUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=TRXUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 79007,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:02.048700+00:00",
+      "rows": 625,
+      "sha256": "52da6f312d1875a12151a9d8d5bbf29ed951db8aa65d905e450fd7e5c835d012",
+      "symbol": "UNIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=UNIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 82815,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.244887+00:00",
+      "rows": 625,
+      "sha256": "42ad0c5036e90427edee6056ed13498f244607e474f382265fee20045b3223d8",
+      "symbol": "XLMUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=XLMUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 85085,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:58.692826+00:00",
+      "rows": 625,
+      "sha256": "1ca652580a531c37e37b124ca067db798eb925623eabd6ca4873a962a92a8df9",
+      "symbol": "XRPUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=XRPUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 74061,
+      "endpoint": "klines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:02.952574+00:00",
+      "rows": 625,
+      "sha256": "4774234442066cafc04a5c4297019282353057f4bf0bf1a0d35b1e256dd42076",
+      "symbol": "YFIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/klines?symbol=YFIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 71876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:05.061730+00:00",
+      "rows": 625,
+      "sha256": "33bcc302e4e6b2231767a0cbaca6361208435b942fa77b2c0317c3945dfdc339",
+      "symbol": "AAVEUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=AAVEUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.765397+00:00",
+      "rows": 625,
+      "sha256": "13002cc5999a7d3dd82bffd3f4d8be1403a250b346a3ab5ec94e65732eeddea0",
+      "symbol": "ADAUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=ADAUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 71876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.028469+00:00",
+      "rows": 625,
+      "sha256": "5754be7be25fa699f9d24109f91ea1c65f35506b80d2b8d338c74f98ef19b1d4",
+      "symbol": "BCHUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=BCHUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 71876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:04.448517+00:00",
+      "rows": 625,
+      "sha256": "4a61263c226796eea66351d9140e6b4c2f21d1c952facd39904d37fc7ab77309",
+      "symbol": "BNBUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=BNBUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 76876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:57.822065+00:00",
+      "rows": 625,
+      "sha256": "13aac8d21647b207e1f275506a71d773f54dd0167409119978d8ab0f65baf66f",
+      "symbol": "BTCUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=BTCUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:04.768857+00:00",
+      "rows": 625,
+      "sha256": "a596d24eb9f98bced9b5055697849831e7c1f11a7d60e7a73f988511e9563acf",
+      "symbol": "CRVUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=CRVUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:00.132257+00:00",
+      "rows": 625,
+      "sha256": "063897b2b15faf4483f912b6c2297350f8fe9f6aa7d99f1edd624edd063f9de8",
+      "symbol": "DOGEUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=DOGEUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:00.616575+00:00",
+      "rows": 625,
+      "sha256": "7c52f029ad2eef78788e7399c48364d98078f1ad3b3f4c585bbe65f57cd4a617",
+      "symbol": "DOTUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=DOTUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 74376,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:58.596455+00:00",
+      "rows": 625,
+      "sha256": "33e5436ba41c7ccb604397fe012422736afeffd4af33d7684a0f5bf0cef9ed7b",
+      "symbol": "ETHUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=ETHUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:05.640238+00:00",
+      "rows": 625,
+      "sha256": "bd96a9d9aab4d8a8f087b44a9177004768415c314257ba43ecf89c073a1c3e11",
+      "symbol": "GRTUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=GRTUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 69376,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:59.248844+00:00",
+      "rows": 625,
+      "sha256": "3f5040d5bbf1167bbbc8ddb347d495aac3091060778d036ee8f7c78e99449e4b",
+      "symbol": "LINKUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=LINKUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 69376,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:00.041610+00:00",
+      "rows": 625,
+      "sha256": "4bea5534bce26fb377336d20e39295b9596a386530f2c3b4c1a330a0d7bf9e60",
+      "symbol": "LTCUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=LTCUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:02.627412+00:00",
+      "rows": 625,
+      "sha256": "97dcc848ebb3dbc502fc8231052b45c5fd6fb3cedf276b12a63dfcbddad0f9f5",
+      "symbol": "SUSHIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=SUSHIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:04.160779+00:00",
+      "rows": 625,
+      "sha256": "c6fe274c7e6c6fd0029b435852f6a068c2d75d3e73f41f8f1b81b808315ff3a7",
+      "symbol": "TRXUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=TRXUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66923,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:02.332440+00:00",
+      "rows": 625,
+      "sha256": "90247f588f5632d274d4a037e50f53777f57a137539d225962b1cccbb6a388cc",
+      "symbol": "UNIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=UNIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:01.360329+00:00",
+      "rows": 625,
+      "sha256": "6d81788525d92e29bf1b818d5df0d35e1f372061bd0a3f53fbe0b28dbff6d11a",
+      "symbol": "XLMUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=XLMUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 66876,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:58:58.524607+00:00",
+      "rows": 625,
+      "sha256": "a6d0f6b02c592a92929b000357a22aa91a317a3312fdf6fac794fe3257f61956",
+      "symbol": "XRPUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=XRPUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    },
+    {
+      "bytes": 74376,
+      "endpoint": "markPriceKlines",
+      "provenance": "Public HTTPS response; local content hash, not publisher checksum",
+      "retrieved_utc": "2026-09-26T17:59:03.135569+00:00",
+      "rows": 625,
+      "sha256": "4ab148729d0745c0913559623992fd553b703f79f702e5f36497c6d1b05307cc",
+      "symbol": "YFIUSDT",
+      "url": "https://fapi.binance.com/fapi/v1/markPriceKlines?symbol=YFIUSDT&startTime=1788134400000&endTime=1790380800000&limit=1500&interval=1h"
+    }
+  ]
+}

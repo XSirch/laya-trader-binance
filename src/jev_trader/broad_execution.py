@@ -11,7 +11,7 @@ from .broad_research import DAY_MS, features, sign, target_weights
 from .cli import ROOT, RESULTS
 
 
-def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1):
+def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1, exact_funding_marks=None):
     if delay_hours not in (1, 2):
         raise ValueError("execution delay must match frozen experiment")
     bars, marks = hourly["klines"], hourly["markPriceKlines"]
@@ -25,13 +25,17 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
     margin_failures, entries = 0, 0
     daily, audit, monthly = {}, [], {}
     month_start = 1.0
+    attribution = {s: {"price_pnl": 0.0, "funding_pnl": 0.0, "fees": 0.0} for s in bars}
+    exact_count, bound_count, boundary_mark_count = 0, 0, 0
     start_ms, end_ms = utc_ms(start), utc_ms(end)
     for timestamp in range(start_ms, end_ms + 1, HOUR_MS):
         for s, q in quantities.items():
             if timestamp not in bars[s] or timestamp not in marks[s]:
                 raise ValueError(f"unresolved held price {s} at {timestamp}")
             price = bars[s][timestamp].open
-            equity += q * (price - previous[s])
+            pnl = q * (price - previous[s])
+            equity += pnl
+            attribution[s]["price_pnl"] += pnl
             previous[s] = price
         terminal = timestamp == end_ms
         day = timestamp // DAY_MS * DAY_MS
@@ -51,6 +55,7 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
                 charge = abs(desired - quantities.get(s, 0)) * price * side_cost
                 equity -= charge
                 fees += charge
+                attribution[s]["fees"] += charge
                 entries += bool(desired) and sign(desired) != sign(quantities.get(s, 0))
                 if desired:
                     quantities[s], previous[s] = desired, price
@@ -69,9 +74,24 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
                     scalar = min(scalar, -old.get(s, 0) * event.rate)
                 if scalar:
                     mark = marks[s][timestamp]
-                    payment = scalar * (mark.low if scalar > 0 else mark.high)
+                    settlement_mark = (exact_funding_marks or {}).get((s, event.timestamp_ms))
+                    if settlement_mark is not None:
+                        if not mark.low * (1 - 1e-8) <= settlement_mark <= mark.high * (1 + 1e-8):
+                            # The exact settlement instant can precede the first
+                            # sample of its timestamp's hourly mark candle.
+                            prior_mark = marks[s].get(timestamp - HOUR_MS)
+                            if (event.timestamp_ms - timestamp >= 60_000 or prior_mark is None or
+                                    not prior_mark.low * (1 - 1e-8) <= settlement_mark <= prior_mark.high * (1 + 1e-8)):
+                                raise ValueError("settlement mark outside corresponding boundary candle bounds")
+                            boundary_mark_count += 1
+                        exact_count += 1
+                    else:
+                        settlement_mark = mark.low if scalar > 0 else mark.high
+                        bound_count += 1
+                    payment = scalar * settlement_mark
                     equity += payment
                     funding_pnl += payment
+                    attribution[s]["funding_pnl"] += payment
         peak = max(peak, equity)
         drawdown = max(drawdown, 1 - equity / peak)
         if not terminal:
@@ -97,7 +117,12 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
             "fees_pct_initial": 100 * fees, "funding_pct_initial": 100 * funding_pnl,
             "entries": entries, "rebalances": len(audit), "margin_stress_failures": margin_failures,
             "monthly_returns_pct": monthly, "positive_months": sum(v > 0 for v in monthly.values()),
-            "months": len(monthly), "daily_equity": daily, "execution_audit": audit}
+            "months": len(monthly), "daily_equity": daily, "execution_audit": audit,
+            "funding_observations": {"exact_marks": exact_count, "hourly_bounds": bound_count,
+                                     "exact_marks_within_previous_candle_only": boundary_mark_count},
+            "asset_attribution_pct_initial": {s: {**{k: 100 * v for k, v in values.items()},
+                "net": 100 * (values["price_pnl"] + values["funding_pnl"] - values["fees"])}
+                for s, values in attribution.items()}}
 
 
 def run():
