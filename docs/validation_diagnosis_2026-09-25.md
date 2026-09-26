@@ -15,6 +15,11 @@ best at +1.458% annualized conditional after-cost return. The ongoing BTC
 March 2027 COIN-M forward watch remains read-only and cannot by itself
 establish realized profit.
 
+BitMEX is excluded from further venue screening: its [official closure
+notice](https://www.bitmex.com/wind-down/) says trading and new positions
+stopped on 2026-09-23. Its old API descriptions and contract history are not
+evidence of a currently executable market.
+
 ## Existing 15 minute Laya checkpoint
 
 The completed Colab A100 run evaluated 100,000 records from 2025 H2. The report is preserved in `MyDrive/laya-trader-colab/persistent/validation_report.json` and `.md`; the checkpoint is in `MyDrive/laya-trader-colab/checkpoints/laya-trader-v0.1-local`.
