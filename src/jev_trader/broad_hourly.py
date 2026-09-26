@@ -11,14 +11,14 @@ from .broad_data import CACHE, listing
 from .derivatives_data import fetch
 
 
-def download():
+def download(first="2024-01", last="2026-08", manifest_name="hourly_manifest.json"):
     cohort = json.loads((CACHE / "cohort.json").read_text(encoding="utf-8"))
     jobs = []
     for symbol in cohort["selected"]:
         for kind in ("klines", "markPriceKlines"):
             prefix = f"data/futures/um/monthly/{kind}/{symbol}/1h/"
             keys = set(listing(prefix))
-            for month in months("2024-01", "2026-08"):
+            for month in months(first, last):
                 filename = f"{symbol}-1h-{month}.zip"
                 if prefix + filename in keys:
                     jobs.append((kind, symbol, month))
@@ -30,12 +30,12 @@ def download():
             if i % 100 == 0 or i == len(jobs):
                 print(f"verified hourly execution archives {i}/{len(jobs)}", flush=True)
     records.sort(key=lambda row: (row["kind"], row["symbol"], row["month"]))
-    (CACHE / "hourly_manifest.json").write_text(json.dumps(records, indent=2) + "\n", encoding="utf-8")
+    (CACHE / manifest_name).write_text(json.dumps(records, indent=2) + "\n", encoding="utf-8")
     return records
 
 
-def load(daily):
-    records = json.loads((CACHE / "hourly_manifest.json").read_text(encoding="utf-8"))
+def load(daily, manifest_name="hourly_manifest.json"):
+    records = json.loads((CACHE / manifest_name).read_text(encoding="utf-8"))
     output = {kind: {s: {} for s in daily["klines"]} for kind in ("klines", "markPriceKlines")}
     for record in records:
         path = Path(record["path"])
@@ -75,7 +75,8 @@ def load(daily):
             if expected - set(output[kind][symbol]):
                 raise ValueError(f"unresolved hourly calendar: {kind} {symbol}")
     supplements.sort(key=lambda r: (r["kind"], r["symbol"], r["month"]))
-    (CACHE / "hourly_supplements.json").write_text(json.dumps(supplements, indent=2) + "\n", encoding="utf-8")
+    supplements_name = manifest_name.replace("manifest", "supplements")
+    (CACHE / supplements_name).write_text(json.dumps(supplements, indent=2) + "\n", encoding="utf-8")
     return output, records + supplements
 
 

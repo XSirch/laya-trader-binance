@@ -11,7 +11,8 @@ from .broad_research import DAY_MS, features, sign, target_weights
 from .cli import ROOT, RESULTS
 
 
-def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1, exact_funding_marks=None):
+def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1, exact_funding_marks=None,
+             target_policy=None):
     if delay_hours not in (1, 2):
         raise ValueError("execution delay must match frozen experiment")
     bars, marks = hourly["klines"], hourly["markPriceKlines"]
@@ -44,7 +45,8 @@ def evaluate(hourly, funding, states, rule, start, end, side_cost, delay_hours=1
         old = dict(quantities)
         if rebalance or terminal:
             state = {s: rows[day] for s, rows in states.items() if day in rows}
-            targets = target_weights(state, rule) if not terminal else {}
+            policy = target_weights if target_policy is None else target_policy
+            targets = policy(state, rule) if not terminal else {}
             for s in targets:
                 if timestamp not in bars[s] or bars[s][timestamp].trades <= 0:
                     raise ValueError(f"unverified execution liquidity {s} at {timestamp}")

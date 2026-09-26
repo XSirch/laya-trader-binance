@@ -34,13 +34,18 @@ if __name__ == "__main__":
     for name in ("manifest", "supplements", "hourly_manifest", "cohort", "data_quality", "absent_archives"):
         sources[name] = compact(json.loads((CACHE / f"{name}.json").read_text(encoding="utf-8")))
     save("broad_sources_2026-09-26.json", sources)
-    for name in ("broad_execution", "broad_august", "broad_extension"):
+    for name in ("broad_execution", "broad_august", "broad_extension", "broad_prediction"):
         path = ROOT / "results" / f"{name}.json"
         if path.exists():
             save(f"{name}_2026-09-26.json", compact(json.loads(path.read_text(encoding="utf-8"))))
     supplements = CACHE / "hourly_supplements.json"
     if supplements.exists():
         save("broad_hourly_repairs_2026-09-26.json", compact(json.loads(supplements.read_text(encoding="utf-8"))))
+    training = CACHE / "training_hourly_manifest.json"
+    if training.exists():
+        training_sources = {"manifest": compact(json.loads(training.read_text(encoding="utf-8"))),
+                            "supplements": compact(json.loads((CACHE / "training_hourly_supplements.json").read_text(encoding="utf-8")))}
+        save("broad_training_sources_2026-09-26.json", training_sources)
     frozen_path = ROOT / "docs/broad_candidate_freeze_2026-09-26.json"
     if not frozen_path.exists():
         combo = json.loads((ROOT / "results/broad_combo_research.json").read_text(encoding="utf-8"))
