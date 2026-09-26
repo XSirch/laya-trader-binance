@@ -156,7 +156,7 @@ def summarize_errors(rows, start, end):
             "direction_accuracy": sum((r["prediction"] > 0) == (r["actual"] > 0) for r in rows) / len(rows)}
 
 
-def run(state_builder=None, family="economic", settlement_scenario=False, model_builder=None):
+def run(state_builder=None, family="economic", settlement_scenario=False, model_builder=None, decision_policy=None):
     data, _, _ = load_daily()
     if state_builder is None:
         state, fields, feature_quality = features(data), FIELDS, {}
@@ -190,7 +190,7 @@ def run(state_builder=None, family="economic", settlement_scenario=False, model_
             for label, cost in (("base", .001), ("stress", .0015), ("double_stress", .003)):
                 try:
                     m = evaluate(hourly, data["fundingRate"], signal, sizing, *dates, cost,
-                                 target_policy=portfolio, settlement_bounds=bounds)
+                                 target_policy=portfolio, settlement_bounds=bounds, decision_policy=decision_policy)
                     m["status"] = "bounded_settlement_scenario" if m["bounded_settlements"] else "complete"
                 except ValueError as exc:
                     m = {"status": "invalid_execution", "error": str(exc)}
@@ -203,6 +203,7 @@ def run(state_builder=None, family="economic", settlement_scenario=False, model_
     report = {"created_utc": datetime.now(timezone.utc).isoformat(), "fields": fields, "results": results,
               "family": family, "feature_quality": feature_quality,
               "model_design": model_design,
+              "decision_policy": "forecast_minus_turnover_cost" if decision_policy is not None else "weekly_target",
               "settlement_scenario": settlement_scenario, "settlement_evidence": settlement_evidence,
               "selected_on_development": selected, "training_audits": audits, "unavailable_label_weeks": unavailable,
               "selection_scope": "Highest-return trading variant on development, for comparison only; not authorization to trade.",
@@ -239,9 +240,16 @@ def run(state_builder=None, family="economic", settlement_scenario=False, model_
     if settlement_scenario:
         report["source_code_sha256"]["settlement_bounds.py"] = hashlib.sha256(
             (ROOT / "src/jev_trader/settlement_bounds.py").read_bytes()).hexdigest()
+    if decision_policy is not None:
+        import inspect
+        from pathlib import Path
+        source = Path(inspect.getfile(decision_policy))
+        report["source_code_sha256"][source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
     filename = "broad_prediction.json" if family == "economic" else f"broad_{family}_prediction.json"
     if settlement_scenario:
         filename = filename.replace(".json", "_settlement_bounds.json")
+    if decision_policy is not None:
+        filename = filename.replace(".json", "_cost_policy.json")
     (RESULTS / filename).write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"development selection: {selected}", flush=True)
     return report

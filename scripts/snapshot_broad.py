@@ -41,6 +41,12 @@ if __name__ == "__main__":
         path = ROOT / "results" / f"{name}.json"
         if path.exists():
             save(f"{name}_2026-09-26.json", compact(json.loads(path.read_text(encoding="utf-8"))))
+    for family in ("economic", "technical", "nonlinear"):
+        stem = "broad_prediction" if family == "economic" else f"broad_{family}_prediction"
+        for suffix in ("_cost_policy", "_settlement_bounds_cost_policy"):
+            path = ROOT / "results" / f"{stem}{suffix}.json"
+            if path.exists():
+                save(f"{stem}{suffix}_2026-09-26.json", compact(json.loads(path.read_text(encoding="utf-8"))))
     supplements = CACHE / "hourly_supplements.json"
     if supplements.exists():
         save("broad_hourly_repairs_2026-09-26.json", compact(json.loads(supplements.read_text(encoding="utf-8"))))

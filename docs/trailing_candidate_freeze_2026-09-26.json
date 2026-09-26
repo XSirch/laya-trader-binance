@@ -1,0 +1,22 @@
+{
+  "base_freeze_sha256": "8fe84cb7140c6c265b02dbfe2825dabfe2a6fc7ff8d5c9cef14e19cc22fe9b85",
+  "base_rule": "blend:low_volatility30+carry30_betahedged",
+  "created_utc": "2026-09-26T18:40:23.999337+00:00",
+  "deployable": false,
+  "distance": 0.04,
+  "full_report_sha256": "17fb5c7e91728ef4604dc94347647a220fb555dbd9dd3f2ff4319ee451469ff1",
+  "latest_evaluated_end_utc": "2026-09-26T00:00:00Z",
+  "limits": [
+    "Selected after evaluating nine trailing variants on previously inspected history.",
+    "Improved aggregate drawdown, but worsened the independent August-September window.",
+    "Further execution-delay sensitivity and chronologically new evidence remain necessary."
+  ],
+  "observation": "Hourly opens; all legs exit together; next later weekly signal permits a fresh cycle.",
+  "scope": "portfolio_pct",
+  "source_code_sha256": {
+    "broad_execution.py": "38cde34b4c55bc09c68cf631db439668743a92a8167738c89611aad301b44ba5",
+    "trailing_research.py": "23be048ad489f068686e09782d5e2496819ec6b0810b1aa5e39663e1763922e6",
+    "trailing_stop.py": "f88d343b52b1ae6bb34017d67becf1e277e4ac1cb9243d968e71421cc990c716"
+  },
+  "status": "Exploratory risk-control candidate fixed after this retrospective comparison; not approved for trading."
+}
