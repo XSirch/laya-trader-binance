@@ -151,6 +151,17 @@ A fixed rule took the sign of each configured symbol's lagged 30-day return, lon
 
 Despite positive compounded returns after the configured costs, neither variant demonstrates robust profit. Both miss the four-positive-month calibration gate and both week-block intervals include a negative mean. The equal-weight training return was concentrated in a few large months, including November 2024; its training drawdown exceeded 30%. Volatility weighting reduced drawdown but did not improve month consistency. These are gross-notional portfolio approximations: they omit margin, liquidation, actual weight drift within a week, and exchange execution. No 2025 H2 outcomes were calculated for either variant; the separate quarterly-basis 2026 evaluation is reported below. Run `uv run python -u scripts/time_momentum_weekly_probe.py` and add `--inverse-vol` for the second variant. Reports and weekly portfolios remain in ignored `outputs/` files.
 
+## Long-only market trend, 28-day signal and five-day hold
+
+A separate, unlevered spot rule was motivated by [Han, Kang and Ryu's time-series momentum study](https://acfr.aut.ac.nz/__data/assets/pdf_file/0009/918729/Time_Series_and_Cross_Sectional_Momentum_in_the_Cryptocurrency_Market_with_IA.pdf), which examined a 28-day lookback and five-day hold on a broader historical crypto market. This is an adaptation, not a replication: the local basket is fixed to BTC, ETH, BNB, SOL, and XRP at equal initial weights. Its market signal uses daily equal-weight open-to-open returns, ending at the previous day's open. The upper-tercile cutoff comes only from earlier 28-day returns in a trailing 365-day window, with at least 60 past observations. Five-day windows are anchored to 2023-04-01; if the signal exceeds the causal cutoff, the account buys the five spot assets for that window and otherwise remains in USDT. Every invested five-day window pays 12 bps per side in fee/slippage, even if the next window also invests; an extra 2 bps per side gives a 4 bps round-trip stress. No borrowed asset or futures margin is assumed.
+
+| Period | Windows, invested | Net compounded | Extra-cost stress | Positive months | Daily drawdown | Four-window block 95% interval for mean window return |
+|---|---:|---:|---:|---:|---:|---:|
+| Apr 2023-Dec 2024 development | 128, 49 | +163.49% | +158.38% | 10/21 | -19.95% | [+0.070%, +1.691%] |
+| 2025 H1 calibration | 35, 10 | +8.32% | +7.89% | 1/6 | -12.72% | [-0.452%, +1.379%] |
+
+The calibration profit came mainly from May (+14.95% assigned to exit month); January and June lost money, and February-April held cash. The prespecified gate needed at least 12 invested windows, four positive months, positive stressed return, less than 25% modeled drawdown, and a positive lower block-bootstrap bound. It failed three of those five checks, despite the positive aggregate return. The same-date equal-weight spot buy-and-hold basket returned -14.88% during calibration, but avoiding that drawdown in this one period does not establish robust profit. The 2025 H2 outcome was not calculated. Run `uv run python -u scripts/market_trend_28_5_probe.py`; the report and window ledger are ignored under `outputs/`. The local report SHA256 is `79b45f8b76f7ab60e09d6262f22405ce8f2d11acf51040116f63bb9e591c9f13`.
+
 ## Evaluator fixes
 
 - Top-class ECE now uses the predicted class probability.
