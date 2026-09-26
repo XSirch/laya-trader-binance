@@ -6,8 +6,11 @@ No candidate has demonstrated a robust, executable edge after costs. A six-month
 
 A separately frozen 12-contract OKX USD-margined BTC/ETH/SOL delivery-book
 screen also failed: all 24 size cases had negative conditional net cash after
-its fixed costs, despite timely displayed entry depth. The ongoing BTC March
-2027 COIN-M forward watch remains read-only and cannot by itself establish
+its fixed costs, despite timely displayed entry depth. A separate Deribit
+USDC delivery-book screen found no passing BTC/ETH/AVAX/SOL/XRP future either;
+six larger altcoin cases lacked displayed depth and every evaluable case had
+negative conditional net cash after fixed costs. The ongoing BTC March 2027
+COIN-M forward watch remains read-only and cannot by itself establish
 realized profit.
 
 ## Existing 15 minute Laya checkpoint
@@ -501,6 +504,34 @@ was opened. The ignored full public-API report is
 `84ad1720eeefa296d3b1acb50c282b09277925f55bbf62a186f0416ca45841f4`.
 Reproduce a time-varying snapshot with
 `uv run python -u scripts/okx_usdm_delivery_universe_screen.py`.
+
+### Deribit USDC delivery quote universe
+
+The [Deribit USDC protocol](deribit_usdc_delivery_universe_protocol.md) was
+committed at `b43602c` after instrument discovery and before the first
+order-book read. It fixed 12 live linear future/spot pairs for AVAX, BTC, ETH,
+SOL and XRP with October and December 2026 delivery, plus BTC and ETH for
+November 2026, at both 500 and 1,000 USDC intended sizes. Both spot and
+future books were read from the Deribit production public API. Every paired
+book had a receive offset below 0.09 seconds and book timestamps below 3
+seconds old at the subsequent venue-clock read.
+
+All 12 smaller-size cases had displayed depth but negative conditional cash
+after the protocol's fixed trading, expiry, exit, index and capital costs.
+BTC/ETH also had displayed depth at 1,000 USDC and were negative at all
+three expiries. The six 1,000 USDC AVAX/SOL/XRP cases lacked enough displayed
+entry depth and failed. Thus **0/12 contracts passed** the both-size,
+4%-annualized preliminary gate. The least-negative evaluated scenario was
+BTC December 2026 at -0.889% annualized. Its 500 USDC target bought 0.0059
+BTC for 497.381 USDC against 503.182 USDC of displayed future-bid proceeds,
+a 5.801 gross basis that became -2.208 conditional net after the fixed
+charges. The Deribit spot book may be routed to Coinbase and the user's
+actual fee tier or regional access is unknown; this was not a fill or a
+completed exit. No order or shadow position was opened. The ignored full
+API report is `outputs/deribit_usdc_delivery_universe.json`, SHA256
+`b6088c8064b543c2d1688667d620a14d0f6a65580ab2b4dcb3c3d0e1c0290241`.
+Reproduce a new snapshot with
+`uv run python -u scripts/deribit_usdc_delivery_universe_screen.py`.
 
 ### BTC March 2027 prospective quote watch and settlement-range audit
 
