@@ -326,6 +326,35 @@ All 20 Bybit seven-day windows had 21 settled events and all three-day windows h
 
 The ignored raw public API report is `outputs/binance_bybit_cross_venue_perp_screen.json`, SHA256 `4b0b0e6eb4eac825b9d596752a24e0fe512af972d2eea0b4f1a19a699378b7f5`. Reproduce a *new, time-varying* read with `uv run python -u scripts/binance_bybit_cross_venue_perp_screen.py` while the exact hash-pinned Binance funding input is present. The result does not measure future funding, realized exit basis, actual account fees, two-exchange collateral or liquidation, transfers, latency-adjusted fills or taxes. It supplies no robust executable-profit evidence.
 
+### Exploratory WBETH staking plus ETH perpetual hedge input
+
+WBETH accrues ETH staking rewards through its ETH conversion ratio, but the
+[Binance product description](https://www.binance.com/en/earn/ethereum-staking)
+states that APR varies and secondary-market WBETH can deviate from that ratio.
+Binance also [reported a WBETH depeg and related collateral liquidations in
+October 2025](https://www.binance.com/en/support/announcement/detail/0989d6c7f32545bfb019e3249eaabc3f).
+This is a different risk from the already failed direct ETH spot/perpetual
+carry screens. An input-only preflight was selected **after an exploratory
+preview**, so it is not a frozen holdout or a strategy backtest.
+
+The fixed historical read archived 90 ETHUSDT perpetual funding settlements
+from 2026-08-27 16:00 to 2026-09-26 08:00 UTC. Their rate sum was +0.374964%
+(positive funding pays the short). WBETHETH daily close increased from
+1.1046 to 1.1064 ETH, or +0.162955%, between August 26 and September 25
+closes. Adding those inputs gives an indicative +0.537919% over about 30
+days. On an illustrative reserve of twice the underlying notional, that is
+about **3.272% annualized before any fees, spreads, futures basis movement,
+financing, rebalancing, depeg, margin or redemption risk**. It does not reach
+the existing 4% research hurdle even at this input-only stage for that
+capital assumption. A different account margin arrangement might change
+reserved capital, but cannot be asserted without account evidence. Historical
+funding does not forecast the next month. No trade or shadow position was
+opened. The ignored public API report is
+`outputs/wbeth_funding_preflight.json`, SHA256
+`97364499105fddb98e5bf6b8c0cca59c498cf2f5ab16901764d1f5ef5b4da414`.
+Reproduce the exact historical read with
+`uv run python -u scripts/wbeth_funding_preflight.py`.
+
 ## BTC/ETH spot versus quarterly delivery futures
 
 Another distinct cash-and-carry screen bought BTC and ETH spot at the first day of each quarter and sold the matching USD-M quarterly delivery futures, closing both legs at 00:00 UTC two days before the last Friday of that quarter. Binance describes these as [dated USD-M delivery contracts](https://www.binance.com/en/support/faq/detail/3ae441db4ae740e19af3fe9228eb6619), unlike the perpetuals used above. Each spot purchase was 0.5 normalized USDT units, and the matching short used the same base-asset quantity. The same 10 bps spot and 5 bps future fees plus 2 bps slippage per side were charged. The initial stress added another 8 bps per completed pair. One unit of spot capital plus a 0.05 spot cash buffer and two units of USDT futures margin gave 3.05 initial capital. Daily future highs plus 10% and an assumed 5% maintenance charge screened margin risk; both legs were closed before settlement, so no settlement-price assumption was needed.
