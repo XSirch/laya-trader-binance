@@ -26,6 +26,9 @@ class Bar:
     low: float
     close: float
     volume: float
+    quote_volume: float | None = None
+    trades: int | None = None
+    taker_buy_base: float | None = None
 
 
 def months(first: str, last: str) -> list[str]:
@@ -131,10 +134,17 @@ def parse_archive(path: Path) -> list[Bar]:
                     continue
                 if len(row) < 6:
                     raise ValueError(f"short kline row in {path}")
-                bar = Bar(_time_ms(row[0]), *[float(row[i]) for i in range(1, 6)])
+                bar = Bar(_time_ms(row[0]), *[float(row[i]) for i in range(1, 6)],
+                          float(row[7]) if len(row) > 7 else None,
+                          int(row[8]) if len(row) > 8 else None,
+                          float(row[9]) if len(row) > 9 else None)
                 if not (0 < bar.low <= min(bar.open, bar.close)
                         <= max(bar.open, bar.close) <= bar.high and bar.volume >= 0):
                     raise ValueError(f"invalid OHLCV at {bar.open_ms} in {path}")
+                if (bar.quote_volume is not None and not bar.quote_volume >= 0
+                        or bar.trades is not None and bar.trades < 0
+                        or bar.taker_buy_base is not None and not 0 <= bar.taker_buy_base <= bar.volume):
+                    raise ValueError(f"invalid volume/trade fields at {bar.open_ms} in {path}")
                 result.append(bar)
     if not result:
         raise ValueError(f"empty archive: {path}")

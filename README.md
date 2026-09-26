@@ -26,6 +26,31 @@ uv run jev-trader jev-replay
 
 `research-cached` recalculates the rule comparison from verified local ZIPs without network downloads.
 
+`uv run jev-trader research-extended` runs the second, explicitly exploratory
+comparison: 11 daily technical rules, five weekly statistical forecasts, cash,
+buy-and-hold, and a quarterly selector that can abstain. It uses only verified
+cached archives and cached Jev decisions; no paid requests are made. Forecasts
+use trailing training data with fully observed seven-day labels, and selection
+uses only earlier periods. Outputs include training timestamp audits, cost and
+execution-delay stress, asset exclusions, an hourly equity check, and a direct
+numeric-checklist versus Jev comparison in `results/extended_research.json`.
+See [the second-round report](docs/extended_research_2026-09-26.md).
+
+For the multi-parameter Jev experiment, use
+`uv run python -m jev_trader.multifactor` for local rules and cached responses.
+It combines 103 market fields across daily candles, four-hour candles and
+cross-asset context. All indicators and all five adherence questions travel in
+**one request per asset/time decision**. Jev returns only criterion adherence;
+the Python script owns entry, hold and exit decisions through fixed thresholds.
+The paid replay is explicit: `uv run python -m jev_trader.multifactor --budget-usd 2`.
+The user authorized a maximum of USD 2 for this experiment on 2026-09-26.
+The ledger reserves in-flight charges and blocks retries with unreconciled costs.
+See [the multi-parameter report](docs/multifactor_research_2026-09-26.md).
+
+The extended implementation corrects entry-cost compounding: entry costs reduce
+capital before the subsequent market return. Earlier reports retain their
+historical values; fresh replays use the corrected execution arithmetic.
+
 ## Fixed research design
 
 - Data: official Binance Spot 1h archives, 2023-01 through 2026-08 inclusive. Each ZIP is matched to its `.CHECKSUM`; timestamp gaps and OHLC sanity are checked. The extra August archive supplies the 2026-08-01 exit open. No candle is invented for a gap. The exact source ZIP hashes and gap counts are recorded in `data/binance/spot/1h/manifest.json`.

@@ -41,7 +41,9 @@ def evaluate_window(frames: dict[str, list[Bar]], signals: dict[str, list[bool]]
             raise ValueError(f"signal length mismatch: {symbol}")
         indices = [i for i, bar in enumerate(bars[:-1])
                    if start_ms <= bar.open_ms < end_ms]
-        if not indices or indices[0] == 0 or bars[indices[-1] + 1].open_ms != end_ms:
+        if (not indices or indices[0] == 0
+                or bars[indices[0]].open_ms != start_ms
+                or bars[indices[-1] + 1].open_ms != end_ms):
             raise ValueError(f"incomplete window or warmup for {symbol} {start}:{end}")
         if indices != list(range(indices[0], indices[-1] + 1)):
             raise ValueError(f"noncontiguous window: {symbol}")
@@ -64,7 +66,7 @@ def evaluate_window(frames: dict[str, list[Bar]], signals: dict[str, list[bool]]
             bar, next_bar = frames[symbol][i:i + 2]
             raw_return = next_bar.open / bar.open - 1
             turnover = int(desired != position[symbol])
-            factor = 1 + (raw_return if desired else 0) - turnover * side_cost
+            factor = (1 - turnover * side_cost) * (1 + (raw_return if desired else 0))
             if factor <= 0:
                 raise ValueError("nonpositive equity factor")
             equity[symbol] *= factor

@@ -7,6 +7,7 @@ paths = [ROOT / name for name in ("README.md", "pyproject.toml", ".gitignore", "
 for directory, pattern in (("src", "*.py"), ("tests", "*.py"),
                            ("scripts", "*.py"), ("docs", "*.md")):
     paths.extend((ROOT / directory).rglob(pattern))
+paths.extend((ROOT / "docs").rglob("*.json"))
 
 failures = []
 suspect_sequences = ("\ufffd", "\u00c3\u00a7", "\u00c3\u00a3", "\u00c3\u00a9")

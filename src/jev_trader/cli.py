@@ -224,7 +224,7 @@ def jev_smoke() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("research", "research-cached", "jev-smoke", "jev-replay"))
+    parser.add_argument("command", choices=("research", "research-cached", "research-extended", "jev-smoke", "jev-replay"))
     args = parser.parse_args()
     if args.command == "research":
         research(download=True)
@@ -232,6 +232,9 @@ def main() -> None:
         research(download=False)
     elif args.command == "jev-smoke":
         jev_smoke()
+    elif args.command == "research-extended":
+        from .extended import run
+        run()
     else:
         jev_replay()
 
