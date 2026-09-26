@@ -153,6 +153,18 @@ zero costs and an ideal price hedge. This is an income-component diagnostic;
 its drawdown does not measure portfolio risk. Reproduce from the preserved
 cache with `uv run python -m jev_trader.funding_capacity_research`.
 
+The [tree prediction experiment](docs/tree_prediction_research_2026-09-26.md)
+learns interactions among all sixty raw fields using monthly expanding fits and
+strictly completed hourly-aligned weekly labels. All eight 2023 scenarios are
+positive, but all eight later scenarios lose money; none satisfies 50% CAGR
+and 10% maximum drawdown. The separate `.venv-tree` environment uses
+`requirements-tree.lock`; run its Python with `-m jev_trader.tree_research`.
+
+The [derivatives metrics inventory](docs/derivatives_metrics_inventory_2026-09-26.md)
+checks public open-interest and positioning archives as potential additional
+inputs. Two checksum-verified samples expose duplicate rows and historical
+publication/revision uncertainty; this inventory contains no strategy result.
+
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
 Sources: [Binance public-data format and checksums](https://github.com/binance/binance-public-data/blob/master/README.md), [OpenRouter Jev Decisions API](https://openrouter.ai/blog/insights/what-is-jev/).
