@@ -136,6 +136,16 @@ spending after an unresolved request, including across restarts. The experiment
 is separate from the running paper strategy. See
 [the broad JEV results](docs/broad_jev_research_2026-09-26.md).
 
+The separate [residual-reversion study](docs/residual_research_2026-09-26.md)
+tests daily BTC/ETH-hedged residual signals using disjoint factor-estimation and
+residual windows. Its isolated hourly simulator reproduces the weekly baseline
+and also enforces exit liquidity. The first attempt preserves an invalid EOS
+re-entry; a separately frozen lifecycle correction completes all 16 scenarios
+without changing economic parameters. Every completed corrected scenario loses
+money after costs. Reproduce the correction from preserved R1 inputs with
+`uv run python -m jev_trader.residual_lifecycle_research`; it makes no JEV calls
+and does not change the paper strategy.
+
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
 Sources: [Binance public-data format and checksums](https://github.com/binance/binance-public-data/blob/master/README.md), [OpenRouter Jev Decisions API](https://openrouter.ai/blog/insights/what-is-jev/).
