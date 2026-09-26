@@ -594,7 +594,9 @@ The best 1,000 USDC case, BTC September 2027, had 1,000 USD future face,
 951.842 USDC spot acquisition cost, 48.158 gross entry basis, and +27.077
 conditional cash after charges on 975.638 illustrative reserved capital over
 about 363 days. It would need another 11.731 USDC of conditional net to
-reach the fixed gate. A year of exchange, collateral, index and exit risk
+reach the fixed gate. All modeled spot/future entry, expiry and spot-exit
+fees together total 4.380 USDC, so eliminating those fees entirely would
+still not close the gap. A year of exchange, collateral, index and exit risk
 remains unverified; this is neither a fill nor realized profit. No order or
 shadow position was opened. The ignored full public-API report is
 `outputs/deribit_inverse_long_delivery.json`, SHA256
