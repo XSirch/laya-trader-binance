@@ -81,6 +81,12 @@ Reports are written to `results/research.json` and `results/jev_replay.json`. `d
 
 ## Interpretation
 
+The read-only forward-data collector is available as
+`uv run python -m jev_trader.forward_observer`. It validates current public
+quotes and contract status and appends a hash-chained acquisition record.
+It is a one-shot collector, not a running paper portfolio or continuous service.
+See [the acquisition checkpoint](docs/forward_observer_2026-09-26.md).
+
 The ranking identifies the best candidate **within this fixed comparison**, not a guaranteed profitable strategy. Hourly kline opens do not prove order fills; slippage is assumed. Fees vary by account. Earlier project research already inspected parts of 2025-2026, so these periods are not pristine holdouts. Jev is a general structured-decision model, not a price model trained on these candles. Its entry filter must improve a chronologically later period after costs before it can be considered useful.
 
 Sources: [Binance public-data format and checksums](https://github.com/binance/binance-public-data/blob/master/README.md), [OpenRouter Jev Decisions API](https://openrouter.ai/blog/insights/what-is-jev/).

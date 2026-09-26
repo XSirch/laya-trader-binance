@@ -1,0 +1,455 @@
+{
+  "continuous_service_running": false,
+  "deployable": false,
+  "ledger_sha256": "feabb160c570d68f9b0dddbb0e7ac6cc416a4eb57db4ff6925771feb3d82e799",
+  "observations": [
+    {
+      "accepted_quotes": {
+        "AAVEUSDT": {
+          "age_ms": 1840,
+          "askPrice": 154.47,
+          "askQty": 19.1,
+          "bidPrice": 154.46,
+          "bidQty": 2.3,
+          "quote_time_ms": 1790449374817,
+          "spread_bps": 0.6473958501920114
+        },
+        "ADAUSDT": {
+          "age_ms": 878,
+          "askPrice": 0.2552,
+          "askQty": 97046.0,
+          "bidPrice": 0.2551,
+          "bidQty": 25647.0,
+          "quote_time_ms": 1790449375779,
+          "spread_bps": 3.9192631785220065
+        },
+        "BCHUSDT": {
+          "age_ms": 1430,
+          "askPrice": 336.96,
+          "askQty": 13.606,
+          "bidPrice": 336.95,
+          "bidQty": 6.228,
+          "quote_time_ms": 1790449375227,
+          "spread_bps": 0.29677553382472155
+        },
+        "BNBUSDT": {
+          "age_ms": 993,
+          "askPrice": 771.81,
+          "askQty": 38.76,
+          "bidPrice": 771.8,
+          "bidQty": 22.41,
+          "quote_time_ms": 1790449375664,
+          "spread_bps": 0.1295664060221287
+        },
+        "BTCUSDT": {
+          "age_ms": 1555,
+          "askPrice": 84020.5,
+          "askQty": 2.607,
+          "bidPrice": 84020.4,
+          "bidQty": 6.646,
+          "quote_time_ms": 1790449375102,
+          "spread_bps": 0.011901864368236634
+        },
+        "CRVUSDT": {
+          "age_ms": 2305,
+          "askPrice": 0.35,
+          "askQty": 2387.7,
+          "bidPrice": 0.3499,
+          "bidQty": 4009.8,
+          "quote_time_ms": 1790449374352,
+          "spread_bps": 2.857551078725218
+        },
+        "DOGEUSDT": {
+          "age_ms": 808,
+          "askPrice": 0.09728,
+          "askQty": 424827.0,
+          "bidPrice": 0.09727,
+          "bidQty": 271315.0,
+          "quote_time_ms": 1790449375849,
+          "spread_bps": 1.0280133641747624
+        },
+        "DOTUSDT": {
+          "age_ms": 1362,
+          "askPrice": 1.2536,
+          "askQty": 2397.9,
+          "bidPrice": 1.2535,
+          "bidQty": 293.2,
+          "quote_time_ms": 1790449375295,
+          "spread_bps": 0.7977344342067646
+        },
+        "ETHUSDT": {
+          "age_ms": 1203,
+          "askPrice": 2685.26,
+          "askQty": 43.289,
+          "bidPrice": 2685.25,
+          "bidQty": 584.666,
+          "quote_time_ms": 1790449375454,
+          "spread_bps": 0.03724041106047015
+        },
+        "GRTUSDT": {
+          "age_ms": 4041,
+          "askPrice": 0.02771,
+          "askQty": 6035.0,
+          "bidPrice": 0.0277,
+          "bidQty": 11125.0,
+          "quote_time_ms": 1790449372616,
+          "spread_bps": 3.6094567767549512
+        },
+        "LINKUSDT": {
+          "age_ms": 1004,
+          "askPrice": 14.188,
+          "askQty": 174.87,
+          "bidPrice": 14.187,
+          "bidQty": 158.51,
+          "quote_time_ms": 1790449375653,
+          "spread_bps": 0.704845814978835
+        },
+        "LTCUSDT": {
+          "age_ms": 895,
+          "askPrice": 71.86,
+          "askQty": 25.55,
+          "bidPrice": 71.85,
+          "bidQty": 31.467,
+          "quote_time_ms": 1790449375762,
+          "spread_bps": 1.3916916011418994
+        },
+        "SUSHIUSDT": {
+          "age_ms": 1097,
+          "askPrice": 0.2695,
+          "askQty": 476.0,
+          "bidPrice": 0.2694,
+          "bidQty": 6531.0,
+          "quote_time_ms": 1790449375560,
+          "spread_bps": 3.7112636852864913
+        },
+        "TRXUSDT": {
+          "age_ms": 740,
+          "askPrice": 0.33596,
+          "askQty": 46984.0,
+          "bidPrice": 0.33595,
+          "bidQty": 7660.0,
+          "quote_time_ms": 1790449375917,
+          "spread_bps": 0.29765891265063743
+        },
+        "UNIUSDT": {
+          "age_ms": 872,
+          "askPrice": 9.586,
+          "askQty": 996.0,
+          "bidPrice": 9.585,
+          "bidQty": 706.0,
+          "quote_time_ms": 1790449375785,
+          "spread_bps": 1.043242397370451
+        },
+        "XLMUSDT": {
+          "age_ms": 1321,
+          "askPrice": 0.21808,
+          "askQty": 5284.0,
+          "bidPrice": 0.21807,
+          "bidQty": 9684.0,
+          "quote_time_ms": 1790449375336,
+          "spread_bps": 0.4585578356062017
+        },
+        "XRPUSDT": {
+          "age_ms": 1153,
+          "askPrice": 1.5247,
+          "askQty": 60566.2,
+          "bidPrice": 1.5246,
+          "bidQty": 18319.4,
+          "quote_time_ms": 1790449375504,
+          "spread_bps": 0.6558882366444037
+        },
+        "YFIUSDT": {
+          "age_ms": 1741,
+          "askPrice": 2485.0,
+          "askQty": 0.04,
+          "bidPrice": 2484.0,
+          "bidQty": 0.284,
+          "quote_time_ms": 1790449374916,
+          "spread_bps": 4.024954719259409
+        }
+      },
+      "capture_start_server_ms": 1790449373916,
+      "cohort_sha256": "f7716d2b673f37cecfd9779b9090b4c63681a8e4b667340e5586972a8661ed57",
+      "continuity_gap_ms": null,
+      "limits": [
+        "Top-of-book observation is not a fill or a simultaneous tradable basket.",
+        "No signal scheduling, paper portfolio accounting or continuous service in this capture command.",
+        "Local hash chain is tamper-evident when externally anchored, not a trusted timestamp service."
+      ],
+      "orders_sent": 0,
+      "paper_equity": null,
+      "paper_positions": null,
+      "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "received_utc": "2026-09-26T19:02:56.781977+00:00",
+      "record_sha256": "a2265fd1fa0781f40acd514fd0b17320b96d628a1d52820c1e25a4b2d260c680",
+      "rejected_quotes": {},
+      "server_time_ms": 1790449376657,
+      "source_code_sha256": {
+        "broad_execution.py": "38cde34b4c55bc09c68cf631db439668743a92a8167738c89611aad301b44ba5",
+        "broad_research.py": "9144a4b085a71b2a6ee0a701b748fb8694e1409ee5f6a5cfd3b73c50179a154b",
+        "forward_observer.py": "75a2f72e5f3ad31129a6dc36e2b295cc6d3ebfc24f6c5b3704aa7df5b831dae3",
+        "trailing_stop.py": "f88d343b52b1ae6bb34017d67becf1e277e4ac1cb9243d968e71421cc990c716"
+      },
+      "sources": [
+        {
+          "file": "raw/20260926T190253-2315b156/server_before.json",
+          "received_ms": 1790449374034,
+          "request_started_ms": 1790449373263,
+          "sha256": "e0bc66c217a144238a33c39edb72e0137cd59fb4ed1ba74cc31f51f0ffa4a9fa",
+          "url": "https://fapi.binance.com/fapi/v1/time"
+        },
+        {
+          "file": "raw/20260926T190253-2315b156/exchange.json",
+          "received_ms": 1790449375463,
+          "request_started_ms": 1790449374035,
+          "sha256": "023779495c79c5d53f227aa01ce7d33e034262774fe82dfa44ed07d36c988226",
+          "url": "https://fapi.binance.com/fapi/v1/exchangeInfo"
+        },
+        {
+          "file": "raw/20260926T190253-2315b156/quotes.json",
+          "received_ms": 1790449376171,
+          "request_started_ms": 1790449375473,
+          "sha256": "8c2e5e207f9dd03093b9ba559c8b03a274190c8b2372d4a030ff6e4671a0e305",
+          "url": "https://fapi.binance.com/fapi/v1/ticker/bookTicker"
+        },
+        {
+          "file": "raw/20260926T190253-2315b156/server_after.json",
+          "received_ms": 1790449376768,
+          "request_started_ms": 1790449376172,
+          "sha256": "e77db654b895599850cceb8a7fdc3c9a006a786edc9491100bb2b5237f8a18c6",
+          "url": "https://fapi.binance.com/fapi/v1/time"
+        }
+      ],
+      "status": "market_observation_only",
+      "unavailable_contracts": {
+        "EOSUSDT": "absent",
+        "MKRUSDT": "SETTLING"
+      }
+    },
+    {
+      "accepted_quotes": {
+        "AAVEUSDT": {
+          "age_ms": 1162,
+          "askPrice": 154.5,
+          "askQty": 4.7,
+          "bidPrice": 154.49,
+          "bidQty": 7.4,
+          "quote_time_ms": 1790449434879,
+          "spread_bps": 0.6472701381915857
+        },
+        "ADAUSDT": {
+          "age_ms": 803,
+          "askPrice": 0.2552,
+          "askQty": 77075.0,
+          "bidPrice": 0.2551,
+          "bidQty": 74234.0,
+          "quote_time_ms": 1790449435238,
+          "spread_bps": 3.9192631785220065
+        },
+        "BCHUSDT": {
+          "age_ms": 1550,
+          "askPrice": 336.85,
+          "askQty": 1.885,
+          "bidPrice": 336.84,
+          "bidQty": 0.97,
+          "quote_time_ms": 1790449434491,
+          "spread_bps": 0.296872448753811
+        },
+        "BNBUSDT": {
+          "age_ms": 1296,
+          "askPrice": 771.51,
+          "askQty": 9.94,
+          "bidPrice": 771.5,
+          "bidQty": 46.63,
+          "quote_time_ms": 1790449434745,
+          "spread_bps": 0.12961678796625953
+        },
+        "BTCUSDT": {
+          "age_ms": 1499,
+          "askPrice": 84012.5,
+          "askQty": 5.018,
+          "bidPrice": 84012.4,
+          "bidQty": 1.821,
+          "quote_time_ms": 1790449434542,
+          "spread_bps": 0.011902997711151237
+        },
+        "CRVUSDT": {
+          "age_ms": 1784,
+          "askPrice": 0.3501,
+          "askQty": 4378.7,
+          "bidPrice": 0.35,
+          "bidQty": 3673.9,
+          "quote_time_ms": 1790449434257,
+          "spread_bps": 2.856734752179532
+        },
+        "DOGEUSDT": {
+          "age_ms": 839,
+          "askPrice": 0.09725,
+          "askQty": 440571.0,
+          "bidPrice": 0.09724,
+          "bidQty": 451184.0,
+          "quote_time_ms": 1790449435202,
+          "spread_bps": 1.0283305054254719
+        },
+        "DOTUSDT": {
+          "age_ms": 805,
+          "askPrice": 1.2514,
+          "askQty": 510.0,
+          "bidPrice": 1.2513,
+          "bidQty": 2892.2,
+          "quote_time_ms": 1790449435236,
+          "spread_bps": 0.7991369321132297
+        },
+        "ETHUSDT": {
+          "age_ms": 1293,
+          "askPrice": 2685.0,
+          "askQty": 490.521,
+          "bidPrice": 2684.99,
+          "bidQty": 20.547,
+          "quote_time_ms": 1790449434748,
+          "spread_bps": 0.03724401721499772
+        },
+        "GRTUSDT": {
+          "age_ms": 6942,
+          "askPrice": 0.02771,
+          "askQty": 44862.0,
+          "bidPrice": 0.02769,
+          "bidQty": 13622.0,
+          "quote_time_ms": 1790449429099,
+          "spread_bps": 7.220216606497901
+        },
+        "LINKUSDT": {
+          "age_ms": 918,
+          "askPrice": 14.183,
+          "askQty": 425.87,
+          "bidPrice": 14.182,
+          "bidQty": 12.17,
+          "quote_time_ms": 1790449435123,
+          "spread_bps": 0.7050943063630852
+        },
+        "LTCUSDT": {
+          "age_ms": 2499,
+          "askPrice": 71.89,
+          "askQty": 1.312,
+          "bidPrice": 71.88,
+          "bidQty": 50.318,
+          "quote_time_ms": 1790449433542,
+          "spread_bps": 1.3911108019760892
+        },
+        "SUSHIUSDT": {
+          "age_ms": 5618,
+          "askPrice": 0.2695,
+          "askQty": 1846.0,
+          "bidPrice": 0.2694,
+          "bidQty": 6966.0,
+          "quote_time_ms": 1790449430423,
+          "spread_bps": 3.7112636852864913
+        },
+        "TRXUSDT": {
+          "age_ms": 859,
+          "askPrice": 0.33596,
+          "askQty": 53599.0,
+          "bidPrice": 0.33595,
+          "bidQty": 18124.0,
+          "quote_time_ms": 1790449435182,
+          "spread_bps": 0.29765891265063743
+        },
+        "UNIUSDT": {
+          "age_ms": 1058,
+          "askPrice": 9.582,
+          "askQty": 801.0,
+          "bidPrice": 9.581,
+          "bidQty": 347.0,
+          "quote_time_ms": 1790449434983,
+          "spread_bps": 1.0436779209948568
+        },
+        "XLMUSDT": {
+          "age_ms": 791,
+          "askPrice": 0.218,
+          "askQty": 1451.0,
+          "bidPrice": 0.21799,
+          "bidQty": 8394.0,
+          "quote_time_ms": 1790449435250,
+          "spread_bps": 0.4587261175719627
+        },
+        "XRPUSDT": {
+          "age_ms": 1141,
+          "askPrice": 1.5246,
+          "askQty": 7437.7,
+          "bidPrice": 1.5245,
+          "bidQty": 90251.3,
+          "quote_time_ms": 1790449434900,
+          "spread_bps": 0.655931258404047
+        },
+        "YFIUSDT": {
+          "age_ms": 13776,
+          "askPrice": 2484.0,
+          "askQty": 0.085,
+          "bidPrice": 2483.0,
+          "bidQty": 0.777,
+          "quote_time_ms": 1790449422265,
+          "spread_bps": 4.02657539762432
+        }
+      },
+      "capture_start_server_ms": 1790449432430,
+      "cohort_sha256": "f7716d2b673f37cecfd9779b9090b4c63681a8e4b667340e5586972a8661ed57",
+      "continuity_gap_ms": 59384,
+      "limits": [
+        "Top-of-book observation is not a fill or a simultaneous tradable basket.",
+        "No signal scheduling, paper portfolio accounting or continuous service in this capture command.",
+        "Local hash chain is tamper-evident when externally anchored, not a trusted timestamp service."
+      ],
+      "orders_sent": 0,
+      "paper_equity": null,
+      "paper_positions": null,
+      "previous_sha256": "a2265fd1fa0781f40acd514fd0b17320b96d628a1d52820c1e25a4b2d260c680",
+      "received_utc": "2026-09-26T19:03:56.159994+00:00",
+      "record_sha256": "2b23ca29eb5eb001e7f5c838618b56cc4b5cf624d774e5ef652ea93b2e052663",
+      "rejected_quotes": {},
+      "server_time_ms": 1790449436041,
+      "source_code_sha256": {
+        "broad_execution.py": "38cde34b4c55bc09c68cf631db439668743a92a8167738c89611aad301b44ba5",
+        "broad_research.py": "9144a4b085a71b2a6ee0a701b748fb8694e1409ee5f6a5cfd3b73c50179a154b",
+        "forward_observer.py": "75a2f72e5f3ad31129a6dc36e2b295cc6d3ebfc24f6c5b3704aa7df5b831dae3",
+        "trailing_stop.py": "f88d343b52b1ae6bb34017d67becf1e277e4ac1cb9243d968e71421cc990c716"
+      },
+      "sources": [
+        {
+          "file": "raw/20260926T190351-c4b2fbed/server_before.json",
+          "received_ms": 1790449432548,
+          "request_started_ms": 1790449431914,
+          "sha256": "e6f41b50ce81683608b4c0ed053bf19de0f5000f2da87efb0c962d00b0ab22a9",
+          "url": "https://fapi.binance.com/fapi/v1/time"
+        },
+        {
+          "file": "raw/20260926T190351-c4b2fbed/exchange.json",
+          "received_ms": 1790449434747,
+          "request_started_ms": 1790449432549,
+          "sha256": "c33735d38f8e8290e63e0431878058049f68bacb032f88aa1f02da9235cbc13c",
+          "url": "https://fapi.binance.com/fapi/v1/exchangeInfo"
+        },
+        {
+          "file": "raw/20260926T190351-c4b2fbed/quotes.json",
+          "received_ms": 1790449435494,
+          "request_started_ms": 1790449434756,
+          "sha256": "2cef561a7f3501527a41f03c8f30cedf68c8c2c86791f99d2641c65632cbcaf1",
+          "url": "https://fapi.binance.com/fapi/v1/ticker/bookTicker"
+        },
+        {
+          "file": "raw/20260926T190351-c4b2fbed/server_after.json",
+          "received_ms": 1790449436155,
+          "request_started_ms": 1790449435496,
+          "sha256": "41fdb7381047e9a92c1ad089b8c253c0a5a80020a6b791a8cc9bab11eb012641",
+          "url": "https://fapi.binance.com/fapi/v1/time"
+        }
+      ],
+      "status": "market_observation_only",
+      "unavailable_contracts": {
+        "EOSUSDT": "absent",
+        "MKRUSDT": "SETTLING"
+      }
+    }
+  ],
+  "paper_returns_available": false,
+  "status": "acquisition_verified_only"
+}
