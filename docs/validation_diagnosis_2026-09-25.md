@@ -20,6 +20,12 @@ notice](https://www.bitmex.com/wind-down/) says trading and new positions
 stopped on 2026-09-23. Its old API descriptions and contract history are not
 evidence of a currently executable market.
 
+The Kraken Tier 1 inverse-future top-quote screen also found no executable
+entry side: all four fixed BTC/ETH October/December futures lacked a best bid
+in the official ticker response, with zero reported open interest and 24-hour
+volume. A tradeable metadata flag alone is insufficient. No after-cost return
+was calculated for these missing quotes.
+
 ## Existing 15 minute Laya checkpoint
 
 The completed Colab A100 run evaluated 100,000 records from 2025 H2. The report is preserved in `MyDrive/laya-trader-colab/persistent/validation_report.json` and `.md`; the checkpoint is in `MyDrive/laya-trader-colab/checkpoints/laya-trader-v0.1-local`.
@@ -568,6 +574,29 @@ or shadow position was opened. The ignored full public-API report is
 `48b4f57220ca09c53876646f087b9b68aad2c8d1b06fa3dda121c92fdac2b30a`.
 Reproduce a new snapshot with
 `uv run python -u scripts/deribit_inverse_delivery_universe_screen.py`.
+
+### Kraken inverse retail top-quote screen
+
+The [Kraken retail top-quote protocol](kraken_inverse_retail_top_quote_protocol.md)
+was committed at `d7bba50` before reading current prices. It fixed four
+active-metadata BTC/ETH inverse futures expiring October/December 2026,
+compared with Kraken BTC/USD and ETH/USD spot, and would have charged only
+the published Tier 1 spot entry/exit and future entry taker rates. This was
+an intentionally optimistic upper bound: unlimited best-price depth and no
+settlement fee, slippage, margin, mismatch, financing or tax. The public
+future ticker response returned **no `bid` or `ask` for any of the four
+contracts**, despite `tradeable=true` instrument metadata; each ticker
+reported zero open interest and zero 24-hour volume. The collector's initial
+evaluation printed `evaluation error` because it expected a `bid` key. The
+raw response makes the failure precise: **no executable future entry quote
+was available**, so no return or gate result can be computed. The collector
+was corrected to classify future best-bid absence without changing the
+frozen protocol or replacing this snapshot. No order was placed.
+
+The ignored raw public-API report is
+`outputs/kraken_inverse_retail_top_quote.json`, SHA256
+`238e55c719f6721093d6865774c9de72cdd59488e2525994009255f4cbb08dbc`.
+The missing bids are directly visible under `sources.future_tickers.payload`.
 
 ### BTC March 2027 prospective quote watch and settlement-range audit
 

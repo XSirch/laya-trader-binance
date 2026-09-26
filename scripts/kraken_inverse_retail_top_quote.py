@@ -34,6 +34,11 @@ def evaluate(symbol: str, instrument: dict, ticker: dict,
             or ticker is None or spot_read.get("status") != "ok"):
         result["status"] = "required metadata or ticker unavailable"
         return result
+    if ticker.get("bid") is None:
+        result["status"] = "future best bid unavailable"
+        result["ticker_open_interest"] = ticker.get("openInterest")
+        result["ticker_volume_24h"] = ticker.get("vol24h")
+        return result
     payload = spot_read["payload"]
     if payload.get("error") or not payload.get("result"):
         result["status"] = "spot ticker API error"
