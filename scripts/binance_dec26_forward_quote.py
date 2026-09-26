@@ -80,7 +80,8 @@ def marketable_vwap(levels: list, quantity: Decimal) -> tuple[Decimal | None, De
     return None, quantity - remaining
 
 
-def evaluate(base: str, sources: dict) -> dict:
+def evaluate(base: str, sources: dict, contract_suffix: str = "261225",
+             expected_contract_type: str | None = None) -> dict:
     result = {"base": base, "sizes": [], "both_sizes_qualify": False}
     metadata = sources["metadata"]
     spot_read = sources["spot_book"]
@@ -92,7 +93,7 @@ def evaluate(base: str, sources: dict) -> dict:
         result["status"] = "required public API read failed"
         return result
     spot_symbol = f"{base}USDT"
-    future_symbol = f"{base}USDT_261225"
+    future_symbol = f"{base}USDT_{contract_suffix}"
     spots = [row for row in metadata["spot"]["payload"].get("symbols", [])
              if row.get("symbol") == spot_symbol]
     futures = [row for row in metadata["future"]["payload"].get("symbols", [])
@@ -103,7 +104,9 @@ def evaluate(base: str, sources: dict) -> dict:
     spot, future = spots[0], futures[0]
     if (spot.get("status") != "TRADING" or future.get("status") != "TRADING"
             or future.get("quoteAsset") != "USDT"
-            or future.get("marginAsset") != "USDT"):
+            or future.get("marginAsset") != "USDT"
+            or (expected_contract_type is not None
+                and future.get("contractType") != expected_contract_type)):
         result["status"] = "instrument not trading or wrong settlement asset"
         return result
     spot_book = spot_read["payload"]
