@@ -36,7 +36,8 @@ if __name__ == "__main__":
     save("broad_sources_2026-09-26.json", sources)
     for name in ("broad_execution", "broad_august", "broad_extension", "broad_prediction",
                  "broad_technical_prediction", "broad_prediction_settlement_bounds",
-                 "broad_technical_prediction_settlement_bounds"):
+                 "broad_technical_prediction_settlement_bounds", "broad_nonlinear_prediction",
+                 "broad_nonlinear_prediction_settlement_bounds"):
         path = ROOT / "results" / f"{name}.json"
         if path.exists():
             save(f"{name}_2026-09-26.json", compact(json.loads(path.read_text(encoding="utf-8"))))

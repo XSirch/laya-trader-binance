@@ -1,0 +1,65 @@
+{
+  "deployable": false,
+  "development_returns_pct": {
+    "cash": 0,
+    "economic/ridge0.1_equal": 8.164221692145567,
+    "economic/ridge0.1_inverse_vol": 8.933543025709012,
+    "economic/ridge1.0_equal": 6.020530582767725,
+    "economic/ridge1.0_inverse_vol": 6.866764871633513,
+    "economic/ridge10.0_equal": 5.291219326662233,
+    "economic/ridge10.0_inverse_vol": 6.26064488627649,
+    "nonlinear/rff_scale1_equal": 1.9740672020535532,
+    "nonlinear/rff_scale1_inverse_vol": 2.757472867402466,
+    "nonlinear/rff_scale2_equal": -24.38937377998546,
+    "nonlinear/rff_scale2_inverse_vol": -26.779199687087452,
+    "nonlinear/rff_scale4_equal": -12.256996347817228,
+    "nonlinear/rff_scale4_inverse_vol": -11.725023754741837,
+    "technical/ridge0.1_equal": -2.9058441659580936,
+    "technical/ridge0.1_inverse_vol": -4.034858241665695,
+    "technical/ridge1.0_equal": -7.7910366949830445,
+    "technical/ridge1.0_inverse_vol": -7.4665395524449725,
+    "technical/ridge10.0_equal": -7.240216180121251,
+    "technical/ridge10.0_inverse_vol": -7.201341138786743
+  },
+  "limits": [
+    "Conditional on documented settlement price bounds, not observed settlement transactions.",
+    "Contains 18 forecast variants plus cash; does not correct every earlier research hypothesis.",
+    "Families were designed sequentially after inspecting prior outcomes; this is retrospective."
+  ],
+  "selected_on_development_including_cash": "economic/ridge0.1_inverse_vol",
+  "sources": {
+    "economic": {
+      "path": "broad_prediction_settlement_bounds.json",
+      "sha256": "1e665301603d6fd084f4686bb140ef4cd60fd6cdbf7d78fe6458f6f65e4cf5c5"
+    },
+    "nonlinear": {
+      "path": "broad_nonlinear_prediction_settlement_bounds.json",
+      "sha256": "0867693947ccfc2e42fc0dfd9c1e675c307d5bb5418fb11b03e295fd309f6c87"
+    },
+    "technical": {
+      "path": "broad_technical_prediction_settlement_bounds.json",
+      "sha256": "23f21f5dcf8663f472ca0bc54340e3599aa9619350ca0cc48b1d5fc304012be8"
+    }
+  },
+  "statistical_diagnostic": {
+    "block_days": 30,
+    "cash_benchmark_return": 0,
+    "days": 943,
+    "draws": 2000,
+    "family_size": 19,
+    "limits": [
+      "Centered circular moving-block bootstrap; finite-sample approximation.",
+      "Adjustment covers only the supplied family, not every prior research trial.",
+      "No risk-free yield, live fills, delisting uncertainty or structural breaks are resolved by a p-value."
+    ],
+    "max_mean_reality_check_pvalue": 0.5677161419290355,
+    "seed": 1907,
+    "selected_annualized_geometric_return_95_interval_pct": [
+      -10.324699773691345,
+      14.52948809867105
+    ],
+    "selected_annualized_log_return_pct": 1.44052046365628,
+    "selected_mean_family_adjusted_pvalue": 0.879560219890055,
+    "selection": "economic/ridge0.1_inverse_vol"
+  }
+}

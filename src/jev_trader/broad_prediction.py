@@ -44,7 +44,7 @@ def rank_vectors(states, fields=FIELDS):
     return output
 
 
-def training_weeks(data, states, fields=FIELDS):
+def training_weeks(data, states, fields=FIELDS, vectorizer=rank_vectors):
     prices = {s: {b.open_ms: b for b in bars} for s, bars in data["klines"].items()}
     marks = {s: {b.open_ms: b for b in bars} for s, bars in data["markPriceKlines"].items()}
     funding = {s: {} for s in prices}
@@ -58,7 +58,8 @@ def training_weeks(data, states, fields=FIELDS):
         current = eligible({s: rows[t] for s, rows in states.items() if t in rows})
         if len(current) < 8:
             continue
-        vectors, targets = rank_vectors(current, fields), {}
+        vectors, targets = vectorizer(current, fields), {}
+        dimension = len(next(iter(vectors.values())))
         for s in current:
             if t not in prices[s] or t + WEEK not in prices[s] or any(
                     day not in marks[s] for day in range(t, t + WEEK, DAY_MS)):
@@ -81,16 +82,16 @@ def training_weeks(data, states, fields=FIELDS):
         n = len(current)
         ys = {s: targets[s] - mean for s in current}
         gram = [[sum(vectors[s][a] * vectors[s][b] for s in current) / n
-                 for b in range(len(fields))] for a in range(len(fields))]
-        rhs = [sum(vectors[s][a] * ys[s] for s in current) / n for a in range(len(fields))]
+                 for b in range(dimension)] for a in range(dimension)]
+        rhs = [sum(vectors[s][a] * ys[s] for s in current) / n for a in range(dimension)]
         weeks.append({"signal_ms": t, "label_end_ms": t + WEEK, "gram": gram, "rhs": rhs,
                       "targets": ys, "vectors": vectors})
     return weeks, unavailable, dates
 
 
-def forecasts(states, weeks, dates, fields=FIELDS):
-    output = {str(p): {s: {} for s in states} for p in PENALTIES}
-    audits, errors = [], {str(p): [] for p in PENALTIES}
+def forecasts(states, weeks, dates, fields=FIELDS, vectorizer=rank_vectors, penalties=PENALTIES):
+    output = {str(p): {s: {} for s in states} for p in penalties}
+    audits, errors = [], {str(p): [] for p in penalties}
     labels = {week["signal_ms"]: week for week in weeks}
     for t in dates:
         # Strictly earlier than signal cutoff: even a label ending at today's
@@ -101,15 +102,16 @@ def forecasts(states, weeks, dates, fields=FIELDS):
         current = eligible({s: rows[t] for s, rows in states.items() if t in rows})
         if len(current) < 8:
             continue
-        vectors = rank_vectors(current, fields)
+        vectors = vectorizer(current, fields)
+        dimension = len(next(iter(vectors.values())))
         n = len(known)
-        gram = [[sum(w["gram"][a][b] for w in known) / n for b in range(len(fields))]
-                for a in range(len(fields))]
-        rhs = [sum(w["rhs"][a] for w in known) / n for a in range(len(fields))]
+        gram = [[sum(w["gram"][a][b] for w in known) / n for b in range(dimension)]
+                for a in range(dimension)]
+        rhs = [sum(w["rhs"][a] for w in known) / n for a in range(dimension)]
         audit = {"signal_ms": t, "latest_label_end_ms": max(w["label_end_ms"] for w in known),
                  "first_training_signal_ms": known[0]["signal_ms"], "training_weeks": n,
                  "prediction_assets": len(current), "coefficients": {}}
-        for penalty in PENALTIES:
+        for penalty in penalties:
             key = str(penalty)
             weights = solve([[v + (penalty if a == b else 0) for b, v in enumerate(row)]
                              for a, row in enumerate(gram)], rhs)
@@ -154,15 +156,20 @@ def summarize_errors(rows, start, end):
             "direction_accuracy": sum((r["prediction"] > 0) == (r["actual"] > 0) for r in rows) / len(rows)}
 
 
-def run(state_builder=None, family="economic", settlement_scenario=False):
+def run(state_builder=None, family="economic", settlement_scenario=False, model_builder=None):
     data, _, _ = load_daily()
     if state_builder is None:
         state, fields, feature_quality = features(data), FIELDS, {}
     else:
         state, fields, feature_quality = state_builder(data)
     print(f"family={family}; input_fields={len(fields)}", flush=True)
-    weeks, unavailable, dates = training_weeks(data, state, fields)
-    signals, audits, errors = forecasts(state, weeks, dates, fields)
+    if model_builder is None:
+        weeks, unavailable, dates = training_weeks(data, state, fields)
+        signals, audits, errors = forecasts(state, weeks, dates, fields)
+        models = {f"ridge{p}": signals[str(p)] for p in PENALTIES}
+        model_design = {"penalties": PENALTIES, "type": "linear_ridge"}
+    else:
+        models, audits, errors, unavailable, model_design = model_builder(data, state, fields)
     print(f"causal forecasts complete: {len(audits)} weekly fits", flush=True)
     hourly, sources = load_hourly(data)
     training, training_sources = load_hourly(data, "training_hourly_manifest.json")
@@ -174,7 +181,7 @@ def run(state_builder=None, family="economic", settlement_scenario=False):
         from .settlement_bounds import load as load_settlement
         bounds, settlement_evidence = load_settlement()
     results = {}
-    variants = [(f"ridge{p}_{sizing}", signals[str(p)], sizing) for p in PENALTIES
+    variants = [(f"{name}_{sizing}", signal, sizing) for name, signal in models.items()
                 for sizing in ("equal", "inverse_vol")] + [("zero", state, "zero")]
     for name, signal, sizing in variants:
         results[name] = {}
@@ -195,6 +202,7 @@ def run(state_builder=None, family="economic", settlement_scenario=False):
     selected = max(candidates, key=lambda name: results[name]["development"]["stress"]["return_pct"]) if candidates else None
     report = {"created_utc": datetime.now(timezone.utc).isoformat(), "fields": fields, "results": results,
               "family": family, "feature_quality": feature_quality,
+              "model_design": model_design,
               "settlement_scenario": settlement_scenario, "settlement_evidence": settlement_evidence,
               "selected_on_development": selected, "training_audits": audits, "unavailable_label_weeks": unavailable,
               "selection_scope": "Highest-return trading variant on development, for comparison only; not authorization to trade.",
@@ -222,6 +230,11 @@ def run(state_builder=None, family="economic", settlement_scenario=False):
         import inspect
         from pathlib import Path
         source = Path(inspect.getfile(state_builder))
+        report["source_code_sha256"][source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
+    if model_builder is not None:
+        import inspect
+        from pathlib import Path
+        source = Path(inspect.getfile(model_builder))
         report["source_code_sha256"][source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
     if settlement_scenario:
         report["source_code_sha256"]["settlement_bounds.py"] = hashlib.sha256(
