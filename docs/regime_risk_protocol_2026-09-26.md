@@ -1,0 +1,11 @@
+# Controle de exposição por contexto multifatorial
+
+Hipótese posterior às pesquisas anteriores: reduzir a exposição quando os sinais direcionais das posições discordam de vários grupos de indicadores e quando a volatilidade mediana aumenta. O contexto preserva os sessenta campos econômicos e técnicos já disponíveis. Não há chamada adicional ao JEV; as fórmulas do script determinam a exposição.
+
+Comparar quatro políticas, cada uma com e sem trailing de carteira de 4%: referência; limite de volatilidade; concordância técnica; produto dos dois controles. O limite de volatilidade multiplica a exposição por min(1, 0,03 / volatilidade diária mediana dos ativos elegíveis). A concordância usa seis grupos com pesos iguais: médias/tendência, momentum, participação, estrutura, Fibonacci e tendência econômica de múltiplas escalas. Dentro de cada grupo, médias de sinais assinados evitam que o número de indicadores dê peso excessivo ao grupo. A concordância com o sentido de cada posição é ponderada pela exposição absoluta; a escala final é 0,25 + 0,75 vezes a concordância convertida de [-1,1] para [0,1]. Assim não há aumento de exposição nem inversão do sinal original.
+
+Os indicadores são calculados exclusivamente com candles diários encerrados. Rebalancear nas segundas-feiras às 01:00 UTC. Custos por lado de 0,15% e 0,30%. Recalcular posições pela combinação fixa de baixa volatilidade e carry protegido por beta. Não alterar distâncias de trailing, períodos dos indicadores, fórmulas ou limites depois dos resultados.
+
+Selecionar mecanicamente pelo maior retorno líquido de 2022–2023, entre as oito variantes com execução válida e retorno positivo, antes de calcular as janelas posteriores. Salvar a escolha em arquivo antes dessa avaliação. Comparar 2024, 2025, janeiro–julho/2026, agosto–setembro/2026 e agregado de janeiro/2024 a 26/setembro/2026. Não trocar o escolhido por uma variante que se sair melhor posteriormente. Preservar falhas de execução sem estimar preços ausentes.
+
+Embora a seleção use somente desenvolvimento, a hipótese foi criada depois de inspecionar períodos posteriores em experimentos anteriores. Portanto, nenhuma janela aqui é confirmação prospectiva. Reportar todas as variantes e custos; caixa ou menor perda isoladamente não satisfazem o objetivo de uma estratégia lucrativa e consistente.

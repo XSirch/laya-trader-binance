@@ -2,5 +2,7 @@
 src/jev_trader/broad_*.py text eol=lf
 src/jev_trader/statistics.py text eol=lf
 src/jev_trader/trailing_*.py text eol=lf
+src/jev_trader/regime_*.py text eol=lf
 docs/broad_*.json text eol=crlf
 docs/trailing_*.json text eol=crlf
+docs/regime_*.json text eol=crlf
