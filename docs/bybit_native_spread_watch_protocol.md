@@ -1,0 +1,7 @@
+# Read-only native carry-spread quote watch
+
+Specified after initial Bybit native spread snapshots were inspected. This is a short, post-observation data-quality check, not an order, fill test, historical return or untouched holdout.
+
+- Observe exactly the BTCUSDT-25DEC26_BTC/USDT and ETHUSDT-25DEC26_ETH/USDT CarryTrade order books through Bybit's public spread order-book API. Take ten paired samples 30 seconds apart. Record local UTC request time, response `ts`, matching-engine `cts`, top bid/ask prices and sizes, and errors without silently retrying or replacing a missing sample.
+- For this diagnostic only, classify a sample as a fresh two-sided quote when both top sides have positive prices and quantities and `ts - cts` is between zero and ten seconds. Report the count for each symbol, changes in best bid/ask and matching-engine update IDs, and the oldest observed quote age. Eight or more fresh two-sided samples out of ten would justify further account-specific evaluation; fewer show insufficient freshness under this conservative screen. A resting quote can remain executable even when unchanged, so the freshness threshold is an evidence requirement, not a claim that older quotes cannot fill.
+- Do not turn a quoted spread into a profit claim. Account permissions, fee tier, order size, collateral, exit spread, borrow/capital cost, quote cancellation and actual fill remain separate evidence. No orders are submitted.
