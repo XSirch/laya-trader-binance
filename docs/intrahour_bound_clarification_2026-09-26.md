@@ -1,0 +1,15 @@
+# Esclarecimento sobre o limite de drawdown intrahorário
+
+Esta revisão de código não recalcula resultados financeiros nem altera os módulos ou artefatos congelados. Ela distingue o stress publicado pelos executores antigos de um limite superior conservador para a queda entre pico e vale.
+
+Em `src/jev_trader/broad_execution.py`, linhas 164–174, e `src/jev_trader/scheduled_execution.py`, linhas 171–181, `peak` recebe somente os patrimônios observados nas aberturas horárias. O campo `adverse_intrahour_drawdown_bound_pct` combina esse pico observado com a marcação adversa possível dentro da hora. É um diagnóstico de perda abaixo do pico observado. Como não inclui um pico favorável possível dentro da hora, esse número não é um limite superior geral para o drawdown intrahorário entre pico e vale.
+
+Um exemplo puramente aritmético mostra a diferença. Uma carteira sem custos começa com patrimônio 1 e compra 0,01 unidade de um ativo a 100. Na hora seguinte considerada, a abertura e o fechamento são 100, a máxima é 120 e a mínima é 90. Com apenas picos das aberturas, o pico permanece em 1 e o vale possível é 0,90: o cálculo antigo indica 10%. Porém, se a máxima vier antes da mínima, o patrimônio pode passar de 1,20 para 0,90, uma queda de 25%. O candle não informa a ordem dos extremos; portanto 25% é um limite conservador compatível com os extremos, não um drawdown comprovadamente observado. A queda medida apenas nas aberturas desse exemplo continua sendo zero.
+
+O executor novo `src/jev_trader/hourly_forecast_execution.py` mantém separadamente o pico observado e o pico favorável possível. Para spot comprado com caixa, usa `caixa + quantidade * máxima` e `caixa + quantidade * mínima` durante horas efetivamente em posição. Retém o pico favorável para comparações posteriores e inclui os patrimônios antes e depois de compras, vendas e fechamento terminal, com suas taxas. Não atribui ao investidor os extremos posteriores de um candle no qual a posição foi encerrada na abertura. O trailing continua observando somente as aberturas; máxima e mínima posteriores não decidem saídas retroativamente.
+
+A implementação de duas pernas em `src/jev_trader/basis_execution.py` também distingue `favorable` e `adverse_peak`. Nos dois casos, o limite conservador é uma hipótese de ordenação dos extremos. Ele não comprova preços executáveis, liquidez, sequência intrahorária ou perda máxima futura.
+
+Os [48 resultados da grade target50](target50_research_2026-09-26.md) permanecem preservados. Nenhum alcançou simultaneamente CAGR líquido de 50% e drawdown horário de até 10%; o maior CAGR da grade foi 44,12%, com queda horária de 66,35%. Corrigir ou renomear o diagnóstico intrahorário não cria um cenário aprovado nessa grade. O achado exige cautela ao usar o campo antigo para certificar um teto de risco, mas não modifica os retornos publicados nem autoriza mudar parâmetros depois dos resultados.
+
+Esta nota e os testes do executor novo usam somente inspeção de código e exemplos sintéticos. Não houve novo backtest histórico, chamada JEV ou ordem real neste esclarecimento.
