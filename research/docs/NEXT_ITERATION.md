@@ -1,3 +1,17 @@
+# Atualização operacional das correções C18/C20 — 29/09/2026
+
+As correções e regressões desta revisão estão detalhadas em [REVISAO_C18_C20_CORRECOES_2026-09-29.md](REVISAO_C18_C20_CORRECOES_2026-09-29.md). Nenhum commit posterior ao checkout de referência já resolvia estes itens.
+
+No C18, a observação/contabilização está preparada para ticks a cada 15 minutos, com inferência e rebalanceamento ainda limitados à janela semanal congelada de segunda-feira 01:00–01:04:59 UTC. Lock e reserva única evitam concorrência e repetição da decisão. O guard de lacuna de 65 minutos permanece ativo e bloqueia sem avançar contas com posição quando não há continuidade demonstrável. O profit factor da base e do stress agora usa PnL monetário; EV e payoff preservam suas definições. A configuração, o modelo, o threshold 0,70, os custos e a janela econômica permanecem inalterados.
+
+O status somente leitura do SQLite C18 encontrou quatro registros; o mais recente segue `mark_only`, em 29/09/2026 01:34:55 UTC, sem posições, sem episódios e sem aprovação. `orders_enabled=false`. A atualização do hash de código continua pendente no ledger SQLite até o próximo tick normal. O XML preparado para 15 minutos não foi ativado. As consultas do Agendador não permitiram verificar nem alterar a tarefa existente; não se afirma que a nova cadência esteja em execução.
+
+No C20, o gate fixo considera os primeiros 14 dias após T0: pelo menos 13 dias com 86.400 segundos estruturais e pelo menos 85.536 segundos válidos (99%) cada, sem defeito de parsing, ordem, armazenamento ou hash inexplicado. O estado terminal fica persistido em histórico append-only. A idade de recepção monotônica, as idades de evento `E` e transaction time `T`, a qualificação do relógio e a elegibilidade para execução são diagnósticos distintos. Captura e retomada param no término exclusivo; não se grava em `Tend` ou depois.
+
+T0 permanece `2026-09-30T00:00:00Z` e Tend `2027-01-20T00:00:00Z`. O PID 26484 estava vivo antes de T0, mas os logs de runner estão vazios e não há CSV/manifesto de captura em `research/data/c20_bookticker`. Como o processo foi iniciado antes destas alterações, não foi possível confirmar que carregou o código corrigido. Ele não foi reiniciado nem o T0 foi movido; até nova verificação operacional, a execução corrigida de C20 permanece pendente.
+
+Os testes offline importam os módulos reais: C18 **7 passaram** e C20 **29 passaram**. Não houve treino, coleta longa, chamadas pagas, `tick` C18, ordem real, ativação de tarefa ou decisão econômica. Configuração e modelo C18, protocolos e evidência anterior permanecem preservados. Confira hashes, comandos e limites de operação no [relatório da revisão](REVISAO_C18_C20_CORRECOES_2026-09-29.md).
+
 # Próxima iteração — ciclo 6
 
 Atualizado em 28/09/2026. O estado econômico continua `target_not_demonstrated`; a estratégia ainda não foi encontrada.

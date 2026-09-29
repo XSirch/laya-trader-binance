@@ -33,6 +33,10 @@ MAX_CAPTURE_DAYS = 112
 MAX_QUOTE_AGE_MS = 5_000
 MAX_CLOCK_OFFSET_MS = 100.0
 CLOCK_PROBE_MAX_AGE_MS = 60_000
+UTC_DAY_SECONDS = 86_400
+SOURCE_QUALITY_WINDOW_DAYS = 14
+SOURCE_QUALITY_MIN_DAYS = 13
+SOURCE_QUALITY_MIN_VALID_FRACTION = 0.99
 MAX_START_WAIT_SLEEP_S = 30.0
 ROTATE_CONNECTION_AFTER_S = 23 * 60 * 60 + 50 * 60
 ZERO_HASH = "0" * 64
@@ -173,6 +177,7 @@ class ClockReading:
     uncertainty_ms: float
     measured_utc_ns: int
     qualified: bool
+    measured_monotonic_ns: int | None = None
 
 
 def parse_clock_response(
@@ -205,6 +210,7 @@ def parse_clock_response(
         uncertainty_ms=uncertainty_ms,
         measured_utc_ns=request_start_utc_ns + elapsed_ns,
         qualified=qualified,
+        measured_monotonic_ns=request_end_monotonic_ns,
     )
 
 
@@ -218,6 +224,7 @@ def build_sample_row(
     process_instance_id: str,
     now_utc_ns: int,
     clock_reading: ClockReading | None,
+    now_monotonic_ns: int | None = None,
 ) -> dict[str, str | int]:
     """Create a single row; missing or stale observations remain explicit."""
     row: dict[str, str | int] = {
@@ -241,6 +248,7 @@ def build_sample_row(
 
     if quote is None:
         age_ms: float | None = None
+        receipt_age_monotonic_ms: float | None = None
         quote_fields: dict[str, str | int] = {
             "event_time_ms": "",
             "transaction_time_ms": "",
@@ -259,6 +267,13 @@ def build_sample_row(
         }
     else:
         age_ms = (now_utc_ns - quote.received_utc_ns) / 1_000_000
+        if now_monotonic_ns is None:
+            # Compatibility for deterministic/offline callers predating the
+            # monotonic receive clock argument. Runtime paths pass it directly.
+            now_monotonic_ns = quote.received_monotonic_ns + (now_utc_ns - quote.received_utc_ns)
+        receipt_age_monotonic_ms = (
+            now_monotonic_ns - quote.received_monotonic_ns
+        ) / 1_000_000
         mid = (quote.bid + quote.ask) / 2
         spread_bps = (quote.ask - quote.bid) / mid * Decimal(10_000)
         total_qty = quote.bid_qty + quote.ask_qty
@@ -287,17 +302,49 @@ def build_sample_row(
         }
     row.update(quote_fields)
     row["quote_age_ms"] = "" if age_ms is None else f"{age_ms:.3f}"
+    receipt_fresh = bool(
+        receipt_age_monotonic_ms is not None
+        and 0 <= receipt_age_monotonic_ms <= MAX_QUOTE_AGE_MS
+    )
+    row["receipt_age_monotonic_ms"] = (
+        "" if receipt_age_monotonic_ms is None else f"{receipt_age_monotonic_ms:.3f}"
+    )
+    row["receipt_fresh"] = int(receipt_fresh)
     if clock_reading is not None:
         clock_age_ms = (now_utc_ns - clock_reading.measured_utc_ns) / 1_000_000
     else:
         clock_age_ms = math.inf
     clock_is_fresh = clock_age_ms <= CLOCK_PROBE_MAX_AGE_MS
+    clock_probe_fresh = bool(clock_reading and 0 <= clock_age_ms <= CLOCK_PROBE_MAX_AGE_MS)
+    clock_wall_monotonic_divergence_ms: float | None = None
+    if (clock_reading is not None and now_monotonic_ns is not None
+            and clock_reading.measured_monotonic_ns is not None):
+        monotonic_age_ms = (now_monotonic_ns - clock_reading.measured_monotonic_ns) / 1_000_000
+        clock_wall_monotonic_divergence_ms = clock_age_ms - monotonic_age_ms
+        clock_probe_fresh = bool(
+            0 <= monotonic_age_ms <= CLOCK_PROBE_MAX_AGE_MS
+            and abs(clock_wall_monotonic_divergence_ms) <= MAX_CLOCK_OFFSET_MS
+        )
     row["clock_server_time_ms"] = clock_reading.server_time_ms if clock_reading else ""
     row["clock_offset_ms"] = f"{clock_reading.offset_ms:.3f}" if clock_reading else ""
     row["clock_rtt_ms"] = f"{clock_reading.rtt_ms:.3f}" if clock_reading else ""
     row["clock_uncertainty_ms"] = f"{clock_reading.uncertainty_ms:.3f}" if clock_reading else ""
     row["clock_qualified"] = int(bool(clock_reading and clock_is_fresh and clock_reading.qualified))
     quote_fresh = quote is not None and 0 <= age_ms <= MAX_QUOTE_AGE_MS
+    temporal_state = "unknown"
+    event_age_ms: float | None = None
+    transaction_age_ms: float | None = None
+    if quote is not None and clock_reading is not None:
+        estimated_server_now_ms = now_utc_ns / 1_000_000 + clock_reading.offset_ms
+        event_age_ms = estimated_server_now_ms - quote.event_time_ms
+        transaction_age_ms = estimated_server_now_ms - quote.transaction_time_ms
+        uncertainty_ms = max(0.0, clock_reading.uncertainty_ms)
+        if clock_reading.qualified and clock_probe_fresh:
+            ages = (event_age_ms, transaction_age_ms)
+            if any(age + uncertainty_ms < 0 or age - uncertainty_ms > MAX_QUOTE_AGE_MS for age in ages):
+                temporal_state = "stale"
+            elif all(age - uncertainty_ms >= 0 and age + uncertainty_ms <= MAX_QUOTE_AGE_MS for age in ages):
+                temporal_state = "fresh"
     valid = (
         connection_state == "connected"
         and quote_fresh
@@ -307,7 +354,100 @@ def build_sample_row(
         and int(counters.get("connection_disruptions", 0)) == 0
     )
     row["sample_valid"] = int(valid)
+    temporal_valid = temporal_state == "fresh"
+    row["event_age_ms"] = "" if event_age_ms is None else f"{event_age_ms:.3f}"
+    row["transaction_age_ms"] = "" if transaction_age_ms is None else f"{transaction_age_ms:.3f}"
+    row["event_freshness"] = temporal_state
+    row["clock_probe_fresh"] = int(clock_probe_fresh)
+    row["clock_wall_monotonic_divergence_ms"] = (
+        "" if clock_wall_monotonic_divergence_ms is None
+        else f"{clock_wall_monotonic_divergence_ms:.3f}"
+    )
+    row["temporal_valid"] = int(temporal_valid)
+    row["transport_valid"] = int(connection_state == "connected" and receipt_fresh)
+    row["quality_valid"] = int(valid and receipt_fresh and temporal_state != "stale")
+    row["execution_eligible"] = int(valid and receipt_fresh and temporal_valid)
+    flags = []
+    if quote is None:
+        flags.append("quote_missing")
+    if not receipt_fresh:
+        flags.append("receipt_not_fresh")
+    if not clock_reading or not clock_probe_fresh or not clock_reading.qualified:
+        flags.append("clock_unqualified")
+    if temporal_state != "fresh":
+        flags.append(f"event_{temporal_state}")
+    if counters.get("parse_errors", 0):
+        flags.append("stream_parse_errors")
+    row["quality_flags"] = json.dumps(flags, separators=(",", ":"))
     return row
+
+
+def evaluate_first_14_day_quality(
+    daily_audits: list[dict[str, Any]],
+    *,
+    start_epoch: int,
+    seconds_per_day: int = UTC_DAY_SECONDS,
+    minimum_valid_fraction: float = SOURCE_QUALITY_MIN_VALID_FRACTION,
+    window_closed: bool = True,
+) -> dict[str, Any]:
+    """Evaluate the fixed first 14 days; later days never replace a weak day."""
+    if seconds_per_day < 1 or not 0 < minimum_valid_fraction <= 1:
+        raise ValueError("invalid_source_quality_threshold")
+    expected_days = SOURCE_QUALITY_WINDOW_DAYS
+    minimum_valid_rows = math.ceil(seconds_per_day * minimum_valid_fraction)
+    first_window = {
+        int(row["day_index"]): row
+        for row in daily_audits
+        if 0 <= int(row["day_index"]) < expected_days
+    }
+    integrity_errors = sorted({
+        str(error)
+        for day_index, row in first_window.items()
+        for error in row.get("integrity_errors", [])
+    })
+    qualified_days = []
+    failed_days = []
+    for day_index in range(expected_days):
+        audit = first_window.get(day_index)
+        if audit is None:
+            continue
+        if (audit.get("structural_complete") is True
+                and int(audit.get("rows", 0)) == seconds_per_day
+                and int(audit.get("valid_rows", 0)) >= minimum_valid_rows):
+            qualified_days.append(day_index)
+        else:
+            failed_days.append(day_index)
+    missing_days = [day for day in range(expected_days) if day not in first_window]
+    if integrity_errors:
+        status = "review_required"
+    elif not window_closed:
+        status = "pending"
+    elif len(qualified_days) >= SOURCE_QUALITY_MIN_DAYS:
+        status = "qualified"
+    else:
+        status = "failed"
+    return {
+        "status": status,
+        "start_epoch": int(start_epoch),
+        "days_in_window": expected_days,
+        "days_present": len(first_window),
+        "qualified_days": len(qualified_days),
+        "qualified_day_indices": qualified_days,
+        "failed_day_indices": failed_days,
+        "missing_day_indices": missing_days,
+        "minimum_qualified_days": SOURCE_QUALITY_MIN_DAYS,
+        "seconds_per_day": seconds_per_day,
+        "minimum_valid_fraction": minimum_valid_fraction,
+        "threshold_valid_rows_per_day": minimum_valid_rows,
+        "decision_window_end_epoch": int(start_epoch) + expected_days * seconds_per_day,
+        "window_closed": bool(window_closed),
+        "integrity_errors": integrity_errors,
+        "stop_required": status in {"failed", "review_required"},
+    }
+
+
+class SourceQualityGateStop(RuntimeError):
+    """The fixed C20 source-quality window failed or requires review."""
 
 
 def _canonical_json(value: dict[str, Any]) -> bytes:
@@ -322,6 +462,16 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _atomic_json_file(path: Path, value: dict[str, Any]) -> None:
+    raw = (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
+    temporary = path.with_name(path.name + ".part-" + uuid.uuid4().hex)
+    with temporary.open("xb") as handle:
+        handle.write(raw)
+        handle.flush()
+        os.fsync(handle.fileno())
+    temporary.replace(path)
+
+
 class DailyStore:
     """Append-only daily samples with a checksum and hash-chained manifest."""
 
@@ -330,16 +480,54 @@ class DailyStore:
         self.start_epoch = start_epoch
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.manifest_path = data_dir / "manifest.jsonl"
+        self.quality_report_path = data_dir / "source_quality_report.json"
+        self.quality_history_path = data_dir / "source_quality_history.jsonl"
         self.previous_record_hash = ZERO_HASH
         self.manifested: dict[str, dict[str, Any]] = {}
-        self._verify_manifest()
+        self.quality_history_hash = ZERO_HASH
+        self.source_quality_status = "pending"
+        self.source_quality_report: dict[str, Any] = {}
+        try:
+            self._verify_quality_history()
+        except (OSError, UnicodeError, ValueError, RuntimeError) as exc:
+            report = {
+                "status": "review_required",
+                "start_epoch": self.start_epoch,
+                "days_in_window": SOURCE_QUALITY_WINDOW_DAYS,
+                "days_present": 0,
+                "qualified_days": 0,
+                "minimum_qualified_days": SOURCE_QUALITY_MIN_DAYS,
+                "integrity_errors": [f"source_quality_history_integrity:{type(exc).__name__}:{str(exc)[:160]}"],
+                "stop_required": True,
+            }
+            _atomic_json_file(self.quality_report_path, report)
+            raise RuntimeError("source_quality_history_requires_review") from exc
+        try:
+            self._verify_manifest()
+        except (OSError, UnicodeError, ValueError, RuntimeError) as exc:
+            report = {
+                "status": "review_required",
+                "start_epoch": self.start_epoch,
+                "days_in_window": SOURCE_QUALITY_WINDOW_DAYS,
+                "days_present": 0,
+                "qualified_days": 0,
+                "minimum_qualified_days": SOURCE_QUALITY_MIN_DAYS,
+                "integrity_errors": [f"manifest_integrity:{type(exc).__name__}:{str(exc)[:160]}"],
+                "stop_required": True,
+            }
+            self._append_quality_report(report)
+            raise RuntimeError(f"manifest_integrity_requires_source_quality_review:{exc}") from exc
         self.active_date: str | None = None
         self.csv_handle: Any = None
         self.csv_writer: Any = None
         self.day_rows = 0
         self.day_valid_rows = 0
+        self.day_quality_valid_rows = 0
+        self.day_temporal_valid_rows = 0
         self.last_second_epoch = self._last_manifest_second()
         self._restore_unmanifested_day()
+        if self.source_quality_status not in {"failed", "review_required", "qualified"}:
+            self._refresh_source_quality_report()
 
     @staticmethod
     def date_for(second_epoch: int) -> str:
@@ -351,9 +539,13 @@ class DailyStore:
     def events_path(self, day: str) -> Path:
         return self.data_dir / f"events_usdm_btcusdt_{day}.jsonl"
 
+    def temporal_diagnostics_path(self, day: str) -> Path:
+        return self.data_dir / f"temporal_diagnostics_usdm_btcusdt_{day}.jsonl"
+
     def _verify_manifest(self) -> None:
         if not self.manifest_path.exists():
             return
+        previous_day: str | None = None
         with self.manifest_path.open("r", encoding="utf-8", errors="strict") as handle:
             for line_number, line in enumerate(handle, start=1):
                 if not line.strip():
@@ -366,6 +558,8 @@ class DailyStore:
                 if supplied_hash != expected_hash:
                     raise RuntimeError(f"manifest_record_hash_mismatch:{line_number}")
                 day = record["date_utc"]
+                if previous_day is not None and day <= previous_day:
+                    raise RuntimeError(f"manifest_date_order_mismatch:{line_number}")
                 if day in self.manifested:
                     raise RuntimeError(f"duplicate_manifest_date:{day}")
                 csv_path = self.data_dir / record["csv_file"]
@@ -374,9 +568,180 @@ class DailyStore:
                     raise RuntimeError(f"daily_csv_hash_mismatch:{day}")
                 if not events_path.is_file() or sha256_file(events_path) != record["events_sha256"]:
                     raise RuntimeError(f"daily_events_hash_mismatch:{day}")
+                if int(record.get("schema_version", 1)) >= 2:
+                    temporal_name = record.get("temporal_diagnostics_file")
+                    temporal_path = self.data_dir / str(temporal_name or "")
+                    if (not temporal_name or not temporal_path.is_file()
+                            or sha256_file(temporal_path) != record.get("temporal_diagnostics_sha256")):
+                        raise RuntimeError(f"daily_temporal_diagnostics_hash_mismatch:{day}")
                 record["record_sha256"] = supplied_hash
                 self.manifested[day] = record
                 self.previous_record_hash = supplied_hash
+                previous_day = day
+
+    def _verify_quality_history(self) -> None:
+        if not self.quality_history_path.exists():
+            return
+        with self.quality_history_path.open("r", encoding="utf-8", errors="strict") as handle:
+            for line_number, line in enumerate(handle, start=1):
+                if not line.strip():
+                    raise RuntimeError(f"blank_source_quality_history_line:{line_number}")
+                record = json.loads(line)
+                supplied_hash = record.pop("record_sha256", None)
+                if record.get("previous_record_sha256") != self.quality_history_hash:
+                    raise RuntimeError(f"source_quality_history_chain_broken:{line_number}")
+                expected_hash = hashlib.sha256(_canonical_json(record)).hexdigest()
+                if supplied_hash != expected_hash:
+                    raise RuntimeError(f"source_quality_history_hash_mismatch:{line_number}")
+                report = record.get("report")
+                if not isinstance(report, dict) or report.get("start_epoch") != self.start_epoch:
+                    raise RuntimeError(f"source_quality_history_anchor_mismatch:{line_number}")
+                record["record_sha256"] = supplied_hash
+                self.quality_history_hash = supplied_hash
+                self.source_quality_report = report
+                self.source_quality_status = str(report.get("status", "review_required"))
+        if self.source_quality_report and not self.quality_report_path.exists():
+            _atomic_json_file(self.quality_report_path, self.source_quality_report)
+
+    def _append_quality_report(self, report: dict[str, Any]) -> None:
+        if self.source_quality_report == report:
+            return
+        body = {
+            "schema_version": 1,
+            "recorded_utc": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+            "previous_record_sha256": self.quality_history_hash,
+            "report": report,
+        }
+        record_hash = hashlib.sha256(_canonical_json(body)).hexdigest()
+        line = {**body, "record_sha256": record_hash}
+        with self.quality_history_path.open("a", encoding="utf-8", newline="") as handle:
+            handle.write(json.dumps(line, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        _atomic_json_file(self.quality_report_path, report)
+        self.quality_history_hash = record_hash
+        self.source_quality_report = report
+        self.source_quality_status = str(report["status"])
+
+    def _audit_quality_day(self, day_index: int, day: str, record: dict[str, Any]) -> dict[str, Any]:
+        csv_path = self.data_dir / record["csv_file"]
+        errors: list[str] = []
+        count = valid = quality_valid = temporal_valid = 0
+        first_second: int | None = None
+        last_second: int | None = None
+        expected_start = self.start_epoch + day_index * UTC_DAY_SECONDS
+        try:
+            if sha256_file(csv_path) != record["csv_sha256"]:
+                errors.append("daily_csv_hash_mismatch")
+            with csv_path.open("r", newline="", encoding="utf-8", errors="strict") as handle:
+                reader = csv.DictReader(handle)
+                if reader.fieldnames != CSV_FIELDS:
+                    errors.append("daily_csv_schema_mismatch")
+                for row in reader:
+                    if None in row or len(row) != len(CSV_FIELDS):
+                        errors.append("daily_csv_row_width_mismatch")
+                        continue
+                    stamp = datetime.fromisoformat(row["second_utc"].replace("Z", "+00:00"))
+                    second = int(stamp.timestamp())
+                    expected_second = expected_start + count
+                    if (self.date_for(second) != day or second != expected_second
+                            or second < self.start_epoch
+                            or second >= self.start_epoch + SOURCE_QUALITY_WINDOW_DAYS * UTC_DAY_SECONDS):
+                        errors.append("daily_csv_order_or_date_mismatch")
+                    first_second = second if first_second is None else first_second
+                    last_second = second
+                    count += 1
+                    valid += int(row.get("sample_valid") == "1")
+            if count != int(record.get("rows", -1)) or valid != int(record.get("valid_rows", -1)):
+                errors.append("daily_csv_manifest_count_mismatch")
+
+            schema_version = int(record.get("schema_version", 1))
+            temporal_name = record.get("temporal_diagnostics_file")
+            temporal_path = self.data_dir / str(temporal_name or "") if temporal_name else None
+            if schema_version >= 2:
+                if (temporal_path is None or not temporal_path.is_file()
+                        or sha256_file(temporal_path) != record.get("temporal_diagnostics_sha256")):
+                    errors.append("daily_temporal_diagnostics_hash_mismatch")
+            if temporal_path is not None and temporal_path.is_file():
+                if schema_version < 2:
+                    errors.append("legacy_schema_temporal_quality_unknown")
+                temporal_count = 0
+                with temporal_path.open("r", encoding="utf-8", errors="strict") as handle:
+                    for line in handle:
+                        diagnostic = json.loads(line)
+                        second = int(datetime.fromisoformat(
+                            diagnostic["second_utc"].replace("Z", "+00:00")).timestamp())
+                        if second != expected_start + temporal_count:
+                            errors.append("temporal_diagnostics_order_mismatch")
+                        quality_valid += int(diagnostic.get("quality_valid") == 1)
+                        temporal_valid += int(diagnostic.get("temporal_valid") == 1)
+                        temporal_count += 1
+                if temporal_count != count:
+                    errors.append("temporal_diagnostics_row_count_mismatch")
+            else:
+                # Old captures did not record monotonic receipt/event-clock diagnostics.
+                quality_valid = 0
+                if schema_version < 2:
+                    errors.append("legacy_schema_temporal_quality_unknown")
+            structural = (
+                count == UTC_DAY_SECONDS and first_second == expected_start
+                and last_second == expected_start + UTC_DAY_SECONDS - 1
+                and record.get("complete_utc_day") is True
+            )
+            if (first_second != record.get("first_second_epoch")
+                    or last_second != record.get("last_second_epoch")):
+                errors.append("daily_csv_manifest_boundary_mismatch")
+            if schema_version >= 2 and quality_valid != int(record.get("quality_valid_rows", -1)):
+                errors.append("daily_quality_count_mismatch")
+        except (OSError, UnicodeError, csv.Error, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            errors.append(f"daily_audit_error:{type(exc).__name__}:{str(exc)[:120]}")
+            structural = False
+        return {
+            "day_index": day_index,
+            "date_utc": day,
+            "rows": count,
+            "valid_rows": quality_valid if int(record.get("schema_version", 1)) >= 2 else valid,
+            "legacy_sample_valid_rows": valid,
+            "quality_valid_rows": quality_valid,
+            "temporal_valid_rows": temporal_valid,
+            "structural_complete": structural,
+            "integrity_errors": sorted(set(errors)),
+            "csv_sha256": record.get("csv_sha256"),
+            "temporal_diagnostics_sha256": record.get("temporal_diagnostics_sha256"),
+        }
+
+    def _refresh_source_quality_report(self) -> dict[str, Any]:
+        if self.source_quality_status in {"failed", "review_required", "qualified"}:
+            return self.source_quality_report
+        audits = []
+        for day_index in range(SOURCE_QUALITY_WINDOW_DAYS):
+            day_start = self.start_epoch + day_index * UTC_DAY_SECONDS
+            day = self.date_for(day_start)
+            record = self.manifested.get(day)
+            if record is not None:
+                audits.append(self._audit_quality_day(day_index, day, record))
+        final_day_start = self.start_epoch + (SOURCE_QUALITY_WINDOW_DAYS - 1) * UTC_DAY_SECONDS
+        final_day_record = self.manifested.get(self.date_for(final_day_start))
+        window_closed = bool(
+            time.time() >= self.start_epoch + SOURCE_QUALITY_WINDOW_DAYS * UTC_DAY_SECONDS
+            or (
+                final_day_record
+                and final_day_record.get("complete_utc_day") is True
+                and int(final_day_record.get("last_second_epoch", -1)) >= final_day_start + UTC_DAY_SECONDS - 1
+            )
+        )
+        report = evaluate_first_14_day_quality(
+            audits,
+            start_epoch=self.start_epoch,
+            window_closed=window_closed,
+        )
+        report["gate_version"] = 1
+        if report["status"] in {"qualified", "failed", "review_required"}:
+            report["decision_persisted_utc"] = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+        report["daily_audits"] = audits
+        report["manifest_sha256"] = sha256_file(self.manifest_path) if self.manifest_path.exists() else None
+        self._append_quality_report(report)
+        return report
 
     def _last_manifest_second(self) -> int:
         if not self.manifested:
@@ -399,6 +764,8 @@ class DailyStore:
             raise RuntimeError("unmanifested_file_precedes_manifest_tail")
         count = 0
         valid = 0
+        quality_valid = 0
+        temporal_valid = 0
         last_second: int | None = None
         with path.open("r", newline="", encoding="utf-8", errors="strict") as handle:
             reader = csv.DictReader(handle)
@@ -414,10 +781,70 @@ class DailyStore:
                 last_second = second
                 count += 1
                 valid += int(row["sample_valid"] == "1")
+        temporal_path = self.temporal_diagnostics_path(day)
+        if temporal_path.exists():
+            diagnostic_rows = []
+            with temporal_path.open("r", encoding="utf-8", errors="strict") as handle:
+                for line in handle:
+                    diagnostic_rows.append(json.loads(line))
+            if len(diagnostic_rows) > count:
+                raise RuntimeError(f"temporal_diagnostics_rows_exceed_csv:{day}")
+            for diagnostic in diagnostic_rows:
+                quality_valid += int(diagnostic.get("quality_valid") == 1)
+                temporal_valid += int(diagnostic.get("temporal_valid") == 1)
+            if last_second is not None:
+                csv_seconds = list(range(last_second - count + 1, last_second + 1))
+                diag_seconds = [int(datetime.fromisoformat(
+                    row["second_utc"].replace("Z", "+00:00")).timestamp()) for row in diagnostic_rows]
+                if diag_seconds != csv_seconds[:len(diag_seconds)]:
+                    raise RuntimeError(f"temporal_diagnostics_order_mismatch:{day}")
+                if len(diagnostic_rows) < count:
+                    with temporal_path.open("a", encoding="utf-8", newline="") as handle:
+                        for second in csv_seconds[len(diagnostic_rows):]:
+                            handle.write(json.dumps({
+                                "schema_version": 1,
+                                "second_utc": datetime.fromtimestamp(second, UTC).isoformat().replace("+00:00", "Z"),
+                                "receipt_age_monotonic_ms": "",
+                                "receipt_fresh": 0,
+                                "clock_probe_fresh": 0,
+                                "clock_wall_monotonic_divergence_ms": "",
+                                "event_age_ms": "",
+                                "transaction_age_ms": "",
+                                "event_freshness": "unknown",
+                                "temporal_valid": 0,
+                                "execution_eligible": 0,
+                                "quality_valid": 0,
+                                "quality_flags": ["legacy_temporal_diagnostics_unavailable"],
+                            }, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n")
+        else:
+            # Preserve legacy CSV bytes; an append-only sidecar records that the
+            # old rows have no monotonic receipt or event-clock qualification.
+            with temporal_path.open("w", encoding="utf-8", newline="") as handle:
+                if last_second is not None:
+                    first_second = last_second - count + 1
+                    for second in range(first_second, last_second + 1):
+                        stamp = datetime.fromtimestamp(second, UTC).isoformat().replace("+00:00", "Z")
+                        handle.write(json.dumps({
+                            "schema_version": 1,
+                            "second_utc": stamp,
+                            "receipt_age_monotonic_ms": "",
+                            "receipt_fresh": 0,
+                            "clock_probe_fresh": 0,
+                            "clock_wall_monotonic_divergence_ms": "",
+                            "event_age_ms": "",
+                            "transaction_age_ms": "",
+                            "event_freshness": "unknown",
+                            "temporal_valid": 0,
+                            "execution_eligible": 0,
+                            "quality_valid": 0,
+                            "quality_flags": ["legacy_temporal_diagnostics_unavailable"],
+                        }, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n")
         if last_second is not None:
             self.active_date = day
             self.day_rows = count
             self.day_valid_rows = valid
+            self.day_quality_valid_rows = quality_valid
+            self.day_temporal_valid_rows = temporal_valid
             self.last_second_epoch = last_second
             self.csv_handle = path.open("a", newline="", encoding="utf-8")
             self.csv_writer = csv.DictWriter(
@@ -441,6 +868,8 @@ class DailyStore:
 
     def append_row(self, row: dict[str, str | int], *, second_epoch: int) -> None:
         day = self.date_for(second_epoch)
+        if self.source_quality_status in {"failed", "review_required"}:
+            raise SourceQualityGateStop(f"source_quality_gate_{self.source_quality_status}")
         if day in self.manifested:
             raise RuntimeError(f"attempt_to_modify_manifested_day:{day}")
         if self.last_second_epoch >= 0 and second_epoch != self.last_second_epoch + 1:
@@ -448,10 +877,14 @@ class DailyStore:
         if self.active_date is not None and self.active_date != day:
             self._close_csv()
             self.finalize_day(self.active_date)
+            if self.source_quality_status in {"failed", "review_required"}:
+                raise SourceQualityGateStop(f"source_quality_gate_{self.source_quality_status}")
         if self.active_date != day:
             self.active_date = day
             self.day_rows = 0
             self.day_valid_rows = 0
+            self.day_quality_valid_rows = 0
+            self.day_temporal_valid_rows = 0
             path = self.csv_path(day)
             exists = path.exists()
             self.csv_handle = path.open("a", newline="", encoding="utf-8")
@@ -459,10 +892,32 @@ class DailyStore:
             if not exists or path.stat().st_size == 0:
                 self.csv_writer.writeheader()
         assert self.csv_writer is not None and self.csv_handle is not None
-        self.csv_writer.writerow(row)
+        self.csv_writer.writerow({field: row[field] for field in CSV_FIELDS})
         self.csv_handle.flush()
+        diagnostic = {
+            "schema_version": 1,
+            "second_utc": row["second_utc"],
+            "receipt_age_monotonic_ms": row.get("receipt_age_monotonic_ms", ""),
+            "receipt_fresh": int(row.get("receipt_fresh", 0)),
+            "clock_probe_fresh": int(row.get("clock_probe_fresh", 0)),
+            "clock_wall_monotonic_divergence_ms": row.get("clock_wall_monotonic_divergence_ms", ""),
+            "clock_wall_monotonic_divergence_ms": row.get("clock_wall_monotonic_divergence_ms", ""),
+            "event_age_ms": row.get("event_age_ms", ""),
+            "transaction_age_ms": row.get("transaction_age_ms", ""),
+            "event_freshness": row.get("event_freshness", "unknown"),
+            "temporal_valid": int(row.get("temporal_valid", 0)),
+            "execution_eligible": int(row.get("execution_eligible", 0)),
+            "quality_valid": int(row.get("quality_valid", 0)),
+            "quality_flags": json.loads(str(row.get("quality_flags", "[]"))),
+        }
+        temporal_path = self.temporal_diagnostics_path(day)
+        with temporal_path.open("a", encoding="utf-8", newline="") as handle:
+            handle.write(json.dumps(diagnostic, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n")
+            handle.flush()
         self.day_rows += 1
         self.day_valid_rows += int(row["sample_valid"])
+        self.day_quality_valid_rows += int(diagnostic["quality_valid"])
+        self.day_temporal_valid_rows += int(diagnostic["temporal_valid"])
         self.last_second_epoch = second_epoch
 
     def _close_csv(self) -> None:
@@ -483,10 +938,18 @@ class DailyStore:
         events_path = self.events_path(day)
         if not events_path.exists():
             events_path.write_bytes(b"")
+        temporal_path = self.temporal_diagnostics_path(day)
+        if not temporal_path.exists():
+            temporal_path.write_bytes(b"")
         day_start = int(datetime.fromisoformat(day).replace(tzinfo=UTC).timestamp())
-        complete = self.day_rows == 86_400 and self.last_second_epoch == day_start + 86_399
+        first_second = self._first_second_for_active_file(path)
+        complete = (
+            self.day_rows == UTC_DAY_SECONDS
+            and first_second == day_start
+            and self.last_second_epoch == day_start + UTC_DAY_SECONDS - 1
+        )
         record: dict[str, Any] = {
-            "schema_version": 1,
+            "schema_version": 2,
             "date_utc": day,
             "csv_file": path.name,
             "csv_sha256": sha256_file(path),
@@ -494,12 +957,17 @@ class DailyStore:
             "events_file": events_path.name,
             "events_sha256": sha256_file(events_path),
             "events_bytes": events_path.stat().st_size,
+            "temporal_diagnostics_file": temporal_path.name,
+            "temporal_diagnostics_sha256": sha256_file(temporal_path),
+            "temporal_diagnostics_bytes": temporal_path.stat().st_size,
             "rows": self.day_rows,
             "valid_rows": self.day_valid_rows,
-            "expected_rows": 86_400,
-            "valid_fraction_of_utc_day": self.day_valid_rows / 86_400,
+            "quality_valid_rows": self.day_quality_valid_rows,
+            "temporal_valid_rows": self.day_temporal_valid_rows,
+            "expected_rows": UTC_DAY_SECONDS,
+            "valid_fraction_of_utc_day": self.day_quality_valid_rows / UTC_DAY_SECONDS,
             "complete_utc_day": complete,
-            "first_second_epoch": day_start if self.day_rows == 86_400 else self._first_second_for_active_file(path),
+            "first_second_epoch": first_second,
             "last_second_epoch": self.last_second_epoch,
             "previous_record_sha256": self.previous_record_hash,
         }
@@ -515,6 +983,9 @@ class DailyStore:
         self.active_date = None
         self.day_rows = 0
         self.day_valid_rows = 0
+        self.day_quality_valid_rows = 0
+        self.day_temporal_valid_rows = 0
+        self._refresh_source_quality_report()
         return line
 
     @staticmethod
@@ -564,6 +1035,7 @@ class BookTickerCapture:
         self.store = DailyStore(data_dir, start_epoch=self.start_epoch)
         self.process_instance_id = str(uuid.uuid4())
         self.connection_generation = 0
+        self.websocket_opened = False
         self.connected = False
         self.quote: BookTicker | None = None
         self.clock_reading: ClockReading | None = None
@@ -590,9 +1062,12 @@ class BookTickerCapture:
         self.store.append_row(row, second_epoch=second)
 
     def _flush_until(self, current_second: int) -> None:
+        # The planned end is exclusive. Once the wall clock passes it, clamp
+        # final flushing to Tend instead of treating the clamp as clock rollback.
+        target_second = min(current_second, self.end_epoch)
         if self.active_second is None:
             self.active_second = max(self.start_epoch, self.store.last_second_epoch + 1)
-        if current_second < self.active_second:
+        if target_second < self.active_second:
             self.store.log_event(
                 "wall_clock_regression",
                 observed_second=current_second,
@@ -600,7 +1075,7 @@ class BookTickerCapture:
                 process_instance_id=self.process_instance_id,
             )
             raise RuntimeError("wall_clock_regressed_during_capture")
-        while self.active_second < current_second:
+        while self.active_second < target_second:
             second = self.active_second
             row = build_sample_row(
                 second_epoch=second,
@@ -609,16 +1084,17 @@ class BookTickerCapture:
                 connection_state="connected" if self.connected else "disconnected",
                 connection_generation=self.connection_generation,
                 process_instance_id=self.process_instance_id,
-                now_utc_ns=(second + 1) * 1_000_000_000,
+                now_utc_ns=time.time_ns(),
                 clock_reading=self.clock_reading,
+                now_monotonic_ns=time.monotonic_ns(),
             )
             self.store.append_row(row, second_epoch=second)
             self._new_second(second + 1)
-        if self.active_second < current_second:
+        if self.active_second < target_second:
             raise RuntimeError("sample_clock_advance_failed")
 
     async def _clock_probe_loop(self) -> None:
-        while not self.stop_reason:
+        while not self.stop_reason and time.time() < self.end_epoch:
             start_wall = time.time_ns()
             start_mono = time.monotonic_ns()
             try:
@@ -628,6 +1104,9 @@ class BookTickerCapture:
 
                 body = await asyncio.to_thread(fetch)
                 end_mono = time.monotonic_ns()
+                if time.time() >= self.end_epoch:
+                    self.stop_reason = "capture_window_expired"
+                    return
                 self.clock_reading = parse_clock_response(
                     body,
                     request_start_utc_ns=start_wall,
@@ -651,19 +1130,34 @@ class BookTickerCapture:
                     error=str(exc)[:240],
                     process_instance_id=self.process_instance_id,
                 )
-            await asyncio.sleep(30)
+            if time.time() < self.end_epoch and not self.stop_reason:
+                await asyncio.sleep(30)
 
-    def _on_connection_opened(self) -> None:
+    def _on_connection_opened(self) -> bool:
         # Account for seconds spent in the handshake as disconnected before
         # marking the new generation active; never carry a quote across sockets.
+        if time.time() >= self.end_epoch:
+            self.connected = False
+            self.stop_reason = "capture_window_expired"
+            return False
         self._flush_until(int(time.time()))
+        if time.time() >= self.end_epoch:
+            self.connected = False
+            self.stop_reason = "capture_window_expired"
+            return False
         self.quote = None
         self.connected = True
+        return True
 
-    def _on_message(self, message: str | bytes) -> None:
+    def _on_message(self, message: str | bytes) -> bool:
         received_utc_ns = time.time_ns()
         received_mono_ns = time.monotonic_ns()
-        self._flush_until(received_utc_ns // 1_000_000_000)
+        received_second = received_utc_ns // 1_000_000_000
+        if received_second >= self.end_epoch:
+            self.connected = False
+            self.stop_reason = "capture_window_expired"
+            return False
+        self._flush_until(received_second)
         self.counters.messages_received += 1
         try:
             quote = parse_bookticker(
@@ -679,7 +1173,7 @@ class BookTickerCapture:
                 error=str(exc),
                 process_instance_id=self.process_instance_id,
             )
-            return
+            return True
         if self.previous_update_id is not None:
             delta = quote.update_id - self.previous_update_id
             if delta == 0:
@@ -692,6 +1186,7 @@ class BookTickerCapture:
                 self.counters.max_update_id_delta = max(self.counters.max_update_id_delta, delta)
         self.previous_update_id = quote.update_id
         self.quote = quote
+        return True
 
     async def _wait_until_start(self) -> None:
         while time.time() < self.start_epoch:
@@ -699,7 +1194,7 @@ class BookTickerCapture:
 
     async def _pause_with_sampling(self, seconds: float) -> None:
         deadline = time.monotonic() + seconds
-        while time.monotonic() < deadline:
+        while time.monotonic() < deadline and time.time() < self.end_epoch and not self.stop_reason:
             now = time.time()
             self._flush_until(int(now))
             next_boundary = math.floor(now) + 1
@@ -717,16 +1212,52 @@ class BookTickerCapture:
                 message = await asyncio.wait_for(websocket.recv(), timeout=timeout)
             except asyncio.TimeoutError:
                 continue
+            if time.time() >= self.end_epoch:
+                return "capture_window_expired"
             self._on_message(message)
         return "capture_window_expired"
 
     async def run(self) -> dict[str, Any]:
-        if self.store.last_second_epoch >= self.end_epoch:
-            raise RuntimeError("capture_window_already_complete")
+        if self.store.source_quality_status in {"failed", "review_required"}:
+            return {
+                "reason": f"source_quality_gate_{self.store.source_quality_status}",
+                "source_quality": self.store.source_quality_report,
+                "data_dir": str(self.store.data_dir),
+                "websocket_opened": False,
+            }
+        if self.store.last_second_epoch >= self.end_epoch - 1:
+            if self.store.active_date:
+                self.store.finalize_day(self.store.active_date)
+            return {
+                "reason": "capture_window_already_complete",
+                "data_dir": str(self.store.data_dir),
+                "manifest_sha256": sha256_file(self.store.manifest_path) if self.store.manifest_path.exists() else None,
+                "websocket_opened": False,
+            }
         await self._wait_until_start()
         now_second = int(time.time())
         if now_second >= self.end_epoch:
-            raise RuntimeError("capture_start_or_resume_after_window_end")
+            self.active_second = max(self.start_epoch, self.store.last_second_epoch + 1)
+            if self.active_second < self.end_epoch:
+                self.store.log_event(
+                    "explicit_gap_fill",
+                    first_missing_second=self.active_second,
+                    last_missing_second=self.end_epoch - 1,
+                    reason="capture_window_elapsed_without_observation",
+                    process_instance_id=self.process_instance_id,
+                )
+                for second in range(self.active_second, self.end_epoch):
+                    self._append_gap(second, "process_inactive")
+                self.active_second = self.end_epoch
+            if self.store.active_date:
+                self.store.finalize_day(self.store.active_date)
+            return {
+                "reason": "capture_window_expired_before_resume",
+                "data_dir": str(self.store.data_dir),
+                "manifest_sha256": sha256_file(self.store.manifest_path) if self.store.manifest_path.exists() else None,
+                "source_quality": self.store.source_quality_report,
+                "websocket_opened": False,
+            }
         if self.store.last_second_epoch >= now_second:
             raise RuntimeError("local_clock_precedes_last_saved_sample")
 
@@ -766,7 +1297,9 @@ class BookTickerCapture:
                         max_queue=2_048,
                         compression=None,
                     ) as websocket:
-                        self._on_connection_opened()
+                        if not self._on_connection_opened():
+                            break
+                        self.websocket_opened = True
                         self.store.log_event(
                             "connection_opened",
                             generation=self.connection_generation,
@@ -817,6 +1350,23 @@ class BookTickerCapture:
                 "reason": self.stop_reason or "capture_window_expired",
                 "data_dir": str(self.store.data_dir),
                 "manifest_sha256": sha256_file(self.store.manifest_path) if self.store.manifest_path.exists() else None,
+                "source_quality": self.store.source_quality_report,
+                "websocket_opened": self.websocket_opened,
+            }
+        except SourceQualityGateStop as exc:
+            self.stop_reason = str(exc)
+            self.connected = False
+            self.store.log_event(
+                "source_quality_gate_stopped",
+                status=self.store.source_quality_status,
+                process_instance_id=self.process_instance_id,
+            )
+            return {
+                "reason": self.stop_reason,
+                "data_dir": str(self.store.data_dir),
+                "manifest_sha256": sha256_file(self.store.manifest_path) if self.store.manifest_path.exists() else None,
+                "source_quality": self.store.source_quality_report,
+                "websocket_opened": self.websocket_opened,
             }
         except asyncio.CancelledError:
             self.stop_reason = "process_cancelled"

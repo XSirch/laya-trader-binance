@@ -11,9 +11,10 @@ import sqlite3
 import sys
 import time
 import uuid
+from contextlib import contextmanager
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -49,6 +50,7 @@ SEED_FUNDING_DAYS = 45
 KEEP_FUNDING_DAYS = 45
 FIRST_DECISION_MS = utc_ms("2026-10-05T01:00:00Z")
 WEEK_MS = 7 * DAY_MS
+OBSERVATION_INTERVAL_MS = 15 * 60_000
 BOOTSTRAP_REPLICATES = 2_000
 EXPECTED_TRAINING_METADATA_SHA256 = "55f315df0cb78b49b3b3d820eb43535938dce18112bc23caaaaa95064ad446dd"
 EXPECTED_MODEL_SHA256 = "13c1b2dbd59a56d29ed172a5abb390159da0b6528989993b02641c1e7f9ad606"
@@ -99,6 +101,88 @@ def _atomic_json(path: Path, value: dict) -> None:
     temporary.replace(path)
 
 
+@contextmanager
+def _exclusive_paper_tick_lock(path: Path | None = None):
+    """Serialize local C18 ticks; overlapping scheduled/manual runs skip."""
+    PAPER.mkdir(parents=True, exist_ok=True)
+    lock_path = path or (PAPER / ".paper_tick.lock")
+    descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+    acquired = False
+    backend = None
+    try:
+        if os.fstat(descriptor).st_size == 0:
+            os.write(descriptor, b"0")
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        if os.name == "nt":
+            import msvcrt
+
+            backend = msvcrt
+            try:
+                msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+                acquired = True
+            except OSError:
+                acquired = False
+        else:
+            import fcntl
+
+            backend = fcntl
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                acquired = True
+            except BlockingIOError:
+                acquired = False
+        yield acquired
+    finally:
+        if acquired:
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            if os.name == "nt":
+                backend.locking(descriptor, backend.LK_UNLCK, 1)
+            else:
+                backend.flock(descriptor, backend.LOCK_UN)
+        os.close(descriptor)
+
+
+@contextmanager
+def _exclusive_paper_tick_lock(path: Path | None = None):
+    """Serialize local C18 ticks; overlapping scheduled/manual runs skip."""
+    PAPER.mkdir(parents=True, exist_ok=True)
+    lock_path = path or (PAPER / ".paper_tick.lock")
+    descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+    acquired = False
+    backend = None
+    try:
+        if os.fstat(descriptor).st_size == 0:
+            os.write(descriptor, b"0")
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        if os.name == "nt":
+            import msvcrt
+
+            backend = msvcrt
+            try:
+                msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+                acquired = True
+            except OSError:
+                acquired = False
+        else:
+            import fcntl
+
+            backend = fcntl
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                acquired = True
+            except BlockingIOError:
+                acquired = False
+        yield acquired
+    finally:
+        if acquired:
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            if os.name == "nt":
+                backend.locking(descriptor, backend.LK_UNLCK, 1)
+            else:
+                backend.flock(descriptor, backend.LOCK_UN)
+        os.close(descriptor)
+
+
 def _connect() -> sqlite3.Connection:
     PAPER.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(DATABASE, timeout=30, isolation_level=None)
@@ -137,6 +221,12 @@ def _connect() -> sqlite3.Connection:
             timestamp_ms INTEGER NOT NULL,
             base_equity REAL NOT NULL,
             stress_equity REAL NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS decision_attempts (
+            feature_cutoff_ms INTEGER PRIMARY KEY,
+            attempted_server_ms INTEGER NOT NULL,
+            reservation_record_sha256 TEXT,
+            completed_record_sha256 TEXT
         );
     """)
     return connection
@@ -300,25 +390,181 @@ def _append_record(connection: sqlite3.Connection, body: dict, *, base_state: di
     return {**payload, "record_sha256": record_sha256}
 
 
+def _config_without_code_hash(config: dict) -> dict:
+    return {key: value for key, value in config.items() if key != "code_sha256"}
+
+
+def _ensure_runtime_code_amendment(connection: sqlite3.Connection, stored_config: dict,
+                                   expected_config: dict, config_sha256: str) -> str | None:
+    stored_code = stored_config.get("code_sha256")
+    current_code = expected_config["code_sha256"]
+    if stored_code == current_code:
+        connection.execute(
+            "INSERT INTO metadata(key,value) VALUES('runtime_code_sha256',?) "
+            "ON CONFLICT(key) DO NOTHING", (_json(current_code),))
+        amendment_row = connection.execute(
+            "SELECT value FROM metadata WHERE key='runtime_code_amendment_record_sha256'"
+        ).fetchone()
+        return json.loads(amendment_row[0]) if amendment_row else None
+
+    row = connection.execute("SELECT value FROM metadata WHERE key='runtime_code_sha256'").fetchone()
+    previous_code = json.loads(row[0]) if row else stored_code
+    if previous_code == current_code:
+        amendment_row = connection.execute(
+            "SELECT value FROM metadata WHERE key='runtime_code_amendment_record_sha256'"
+        ).fetchone()
+        return json.loads(amendment_row[0]) if amendment_row else None
+    amendment_row = connection.execute(
+        "SELECT payload_json FROM records ORDER BY sequence DESC LIMIT 1").fetchone()
+    last_record = json.loads(amendment_row[0]) if amendment_row else {}
+    if (not row and last_record.get("kind") == "code_amendment"
+            and last_record.get("code_sha256") == current_code):
+        connection.execute("INSERT INTO metadata(key,value) VALUES('runtime_code_sha256',?)",
+                           (_json(current_code),))
+        connection.execute(
+            "INSERT INTO metadata(key,value) VALUES('runtime_code_amendment_record_sha256',?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+            (_json(last_record.get("record_sha256")),),
+        )
+        return last_record.get("record_sha256")
+
+    effective_config = {**expected_config}
+    effective_raw = (json.dumps(effective_config, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
+    state_row = connection.execute("SELECT base_json,stress_json FROM account_state WHERE id=1").fetchone()
+    base_state = json.loads(state_row[0]) if state_row else None
+    stress_state = json.loads(state_row[1]) if state_row else None
+    saved = _append_record(
+        connection,
+        {
+            "kind": "code_amendment",
+            "status": "operational_correction_without_economic_change",
+            "created_utc": datetime.now(timezone.utc).isoformat(),
+            "registered_config_sha256": config_sha256,
+            "effective_config_sha256": hashlib.sha256(effective_raw).hexdigest(),
+            "previous_code_sha256": previous_code,
+            "code_sha256": current_code,
+            "economic_config_unchanged": True,
+            "model_sha256": expected_config["model_sha256"],
+            "prediction_threshold": expected_config["prediction_threshold"],
+            "orders_enabled": False,
+            "real_orders_sent": False,
+        },
+        base_state=base_state,
+        stress_state=stress_state,
+    )
+    connection.execute(
+        "INSERT INTO metadata(key,value) VALUES('runtime_code_sha256',?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (_json(current_code),))
+    connection.execute(
+        "INSERT INTO metadata(key,value) VALUES('runtime_code_amendment_record_sha256',?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (_json(saved["record_sha256"]),),
+    )
+    return saved["record_sha256"]
+
+
 def _blocked(connection: sqlite3.Connection, body: dict, base_state: dict,
              stress_state: dict) -> dict:
     saved = _append_record(connection, body, base_state=base_state, stress_state=stress_state)
-    result = {**body, "record_sha256": saved["record_sha256"], "orders_sent": False}
+    result = {
+        **body,
+        "record_sha256": saved["record_sha256"],
+        "orders_sent": False,
+        "operational_status": _operational_status(
+            base_state, int(body.get("server_time_ms", base_state["last_ms"])),
+            status="blocked", blocking_reason=body.get("status", "blocked_observation"),
+        ),
+    }
+    _atomic_json(REPORT_PATH, result)
     print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
     return result
+
+
+def _reserve_weekly_decision(connection: sqlite3.Connection, *, feature_cutoff_ms: int,
+                             attempted_server_ms: int, base_state: dict,
+                             stress_state: dict) -> tuple[bool, str | None]:
+    connection.execute("BEGIN IMMEDIATE")
+    try:
+        cursor = connection.execute(
+            "INSERT OR IGNORE INTO decision_attempts(feature_cutoff_ms,attempted_server_ms) VALUES(?,?)",
+            (feature_cutoff_ms, attempted_server_ms),
+        )
+        reserved = cursor.rowcount == 1
+        connection.execute("COMMIT")
+    except Exception:
+        connection.execute("ROLLBACK")
+        raise
+    if not reserved:
+        return False, None
+    record = _append_record(
+        connection,
+        {
+            "kind": "weekly_decision_reservation",
+            "status": "inference_reserved_once_for_frozen_weekly_cutoff",
+            "created_utc": datetime.now(timezone.utc).isoformat(),
+            "feature_cutoff_ms": feature_cutoff_ms,
+            "attempted_server_ms": attempted_server_ms,
+            "orders_enabled": False,
+        },
+        base_state=base_state,
+        stress_state=stress_state,
+    )
+    connection.execute(
+        "UPDATE decision_attempts SET reservation_record_sha256=? WHERE feature_cutoff_ms=?",
+        (record["record_sha256"], feature_cutoff_ms),
+    )
+    return True, record["record_sha256"]
+
+
+def _next_weekly_decision_utc(server_ms: int) -> str:
+    current = datetime.fromtimestamp(server_ms / 1000, timezone.utc)
+    days_ahead = (0 - current.weekday()) % 7
+    candidate = (current + timedelta(days=days_ahead)).replace(hour=1, minute=0, second=0, microsecond=0)
+    first_decision = datetime.fromtimestamp(FIRST_DECISION_MS / 1000, timezone.utc)
+    candidate = max(candidate, first_decision)
+    if candidate <= current:
+        candidate += timedelta(days=7)
+    return candidate.isoformat().replace("+00:00", "Z")
+
+
+def _operational_status(base_state: dict, server_ms: int, *, status: str,
+                        blocking_reason: str | None = None) -> dict:
+    positions = []
+    for symbol, position in sorted(base_state.get("positions", {}).items()):
+        quantity = float(position["quantity"])
+        positions.append({
+            "symbol": symbol,
+            "direction": "long" if quantity > 0 else "short",
+            "quantity": quantity,
+            "mark_price": float(position["mark_price"]),
+        })
+    return {
+        "status": status,
+        "last_observation_server_time_ms": server_ms,
+        "last_observation_utc": datetime.fromtimestamp(server_ms / 1000, timezone.utc).isoformat().replace("+00:00", "Z"),
+        "last_accounted_server_time_ms": int(base_state["last_ms"]),
+        "heartbeat_age_ms_at_write": max(0, server_ms - int(base_state["last_ms"])),
+        "observation_interval_ms": OBSERVATION_INTERVAL_MS,
+        "next_weekly_decision_utc": _next_weekly_decision_utc(server_ms),
+        "open_positions": positions,
+        "blocking_reason": blocking_reason,
+        "orders_enabled": False,
+    }
 
 
 def _setup(connection: sqlite3.Connection) -> tuple[dict, dict]:
     metadata = _training_metadata()
     expected_config = _make_config(metadata)
-    config_raw = (json.dumps(expected_config, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
     if CONFIG_PATH.exists():
-        actual = CONFIG_PATH.read_bytes()
-        if actual != config_raw:
-            raise ValueError("C18 immutable paper configuration or a frozen source hash changed")
+        stored_raw = CONFIG_PATH.read_bytes()
+        stored_config = json.loads(stored_raw.decode("utf-8", errors="strict"))
+        if _config_without_code_hash(stored_config) != _config_without_code_hash(expected_config):
+            raise ValueError("C18 immutable economic paper configuration changed")
     else:
+        stored_config = expected_config
+        stored_raw = (json.dumps(stored_config, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
         _write_json_exclusive(CONFIG_PATH, expected_config)
-    config_sha256 = hashlib.sha256(config_raw).hexdigest()
+    config_sha256 = hashlib.sha256(stored_raw).hexdigest()
     last = _verify_chain(connection, full=False)
     if last is None:
         _append_record(connection, {
@@ -329,41 +575,66 @@ def _setup(connection: sqlite3.Connection) -> tuple[dict, dict]:
             "model_sha256": metadata["model_sha256"],
             "training_metadata_sha256": _sha_file(TRAINING_PATH),
             "protocol_sha256": _sha_file(PROTOCOL_PATH),
-            "code_sha256": expected_config["code_sha256"],
+            "code_sha256": stored_config["code_sha256"],
             "input_sha256": metadata["input_sha256"],
             "orders_enabled": False,
             "real_orders_sent": False,
         })
         last = _verify_chain(connection, full=False)
-    elif last.get("kind") != "registration" and last.get("config_sha256") != config_sha256:
-        registration = connection.execute("SELECT payload_json FROM records WHERE sequence=1").fetchone()
-        if not registration or json.loads(registration[0]).get("config_sha256") != config_sha256:
-            raise ValueError("C18 paper configuration does not match the original registration")
-    else:
-        registration = connection.execute("SELECT payload_json FROM records WHERE sequence=1").fetchone()
-        if (not registration or json.loads(registration[0]).get("config_sha256") != config_sha256
-                or json.loads(registration[0]).get("code_sha256") != expected_config["code_sha256"]):
-            raise ValueError("C18 paper registration does not match current frozen inputs")
+    registration = connection.execute("SELECT payload_json FROM records WHERE sequence=1").fetchone()
+    if not registration:
+        raise ValueError("C18 paper ledger has no preregistration record")
+    registered = json.loads(registration[0])
+    if (registered.get("kind") != "registration"
+            or registered.get("config_sha256") != config_sha256
+            or registered.get("code_sha256") != stored_config.get("code_sha256")):
+        raise ValueError("C18 paper registration does not match its immutable configuration")
+    amendment_sha256 = _ensure_runtime_code_amendment(
+        connection, stored_config, expected_config, config_sha256,
+    )
     _verify_chain(connection, full=False)
-    return metadata, expected_config
+    effective_config = {
+        **expected_config,
+        "registered_config_sha256": config_sha256,
+        "effective_config_sha256": hashlib.sha256(
+            (json.dumps(expected_config, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
+        ).hexdigest(),
+        "code_amendment_record_sha256": amendment_sha256,
+    }
+    return metadata, effective_config
 
 
-def _verify_config_record(connection: sqlite3.Connection) -> None:
+def _verify_config_record(connection: sqlite3.Connection) -> dict:
     if not CONFIG_PATH.exists():
         raise ValueError("C18 frozen paper configuration is missing")
     metadata = _training_metadata()
     expected = _make_config(metadata)
-    raw = (json.dumps(expected, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
-    if CONFIG_PATH.read_bytes() != raw:
-        raise ValueError("C18 frozen paper configuration or source code hash changed")
+    stored_raw = CONFIG_PATH.read_bytes()
+    stored = json.loads(stored_raw.decode("utf-8", errors="strict"))
+    if _config_without_code_hash(stored) != _config_without_code_hash(expected):
+        raise ValueError("C18 frozen economic paper configuration changed")
     first = connection.execute("SELECT payload_json FROM records WHERE sequence=1").fetchone()
     if first is None:
         raise ValueError("C18 paper ledger has no preregistration record")
     registration = json.loads(first[0])
     if (registration.get("kind") != "registration"
-            or registration.get("config_sha256") != hashlib.sha256(raw).hexdigest()
-            or registration.get("code_sha256") != expected["code_sha256"]):
+            or registration.get("config_sha256") != hashlib.sha256(stored_raw).hexdigest()
+            or registration.get("code_sha256") != stored.get("code_sha256")):
         raise ValueError("C18 paper registration differs from its frozen configuration")
+    current_code = registration["code_sha256"]
+    for payload_json, in connection.execute("SELECT payload_json FROM records ORDER BY sequence DESC"):
+        payload = json.loads(payload_json)
+        if payload.get("kind") == "code_amendment":
+            current_code = payload.get("code_sha256")
+            break
+    effective_raw = (json.dumps(expected, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
+    return {
+        "status": "registered" if current_code == expected["code_sha256"] else "pending_append_only_code_amendment",
+        "registered_config_sha256": hashlib.sha256(stored_raw).hexdigest(),
+        "effective_config_sha256": hashlib.sha256(effective_raw).hexdigest(),
+        "registered_code_sha256": current_code,
+        "current_code_sha256": expected["code_sha256"],
+    }
 
 
 def _seed_local_data(connection: sqlite3.Connection, active: list[str], server_ms: int) -> dict:
@@ -684,20 +955,25 @@ def _clustered_intervals(trades: list[dict]) -> dict | None:
 def _metrics(connection: sqlite3.Connection, base: dict, stress: dict) -> dict:
     closed = base["closed_trades"]
     returns = [row["net_return_on_entry_notional"] for row in closed]
+    monetary_pnls = [row["net_pnl"] for row in closed]
     wins = [value for value in returns if value > 0]
     losses = [value for value in returns if value < 0]
-    gross_wins = math.fsum(wins)
-    gross_losses = -math.fsum(losses)
+    gross_wins = math.fsum(value for value in monetary_pnls if value > 0)
+    gross_losses = -math.fsum(value for value in monetary_pnls if value < 0)
     payoff = ((math.fsum(wins) / len(wins)) / abs(math.fsum(losses) / len(losses))) if wins and losses else (
         "unbounded" if wins else None)
     profit_factor = (gross_wins / gross_losses if gross_losses else "unbounded" if wins else None)
+    profit_factor_gate_passed = (
+        gross_losses > 0 and isinstance(profit_factor, (int, float)) and profit_factor >= 1.25
+    )
     weeks = {_week_bucket(row["entry_ms"]) for row in closed}
     stress_closed = stress["closed_trades"]
     stress_returns = [row["net_return_on_entry_notional"] for row in stress_closed]
+    stress_monetary_pnls = [row["net_pnl"] for row in stress_closed]
     stress_wins = [value for value in stress_returns if value > 0]
     stress_losses = [value for value in stress_returns if value < 0]
-    stress_gross_wins = math.fsum(stress_wins)
-    stress_gross_losses = -math.fsum(stress_losses)
+    stress_gross_wins = math.fsum(value for value in stress_monetary_pnls if value > 0)
+    stress_gross_losses = -math.fsum(value for value in stress_monetary_pnls if value < 0)
     stress_payoff = ((math.fsum(stress_wins) / len(stress_wins))
                      / abs(math.fsum(stress_losses) / len(stress_losses))) if stress_wins and stress_losses else (
                          "unbounded" if stress_wins else None)
@@ -714,7 +990,7 @@ def _metrics(connection: sqlite3.Connection, base: dict, stress: dict) -> dict:
         len(unique_ids) >= 200 and duplicate_trade_ids == 0 and len(weeks) >= 8
         and (100 * math.fsum(returns) / base_trades) > 1.2
         and (payoff == "unbounded" or (payoff is not None and payoff >= 1.0))
-        and (gross_losses == 0 or gross_wins / gross_losses >= 1.25)
+        and profit_factor_gate_passed
         and stress["equity"] > stress["initial_equity"]
     )
     by_symbol = {}
@@ -737,11 +1013,14 @@ def _metrics(connection: sqlite3.Connection, base: dict, stress: dict) -> dict:
         "mean_net_ev_pct_per_episode": 100 * math.fsum(returns) / base_trades if base_trades else None,
         "payoff_ratio": payoff,
         "profit_factor": profit_factor,
+        "profit_factor_gate_passed": profit_factor_gate_passed,
+        "profit_factor_definition": "sum_positive_net_pnl_usd / abs(sum_negative_net_pnl_usd)",
         "stress_complete_episodes": len(stress_closed),
         "stress_win_rate_pct": 100 * len(stress_wins) / len(stress_closed) if stress_closed else None,
         "stress_mean_net_ev_pct_per_episode": 100 * math.fsum(stress_returns) / len(stress_closed) if stress_closed else None,
         "stress_payoff_ratio": stress_payoff,
         "stress_profit_factor": stress_profit_factor,
+        "stress_profit_factor_definition": "sum_positive_net_pnl_usd / abs(sum_negative_net_pnl_usd)",
         "base_total_pnl_usd": base["equity"] - base["initial_equity"],
         "stress_total_pnl_usd": stress["equity"] - stress["initial_equity"],
         "base_equity_usd": base["equity"],
@@ -803,6 +1082,20 @@ def _market_capture(raw_dir: Path, label: str) -> dict:
 
 
 def tick() -> dict:
+    with _exclusive_paper_tick_lock() as acquired:
+        if not acquired:
+            report = {
+                "status": "skipped_overlap",
+                "blocking_reason": "another_C18_observation_is_running",
+                "observation_interval_ms": OBSERVATION_INTERVAL_MS,
+                "orders_enabled": False,
+            }
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+            return report
+        return _tick_once()
+
+
+def _tick_once() -> dict:
     connection = _connect()
     try:
         metadata, config = _setup(connection)
@@ -864,7 +1157,20 @@ def tick() -> dict:
             raise ValueError("C18 feature cutoffs differ across the fixed active cohort")
 
         decision_candidate = _scheduled(prefetch_ms)
+        decision_reservation_sha256 = None
+        already_attempted = False
+        if decision_candidate:
+            decision_candidate, decision_reservation_sha256 = _reserve_weekly_decision(
+                connection,
+                feature_cutoff_ms=cutoff,
+                attempted_server_ms=prefetch_ms,
+                base_state=base_state,
+                stress_state=stress_state,
+            )
+            already_attempted = not decision_candidate
         predictions, base_targets, target_diagnostics = {}, {}, {"status": "not_scheduled"}
+        if already_attempted:
+            target_diagnostics = {"status": "weekly_decision_already_attempted"}
         if decision_candidate:
             base_targets = target_weights(current_features, "low_volatility30_betahedged")
             if base_targets:
@@ -887,7 +1193,10 @@ def tick() -> dict:
         first_capture = _market_capture(raw_dir, "decision_quote" if decision_candidate else "mark_quote")
         first_cutoff_ok = feature_cutoff(first_capture["server_time_ms"]) == cutoff
         used_capture = first_capture
-        decision_status, decision_reason = "mark_only", None
+        decision_status, decision_reason = (
+            ("mark_only", "weekly_decision_already_attempted") if already_attempted
+            else ("mark_only", None)
+        )
         target_to_apply = None
         predictions_recorded = {}
         if decision_candidate:
@@ -947,10 +1256,29 @@ def tick() -> dict:
         account_symbols = set(held_symbols)
         funding_events = _funding_for_tick(connection, base_state["last_ms"], final_time, account_symbols)
         snapshot = _portfolio_snapshot(used_capture, funding_events)
-        base_next = account.advance(base_state, snapshot, target_to_apply,
-                                    fee_rate=account.BASE_FEE_RATE, slippage=account.BASE_SLIPPAGE)
-        stress_next = account.advance(stress_state, snapshot, target_to_apply,
-                                      fee_rate=account.STRESS_FEE_RATE, slippage=account.STRESS_SLIPPAGE)
+        try:
+            base_next = account.advance(base_state, snapshot, target_to_apply,
+                                        fee_rate=account.BASE_FEE_RATE, slippage=account.BASE_SLIPPAGE)
+            stress_next = account.advance(stress_state, snapshot, target_to_apply,
+                                          fee_rate=account.STRESS_FEE_RATE, slippage=account.STRESS_SLIPPAGE)
+        except ValueError as exc:
+            if "observation gap exceeds 65 minutes" not in str(exc):
+                raise
+            blocked = {
+                "kind": "blocked_observation",
+                "status": "observation_gap_exceeded_65_minutes",
+                "blocking_reason": str(exc),
+                "created_utc": datetime.now(timezone.utc).isoformat(),
+                "server_time_ms": final_time,
+                "last_accounted_server_time_ms": base_state["last_ms"],
+                "open_positions": sorted(base_state["positions"]),
+                "orders_sent": False,
+                "public_request_receipts": [clock_receipt, exchange_receipt, *data_receipts,
+                                             *first_capture["sources"],
+                                             *(used_capture["sources"] if used_capture is not first_capture else []),
+                                             *funding_receipts],
+            }
+            return _blocked(connection, blocked, base_state, stress_state)
         if (base_next["last_ms"] != stress_next["last_ms"]
                 or base_next["equity"] <= 0 or stress_next["equity"] <= 0):
             raise ValueError("C18 base/stress accounting did not advance consistently")
@@ -972,6 +1300,11 @@ def tick() -> dict:
             "server_time_ms": final_time,
             "prefetch_server_time_ms": prefetch_ms,
             "feature_cutoff_ms": cutoff,
+            "decision_reservation_sha256": decision_reservation_sha256,
+            "registered_config_sha256": config["registered_config_sha256"],
+            "effective_config_sha256": config["effective_config_sha256"],
+            "code_sha256": config["code_sha256"],
+            "code_amendment_record_sha256": config["code_amendment_record_sha256"],
             "active_symbols": active,
             "unavailable_contracts": unavailable,
             "current_features": current_features if decision_candidate else None,
@@ -997,10 +1330,24 @@ def tick() -> dict:
         }
         inserted = _append_record(connection, status, base_state=base_next, stress_state=stress_next,
                                   equity_point=True)
+        if decision_reservation_sha256:
+            connection.execute(
+                "UPDATE decision_attempts SET completed_record_sha256=? WHERE feature_cutoff_ms=?",
+                (inserted["record_sha256"], cutoff),
+            )
         metrics = _metrics(connection, base_next, stress_next)
         report = {"experiment_id": config["experiment_id"], "last_record_sha256": inserted["record_sha256"],
                   "last_status": status["status"], "last_server_time_ms": final_time,
                   "feature_cutoff_ms": cutoff, "sample_metrics": metrics,
+                  "operational_status": _operational_status(
+                      base_next, final_time,
+                      status="observed" if not decision_reason else "decision_abstained",
+                      blocking_reason=decision_reason,
+                  ),
+                  "registered_config_sha256": config["registered_config_sha256"],
+                  "effective_config_sha256": config["effective_config_sha256"],
+                  "code_sha256": config["code_sha256"],
+                  "code_amendment_record_sha256": config["code_amendment_record_sha256"],
                   "candidate_approved": metrics["sample_gate_passed"],
                   "approval_limit": "Paper evidence only; never enables real orders.",
                   "orders_enabled": False}
@@ -1066,10 +1413,11 @@ def _sync_funding_to_quote(connection: sqlite3.Connection, active: list[str], qu
 def status() -> dict:
     if not DATABASE.exists():
         return {"status": "not_initialized", "orders_enabled": False}
-    connection = _connect()
+    connection = sqlite3.connect(DATABASE.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
     try:
+        connection.execute("PRAGMA query_only=ON")
         _verify_chain(connection, full=True)
-        _verify_config_record(connection)
+        config_state = _verify_config_record(connection)
         _verify_public_receipts(connection)
         row = connection.execute("SELECT base_json,stress_json FROM account_state WHERE id=1").fetchone()
         last = connection.execute("SELECT payload_json,record_sha256 FROM records ORDER BY sequence DESC LIMIT 1").fetchone()
@@ -1077,9 +1425,40 @@ def status() -> dict:
             return {"status": "registered_without_paper_account", "orders_enabled": False}
         base, stress = json.loads(row[0]), json.loads(row[1])
         metrics = _metrics(connection, base, stress)
+        last_payload = json.loads(last[0])
+        observed_server_ms = int(last_payload.get("server_time_ms", base["last_ms"]))
+        operational = _operational_status(
+            base,
+            observed_server_ms,
+            status="blocked" if last_payload.get("kind") == "blocked_observation" else "observed",
+            blocking_reason=last_payload.get("blocking_reason", last_payload.get("status")
+                             if last_payload.get("kind") == "blocked_observation" else None),
+        )
+        now_ms = time.time_ns() // 1_000_000
+        operational["heartbeat_age_ms"] = max(0, now_ms - observed_server_ms)
+        if (base["positions"] and operational["heartbeat_age_ms"] > account.MAX_GAP_MS
+                and operational["blocking_reason"] is None):
+            operational["status"] = "stale_blocked"
+            operational["blocking_reason"] = "last_C18_observation_exceeds_65_minutes_with_open_positions"
+        has_decision_table = connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='decision_attempts'"
+        ).fetchone()
+        pending_decisions = [
+            {"feature_cutoff_ms": cutoff, "attempted_server_ms": attempted,
+             "reservation_record_sha256": reservation}
+            for cutoff, attempted, reservation in connection.execute(
+                "SELECT feature_cutoff_ms,attempted_server_ms,reservation_record_sha256 "
+                "FROM decision_attempts WHERE completed_record_sha256 IS NULL ORDER BY feature_cutoff_ms"
+            )
+        ] if has_decision_table else []
         result = {"experiment_id": "C18-lowvol-hgb-forward-static-2026-09-29",
-                  "last_record": json.loads(last[0]), "last_record_sha256": last[1],
+                  "last_record": last_payload, "last_record_sha256": last[1],
                   "sample_metrics": metrics, "candidate_approved": metrics["sample_gate_passed"],
+                  "operational_status": operational,
+                  "configuration_amendment_status": config_state,
+                  "pending_weekly_decision_attempts": pending_decisions,
+                  "read_only_snapshot": True,
+                  "wal_file_present": Path(str(DATABASE) + "-wal").exists(),
                   "orders_enabled": False}
         print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
         return result

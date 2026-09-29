@@ -1,0 +1,15 @@
+{
+  "commit": "43ee00f948b87c0bedd2749b09c9639b3a514bf8",
+  "scope": "isolated transcribed methods with synthetic inputs, not full module or repository suite",
+  "live_network_or_orders": false,
+  "delayed_event": {
+    "event_age_ms": 60000,
+    "receipt_age_ms": "100.000",
+    "clock_qualified": 1,
+    "sample_valid": 1
+  },
+  "end_of_window": {
+    "samples_after_exclusive_end": 2,
+    "final_flush_error": "wall_clock_regressed_during_capture"
+  }
+}

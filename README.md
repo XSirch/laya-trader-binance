@@ -1,5 +1,12 @@
 # Jev Binance Research
 
+## Current strategy criteria
+
+For current crypto strategy research, use the user-confirmed gates in
+[the current parameters](research/docs/PARAMETROS_VIGENTES.md). They supersede
+older target language in this README. All C18/C20 work remains paper or public
+market-data research; it does not enable real orders.
+
 This repository is a clean research pipeline for unleveraged Binance Spot trading. It downloads first-party hourly BTCUSDT, ETHUSDT, BNBUSDT, and SOLUSDT candles, checks Binance's published SHA256 for every ZIP, compares a fixed set of long-or-flat rules, and optionally asks OpenRouter Jev 1.13 whether to accept each candidate entry. It never sends an order.
 
 ## Setup
@@ -118,10 +125,11 @@ processed trading hours and never approves a strategy from an empty history.
 The [initial report checkpoint](docs/forward_report_2026-09-26.json) replays both
 flat accounts and verifies their stored inputs; it contains no trading result.
 
-The user target is now **50% net annual CAGR with at most 10% portfolio drawdown**.
-A fixed [48-scenario exposure and trailing grid](docs/target50_research_2026-09-26.md)
-found no match to both constraints. The existing candidate remains a comparison
-baseline; increasing its exposure has not satisfied this target.
+The earlier 50% net annual CAGR / 10% drawdown target belongs to the historical
+2026-09-26 comparison and is superseded by the current per-trade criteria linked
+above. Its fixed [48-scenario exposure and trailing grid](docs/target50_research_2026-09-26.md)
+found no match to those older constraints; the report remains historical
+evidence and was not rewritten.
 
 The separate [broad JEV protocol](docs/broad_jev_protocol_2026-09-26.md) fixes
 2,785 asset/time evaluations with all 60 daily market fields and five adherence
