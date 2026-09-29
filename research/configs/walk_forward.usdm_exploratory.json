@@ -1,0 +1,14 @@
+[
+  {
+    "train_end": "2025-01-01",
+    "calibration_end": "2025-04-01",
+    "selection_end": "2025-07-01",
+    "test_end": "2026-01-01"
+  },
+  {
+    "train_end": "2025-07-01",
+    "calibration_end": "2025-10-01",
+    "selection_end": "2026-01-01",
+    "test_end": "2026-09-01"
+  }
+]

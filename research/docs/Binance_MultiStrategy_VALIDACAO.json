@@ -1,0 +1,61 @@
+{
+  "date_local": "2026-09-27",
+  "version": "0.1.0",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "dependencies": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.8.0",
+    "joblib": "1.5.3",
+    "threadpoolctl": "3.6.0",
+    "pytest": "9.0.2"
+  },
+  "software_tests": {
+    "passed": 52,
+    "failed": 0,
+    "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 python -m pytest -q --disable-warnings",
+    "elapsed_seconds_observed": 5.92,
+    "compileall_passed": true,
+    "cli_help_passed": true
+  },
+  "synthetic_end_to_end_training_test": true,
+  "synthetic_data_purpose": "SOFTWARE TESTING ONLY; not financial validation",
+  "trained_on_real_binance_data": false,
+  "financial_weights_delivered": false,
+  "real_backtest_executed": false,
+  "win_rate_70_demonstrated": false,
+  "live_order_support": false,
+  "real_orders_sent": 0,
+  "paid_model_calls": 0,
+  "github_modified": false,
+  "historical_download_attempt": {
+    "obtained": false,
+    "error": "Download failed: https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1m/BTCUSDT-1m-2024-01.zip.CHECKSUM: <urlopen error [Errno -3] Temporary failure in name resolution>",
+    "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1m/BTCUSDT-1m-2024-01.zip.CHECKSUM"
+  },
+  "included_capabilities": [
+    "8 strategy candidates",
+    "54 market features / 66 model inputs",
+    "separate spot/USD-M training",
+    "chronological calibration and embargo",
+    "classifier + expected-R regressor",
+    "fixed-threshold frozen evaluation",
+    "weekly bootstrap diagnostics",
+    "cost stress",
+    "observed historical funding support",
+    "one global position in each backtest",
+    "event-driven paper risk engine without transport",
+    "offline signal command",
+    "explicit walk-forward folds"
+  ],
+  "not_included": [
+    "real pretrained weights",
+    "proof of future profitability or 70% win rate",
+    "continuous public-market feed",
+    "authenticated Binance client",
+    "demo/testnet verification",
+    "real exchange reconciliation and partial fills",
+    "leveraged liquidation/ADL model",
+    "automatic gap segmentation"
+  ]
+}

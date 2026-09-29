@@ -80,6 +80,19 @@ As pontuações do JEV levaram o script a uma exposição diferente da referênc
 
 Esse diagnóstico distingue duas questões: o JEV nem sempre classificou corretamente as condições explícitas; e o cálculo exato dessas condições também não produziu uma estratégia consistente. Rapidez de inferência e quantidade de indicadores não bastam para demonstrar vantagem financeira.
 
+## Reavaliação pela meta por operação
+
+Recalculei as operações da estratégia `jev_multifactor` usando as mesmas velas e as 332 respostas Jev já armazenadas. Não houve chamadas de API nem mudança nos sinais. Cada amostra tem dez operações fechadas; a contagem e o retorno total reconciliam com o backtest original. Acerto conta PnL líquido positivo, payoff compara ganhos e perdas líquidos médios, e EV é o retorno líquido médio por operação sobre o capital comprometido na entrada.
+
+| Janela / custo por lado | Trades | Acerto | Payoff líquido | EV líquido por operação | Retorno da carteira | DD máximo |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Validação, 0,15% | 10 | 40% | 1,910:1 | +0,913% | +2,137% | 5,944% |
+| Validação, 0,25% | 10 | 40% | 1,809:1 | +0,711% | +1,617% | 5,991% |
+| Confirmação, 0,15% | 10 | 30% | 0,543:1 | -3,279% | -8,247% | 14,976% |
+| Confirmação, 0,25% | 10 | 30% | 0,494:1 | -3,469% | -8,695% | 15,245% |
+
+A validação chega ao payoff mínimo, mas falha a taxa de acerto de 70% e o EV acima de 1,2% nas duas hipóteses de custo. A confirmação também falha acerto e EV, perde payoff mínimo e ultrapassa drawdown de 10%. As dez operações por janela são uma amostra preliminar pequena; o recorte positivo não é evidência de consistência. Custos continuam sendo hipóteses fixas, não fills executáveis.
+
 ## Evidência e reprodução
 
 A [evidência integral](multifactor_research_2026-09-26.json) registra perguntas, limites do script, métricas por janela, robustez a custos e atraso, exclusão de ativos, hashes e auditoria individual das 332 respostas. Os estados completos podem ser regenerados dos arquivos verificados e ficam em `results/multifactor_events.jsonl`. O cache com reservas e respostas está em `results/jev_multifactor_decisions.jsonl`.

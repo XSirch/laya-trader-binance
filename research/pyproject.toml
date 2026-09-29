@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "binance-multistrategy-research"
+version = "0.1.0"
+description = "Causal multi-strategy Binance spot/USDM research, supervised training and paper risk engine"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26,<3", "pandas>=2.2,<3", "scikit-learn>=1.8,<1.9",
+  "joblib>=1.4,<2", "threadpoolctl>=3.5,<4"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+gpu = ["xgboost>=3.4.1,<3.5; python_version >= '3.12'"]
+
+[project.scripts]
+multitrader = "binance_multistrategy.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/binance_multistrategy"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

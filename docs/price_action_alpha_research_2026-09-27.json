@@ -1,0 +1,451 @@
+{
+  "config": {
+    "allocation_per_asset": 0.25,
+    "bar_interval": "1h",
+    "entry_delay_hours_after_signal_close": 1,
+    "estimator": {
+      "early_stopping": false,
+      "l2_regularization": 10.0,
+      "learning_rate": 0.05,
+      "loss": "squared_error",
+      "max_bins": 64,
+      "max_depth": 3,
+      "max_iter": 100,
+      "max_leaf_nodes": 7,
+      "min_samples_leaf": 40,
+      "random_state": 548
+    },
+    "event": "current low below previous 24-hour low and current close above it",
+    "event_cooldown_hours": 24,
+    "first_month": "2023-01",
+    "horizon_hours": 24,
+    "jev_calls_authorized": false,
+    "last_month": "2026-08",
+    "maximum_drawdown_pct": 10,
+    "maximum_stop_distance_atr": 2.0,
+    "minimum_training_events": 400,
+    "orders_authorized": false,
+    "prediction_target": "gross_trade_return_divided_by_R",
+    "side_costs": [
+      0.0015,
+      0.003
+    ],
+    "stop_buffer_atr": 0.1,
+    "symbols": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT"
+    ],
+    "target_R": 2.0,
+    "target_net_cagr_pct": 50,
+    "trade_gate": "predicted_gross_R * risk_fraction > 2 * side_cost"
+  },
+  "created_utc": "2026-09-27T06:45:27.623548+00:00",
+  "decision": "retrospective event-specific experiment only; no consistency claim",
+  "deployable": false,
+  "elapsed_seconds": 13.377911200004746,
+  "event_design": {
+    "event_count": 1325,
+    "excluded": {
+      "cooldown": 2982,
+      "feature_or_history": 123087,
+      "invalidated_or_incomplete_trade": 754
+    },
+    "feature_count": 23,
+    "feature_names": [
+      "sweep_depth_atr",
+      "reclaim_depth_atr",
+      "prior_range_atr",
+      "signal_range_atr",
+      "signal_close_location",
+      "lower_wick_share",
+      "atr_fraction",
+      "realized_volatility_24h",
+      "return_6h",
+      "return_24h",
+      "return_72h",
+      "btc_return_6h",
+      "btc_return_24h",
+      "btc_return_72h",
+      "relative_quote_volume_24h",
+      "taker_imbalance_event",
+      "taker_imbalance_24h",
+      "volume_poc_distance_atr",
+      "volume_poc_share",
+      "asset_is_BTCUSDT",
+      "asset_is_ETHUSDT",
+      "asset_is_BNBUSDT",
+      "asset_is_SOLUSDT"
+    ],
+    "first_prediction_ms": 1711958400000,
+    "fit_count": 44,
+    "historical_point_in_time_verified": false,
+    "last_prediction_ms": 1787932800000,
+    "outcome_count": 1325,
+    "prediction_count": 905,
+    "prediction_training_availability_verified": true
+  },
+  "forecast_scores": {
+    "2024": {
+      "count": 263,
+      "direction_accuracy": 0.45627376425855515,
+      "mae_gross_R": 1.2493329646430953,
+      "mse_gross_R": 1.8563783184139169,
+      "skill_vs_training_mean": -0.08277788413716913,
+      "skill_vs_zero": -0.09163323402982093
+    },
+    "2025": {
+      "count": 379,
+      "direction_accuracy": 0.5013192612137203,
+      "mae_gross_R": 1.2567401678357384,
+      "mse_gross_R": 1.9082445137552562,
+      "skill_vs_training_mean": -0.05352876944042495,
+      "skill_vs_zero": -0.0550220110902393
+    },
+    "2026_jan_aug": {
+      "count": 263,
+      "direction_accuracy": 0.5057034220532319,
+      "mae_gross_R": 1.2801805030046651,
+      "mse_gross_R": 1.915883999228302,
+      "skill_vs_training_mean": -0.03304276417362062,
+      "skill_vs_zero": -0.03337851720550322
+    },
+    "all": {
+      "count": 905,
+      "direction_accuracy": 0.4895027624309392,
+      "mae_gross_R": 1.2613995200012218,
+      "mse_gross_R": 1.8953918897824815,
+      "skill_vs_training_mean": -0.05549551536617714,
+      "skill_vs_zero": -0.058614296986710945
+    }
+  },
+  "full_report_sha256": "c4495377621eba12f43c629810ce21d021a99251d0e0286ea48c68b19433ab87",
+  "goal_achieved": false,
+  "inputs": {
+    "archive_identity_sha256": "0e6af9da709b5de2f420b193344031e8450f27668b61aacc8d2912129034f123",
+    "common_timestamp_count": 32135,
+    "config": {
+      "allocation_per_asset": 0.25,
+      "bar_interval": "1h",
+      "entry_delay_hours_after_signal_close": 1,
+      "estimator": {
+        "early_stopping": false,
+        "l2_regularization": 10.0,
+        "learning_rate": 0.05,
+        "loss": "squared_error",
+        "max_bins": 64,
+        "max_depth": 3,
+        "max_iter": 100,
+        "max_leaf_nodes": 7,
+        "min_samples_leaf": 40,
+        "random_state": 548
+      },
+      "event": "current low below previous 24-hour low and current close above it",
+      "event_cooldown_hours": 24,
+      "first_month": "2023-01",
+      "horizon_hours": 24,
+      "jev_calls_authorized": false,
+      "last_month": "2026-08",
+      "maximum_drawdown_pct": 10,
+      "maximum_stop_distance_atr": 2.0,
+      "minimum_training_events": 400,
+      "orders_authorized": false,
+      "prediction_target": "gross_trade_return_divided_by_R",
+      "side_costs": [
+        0.0015,
+        0.003
+      ],
+      "stop_buffer_atr": 0.1,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "target_R": 2.0,
+      "target_net_cagr_pct": 50,
+      "trade_gate": "predicted_gross_R * risk_fraction > 2 * side_cost"
+    },
+    "event_count": 1325,
+    "event_exclusions": {
+      "cooldown": 2982,
+      "feature_or_history": 123087,
+      "invalidated_or_incomplete_trade": 754
+    },
+    "event_identity_sha256": "20597a1525c525784eb236b8df0b7542c44509f7be22e5b2512c775b1a7ad369",
+    "features": [
+      "sweep_depth_atr",
+      "reclaim_depth_atr",
+      "prior_range_atr",
+      "signal_range_atr",
+      "signal_close_location",
+      "lower_wick_share",
+      "atr_fraction",
+      "realized_volatility_24h",
+      "return_6h",
+      "return_24h",
+      "return_72h",
+      "btc_return_6h",
+      "btc_return_24h",
+      "btc_return_72h",
+      "relative_quote_volume_24h",
+      "taker_imbalance_event",
+      "taker_imbalance_24h",
+      "volume_poc_distance_atr",
+      "volume_poc_share",
+      "asset_is_BTCUSDT",
+      "asset_is_ETHUSDT",
+      "asset_is_BNBUSDT",
+      "asset_is_SOLUSDT"
+    ],
+    "label_identity_sha256": "f505ea78a6adca5253ebfceb75efd93fab4bd29b6922de2bd03eb28aaac6fa2b",
+    "numpy": "2.5.3",
+    "python": "3.13.9",
+    "replay_end_ms": 1788217200000,
+    "replay_start_ms": 1711958400000,
+    "scikit_learn": "1.9.1",
+    "selected_archive_count": 176,
+    "source_hashes": {
+      "docs/price_action_alpha_protocol_2026-09-27.md": "2b66efe8f363bd0df2e6f1c43e212a0edc87d056f18833cb51cfcc1a5a133b81",
+      "src/jev_trader/price_action_alpha.py": "5cedba044bf699932d3ec987211cb210e728928d4d0baec8cdd0d31f2fe13993",
+      "src/jev_trader/price_action_alpha_execution.py": "c36c2baf93723afd9b205f6d657aad8136a414d0597b1de12b41defab8722b46",
+      "src/jev_trader/price_action_alpha_research.py": "a3251db4e90f24e6b9e996fda04b8def151576118c02af12aa7fa7bbafa72283"
+    }
+  },
+  "inputs_file_sha256": "1b6528ff174899f3385b156bb1a0b3c19da730f09c0ed57aceaaca4fd90173ed",
+  "jev_calls": 0,
+  "limits": [
+    "The historical files were already inspected in this project; this is not an untouched holdout.",
+    "The product vendor does not publish GainzAlgo V2 Alpha rules; this is a separate implementation.",
+    "Hourly OHLC and assumed costs do not establish actual orders, spreads, latency, or fills.",
+    "The four assets are correlated and one event is not an independent market regime."
+  ],
+  "orders_sent": 0,
+  "scenario_count": 8,
+  "scenarios": [
+    {
+      "adverse_intrahour_drawdown_bound_pct": 18.242165869054215,
+      "annual_returns_pct": {
+        "2024": -12.644068219941806,
+        "2025": -4.0394615198050765,
+        "2026": 2.0579301595539556
+      },
+      "decision_reasons": {
+        "entry": 106,
+        "expected_gross_below_round_trip_cost": 799,
+        "stop": 65,
+        "target": 20,
+        "time_exit_24h": 21
+      },
+      "descriptive_annualized_cagr_pct": -6.253294564796896,
+      "entries": 106,
+      "event_count": 905,
+      "exits": 106,
+      "fees_pct_initial": 7.006147276946634,
+      "max_drawdown_pct": 17.93155490755327,
+      "meets_static_50_10_gate": false,
+      "mode": "ml_gated",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": -7.441524498145502,
+      "reconciliation_error": 1.1102230246251565e-16,
+      "return_pct": -14.44767177509213,
+      "side_cost": 0.0015,
+      "terminal_equity": 0.8555232822490787,
+      "turnover_multiple_initial": 46.7076485129776
+    },
+    {
+      "adverse_intrahour_drawdown_bound_pct": 13.326405141947495,
+      "annual_returns_pct": {
+        "2024": -10.119607570604384,
+        "2025": -2.231988116148498,
+        "2026": 1.5126779240957733
+      },
+      "decision_reasons": {
+        "entry": 42,
+        "expected_gross_below_round_trip_cost": 863,
+        "stop": 26,
+        "target": 5,
+        "time_exit_24h": 11
+      },
+      "descriptive_annualized_cagr_pct": -4.617879842188543,
+      "entries": 42,
+      "event_count": 905,
+      "exits": 42,
+      "fees_pct_initial": 5.7501321666484,
+      "max_drawdown_pct": 13.168637766719627,
+      "meets_static_50_10_gate": false,
+      "mode": "ml_gated",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": -5.046340356854217,
+      "reconciliation_error": 2.220446049250313e-16,
+      "return_pct": -10.796472523502597,
+      "side_cost": 0.003,
+      "terminal_equity": 0.892035274764974,
+      "turnover_multiple_initial": 19.167107222161327
+    },
+    {
+      "adverse_intrahour_drawdown_bound_pct": 57.80302528875345,
+      "annual_returns_pct": {
+        "2024": -27.65740856168376,
+        "2025": -28.644878558877828,
+        "2026": -17.78338141313268
+      },
+      "decision_reasons": {
+        "entry": 905,
+        "stop": 574,
+        "stop_first_same_bar": 13,
+        "target": 247,
+        "time_exit_24h": 71
+      },
+      "descriptive_annualized_cagr_pct": -29.863148978389688,
+      "entries": 905,
+      "event_count": 905,
+      "exits": 905,
+      "fees_pct_initial": 43.30266891040216,
+      "max_drawdown_pct": 57.59197316295922,
+      "meets_static_50_10_gate": false,
+      "mode": "all_sweeps",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": -14.261781576320512,
+      "reconciliation_error": 5.551115123125783e-16,
+      "return_pct": -57.56445048672262,
+      "side_cost": 0.0015,
+      "terminal_equity": 0.4243554951327738,
+      "turnover_multiple_initial": 288.68445940268134
+    },
+    {
+      "adverse_intrahour_drawdown_bound_pct": 78.5250559076939,
+      "annual_returns_pct": {
+        "2024": -40.59925640151839,
+        "2025": -46.302379965824535,
+        "2026": -32.54589970981371
+      },
+      "decision_reasons": {
+        "entry": 905,
+        "stop": 574,
+        "stop_first_same_bar": 13,
+        "target": 247,
+        "time_exit_24h": 71
+      },
+      "descriptive_annualized_cagr_pct": -47.05907893571717,
+      "entries": 905,
+      "event_count": 905,
+      "exits": 905,
+      "fees_pct_initial": 66.0512126151433,
+      "max_drawdown_pct": 78.50069641161063,
+      "meets_static_50_10_gate": false,
+      "mode": "all_sweeps",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": -12.44359305480193,
+      "reconciliation_error": 1.3322676295501878e-15,
+      "return_pct": -78.4948056699451,
+      "side_cost": 0.003,
+      "terminal_equity": 0.2150519433005491,
+      "turnover_multiple_initial": 220.17070871714395
+    },
+    {
+      "adverse_intrahour_drawdown_bound_pct": 61.9650899861749,
+      "annual_returns_pct": {
+        "2024": 11.591722009032047,
+        "2025": -6.338170263324072,
+        "2026": -16.41596695751677
+      },
+      "decision_reasons": {
+        "entry": 4,
+        "period_end_buy_hold": 4
+      },
+      "descriptive_annualized_cagr_pct": -5.193850759977458,
+      "entries": 4,
+      "event_count": 905,
+      "exits": 4,
+      "fees_pct_initial": 0.28183455228906973,
+      "max_drawdown_pct": 61.53400559313913,
+      "meets_static_50_10_gate": false,
+      "mode": "buy_hold",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": -11.810747799964508,
+      "reconciliation_error": 0.0,
+      "return_pct": -12.092582352253578,
+      "side_cost": 0.0015,
+      "terminal_equity": 0.8790741764774642,
+      "turnover_multiple_initial": 1.8788970152604645
+    },
+    {
+      "adverse_intrahour_drawdown_bound_pct": 61.95410267857705,
+      "annual_returns_pct": {
+        "2024": 11.614474346023918,
+        "2025": -6.300618216794396,
+        "2026": -16.540412992903207
+      },
+      "decision_reasons": {
+        "entry": 4,
+        "period_end_buy_hold": 4
+      },
+      "descriptive_annualized_cagr_pct": -5.2874927425832885,
+      "entries": 4,
+      "event_count": 905,
+      "exits": 4,
+      "fees_pct_initial": 0.5629875816511244,
+      "max_drawdown_pct": 61.52255650616727,
+      "meets_static_50_10_gate": false,
+      "mode": "buy_hold",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": -11.739267399110096,
+      "reconciliation_error": -1.1102230246251565e-16,
+      "return_pct": -12.30225498076123,
+      "side_cost": 0.003,
+      "terminal_equity": 0.8769774501923877,
+      "turnover_multiple_initial": 1.8766252721704146
+    },
+    {
+      "adverse_intrahour_drawdown_bound_pct": 0.0,
+      "annual_returns_pct": {
+        "2024": 0.0,
+        "2025": 0.0,
+        "2026": 0.0
+      },
+      "decision_reasons": {},
+      "descriptive_annualized_cagr_pct": 0.0,
+      "entries": 0,
+      "event_count": 905,
+      "exits": 0,
+      "fees_pct_initial": 0.0,
+      "max_drawdown_pct": 0.0,
+      "meets_static_50_10_gate": false,
+      "mode": "cash",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": 0.0,
+      "reconciliation_error": 0.0,
+      "return_pct": 0.0,
+      "side_cost": 0.0015,
+      "terminal_equity": 1.0,
+      "turnover_multiple_initial": 0.0
+    },
+    {
+      "adverse_intrahour_drawdown_bound_pct": 0.0,
+      "annual_returns_pct": {
+        "2024": 0.0,
+        "2025": 0.0,
+        "2026": 0.0
+      },
+      "decision_reasons": {},
+      "descriptive_annualized_cagr_pct": 0.0,
+      "entries": 0,
+      "event_count": 905,
+      "exits": 0,
+      "fees_pct_initial": 0.0,
+      "max_drawdown_pct": 0.0,
+      "meets_static_50_10_gate": false,
+      "mode": "cash",
+      "period": "retrospective_walk_forward",
+      "price_pnl_pct_initial": 0.0,
+      "reconciliation_error": 0.0,
+      "return_pct": 0.0,
+      "side_cost": 0.003,
+      "terminal_equity": 1.0,
+      "turnover_multiple_initial": 0.0
+    }
+  ],
+  "selected_winner": null
+}
