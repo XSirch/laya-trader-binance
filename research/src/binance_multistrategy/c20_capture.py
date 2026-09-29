@@ -33,6 +33,7 @@ MAX_CAPTURE_DAYS = 112
 MAX_QUOTE_AGE_MS = 5_000
 MAX_CLOCK_OFFSET_MS = 100.0
 CLOCK_PROBE_MAX_AGE_MS = 60_000
+MAX_START_WAIT_SLEEP_S = 30.0
 ROTATE_CONNECTION_AFTER_S = 23 * 60 * 60 + 50 * 60
 ZERO_HASH = "0" * 64
 
@@ -694,7 +695,7 @@ class BookTickerCapture:
 
     async def _wait_until_start(self) -> None:
         while time.time() < self.start_epoch:
-            await asyncio.sleep(min(1.0, self.start_epoch - time.time()))
+            await asyncio.sleep(min(MAX_START_WAIT_SLEEP_S, self.start_epoch - time.time()))
 
     async def _pause_with_sampling(self, seconds: float) -> None:
         deadline = time.monotonic() + seconds

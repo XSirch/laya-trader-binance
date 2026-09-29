@@ -1,3 +1,4 @@
+import asyncio
 import csv
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -11,6 +12,7 @@ from binance_multistrategy.c20_capture import (
     BookTickerCapture,
     ClockReading,
     DailyStore,
+    MAX_START_WAIT_SLEEP_S,
     build_sample_row,
     parse_bookticker,
     parse_clock_response,
@@ -230,3 +232,22 @@ def test_start_must_be_utc_and_whole_second():
         parse_utc_second("2026-09-29T00:00:00")
     with pytest.raises(ValueError, match="timezone_aware_utc_whole_second"):
         parse_utc_second("2026-09-29T00:00:00.500Z")
+
+
+def test_wait_until_start_uses_bounded_low_frequency_sleep(tmp_path: Path, monkeypatch):
+    start = 1_798_000_000
+    capture = BookTickerCapture(tmp_path, start_epoch=start, duration_days=1)
+    now = [float(start - 95)]
+    delays = []
+
+    async def fake_sleep(delay):
+        delays.append(delay)
+        now[0] += delay
+
+    monkeypatch.setattr("binance_multistrategy.c20_capture.time.time", lambda: now[0])
+    monkeypatch.setattr("binance_multistrategy.c20_capture.asyncio.sleep", fake_sleep)
+    asyncio.run(capture._wait_until_start())
+
+    assert MAX_START_WAIT_SLEEP_S == 30
+    assert delays == [30, 30, 30, 5]
+    assert now[0] == start
