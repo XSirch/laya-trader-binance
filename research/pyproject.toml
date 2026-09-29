@@ -9,7 +9,7 @@ description = "Causal multi-strategy Binance spot/USDM research, supervised trai
 requires-python = ">=3.11"
 dependencies = [
   "numpy>=1.26,<3", "pandas>=2.2,<3", "scikit-learn>=1.8,<1.9",
-  "joblib>=1.4,<2", "threadpoolctl>=3.5,<4"
+  "joblib>=1.4,<2", "threadpoolctl>=3.5,<4", "websockets>=17,<18"
 ]
 
 [project.optional-dependencies]
